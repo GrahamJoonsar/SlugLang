@@ -1,4 +1,5 @@
-print $"Hello, What's your name?"
+println $"Hello, What's your name?"
 readStr name
-print $"Hi"
+print $"Hi "
 print name
+println $"!"
