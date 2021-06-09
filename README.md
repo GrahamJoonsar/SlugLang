@@ -18,27 +18,8 @@ Declaring variables is technically calling a function, but I will seperate it fo
 
 ## Examples
 
-Here is an example program of the base datatypes and the print function
+Here is an example program that greets the user.
 
-
-`print "Demonstrating the print and data types"`
-
-`int inum 50`
-
-`float fnum 35.4`
-
-`string s "Hello World"`
-
-`print "Printing an integer"`
-
-`print inum`
-
-`print "Printing a float"`
-
-`print fnum`
-
-`print "Printing a string"`
-
-`print s`
+[Intro To Slug](Examples/greeting.slug)
 
 
