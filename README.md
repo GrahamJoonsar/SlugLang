@@ -1,5 +1,5 @@
 # SlugLang
-A simple interpreted programming language
+A simple interpreted programming language. The read=son behind the name is the language's methodology, "One step at a time". Lots of things that would be one line in other languages are seperated into multiple lines for clarity. There should only be one operation, or something happening, per line, although technically there can be more.
 
 # Documentation
 A brief overview on how to use the slug programming language
@@ -9,8 +9,23 @@ A brief overview on how to use the slug programming language
 Declaring variables is technically calling a function, but I will seperate it for clarity. There are three base datatypes in Slug, `int`, `float`, and `string`.
 
 `int` is used for whole numbers, or integers.
+
 `float` is used for numbers with fractional components.
+
 `string` is used for words or letters.
+
+Here is the code used to declare these three datatypes.
+
+![declarations](https://user-images.githubusercontent.com/70826772/121429336-caa98b00-c944-11eb-864f-2321a470c650.png)
+
+There is another, more complicated datatype to declare, the `bool`. Intead of passing in true or false as most other languages, there is a different way of doing it in slug. First, you pass in the name of the `bool`, Next, the types of values you are declaring. Third, You put in the first value/variable to be compared. Fourthly, the dev puts in the boolean operator, like `==` or `>`. Lastly you put in the second value/variable to be compared. Here is an example.
+
+`bool myBool int 3 > 0`
+
+Here is the code for making bools.
+
+![boolDeclaration](https://user-images.githubusercontent.com/70826772/121434120-d5671e80-c94a-11eb-8587-78993f4f3009.png)
+
 
 ## Base functions
 
