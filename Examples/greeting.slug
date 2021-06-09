@@ -1,3 +1,4 @@
+# This progeam asks the user for their name and greets them.
 println $"Hello, What's your name?"
 readStr name
 print $"Hi "
