@@ -34,19 +34,20 @@ int main(int argc, char * argv[]){
     std::vector<std::string> currentLineTokens;
     std::string args[10]; // Hopefully not more that 10 arguments
 
-    while (getline(inputFile, currentLine)){
+    while (getline(inputFile, currentLine)){ // Looping through the file
         currentLineTokens = slugInterp.tokenizer(currentLine);
-        for (int i = 0; i < currentLineTokens.size(); i++){ // looping through tokens
-            if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
-                for (int j = 0; j < slugInterp.argcountForFunc; j++){
-                    i++;
-                    args[j] = currentLineTokens[i];
+        if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0]){ // if statement succeded
+            for (int i = 0; i < currentLineTokens.size(); i++){ // looping through tokens
+                if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
+                    for (int j = 0; j < slugInterp.argcountForFunc; j++){
+                        i++;
+                        args[j] = currentLineTokens[i];
+                    }
+                    slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 }
-                slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp);
             }
         }
     }
-
     // Closing the file
     inputFile.close();
 }
