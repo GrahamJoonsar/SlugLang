@@ -29,7 +29,23 @@ Here is the code for making bools.
 
 ## Base functions
 
-`print` is the function that outputs to the console. It can either output a string literal, an `int`, a `float`, and a `string`. It automatically adds a newline to the end of what you give it.
+`print` is the function that outputs to the console. It can either output a string literal, an `int`, a `float`, and a `string`. It does not add a newline after what you give it.
+
+![print](https://user-images.githubusercontent.com/70826772/121434432-558d8400-c94b-11eb-8b3d-4d0df3883b9f.png)
+
+`println` is the same as print but it adds a newline at the end.
+
+![println](https://user-images.githubusercontent.com/70826772/121434547-7b1a8d80-c94b-11eb-93bc-2d71056fd363.png)
+
+For getting user input, there are three main functions. `readInt`, `readFloat`, and `readStr`. These are pretty self-explanatory, so I won't go in depth. These functions take input in the forms of the three main datatypes. The only parameter they take is the name of the variable to put the input in.
+
+![read](https://user-images.githubusercontent.com/70826772/121435299-a18cf880-c94c-11eb-9cae-308bc5bd8da2.png)
+
+Next are the main conditional functions `if`, `elseif`, `else`. They are basically the same as other languages, but they are technically functions. They take one parameter, a boolean variable. To tell what is under the if statements, the slug language uses `~` for indentation, like a tab in python. The reason I didn't just use tabs is completely arbitrary, and I recommend that if you decide to build the compiler yourself, you change the following code in `slugInterpreter.cpp`.
+
+![change](https://user-images.githubusercontent.com/70826772/121436470-a6eb4280-c94e-11eb-9be8-f4286eae7224.png)
+
+An example of a full if statement is in Examples.
 
 ## Examples
 
@@ -62,4 +78,10 @@ Variables do not have to be declared before use. This is because of how variable
 The interpreter uses a map that uses a `std::string` key and whatever type the dev specifies as the value type. So whenever the developer sets a variable, the value in the dictionary corresponding to the key (variable name) is set to the value the dev provides. This way, all variables are global, but I might change this later.
 
 ![variables](https://user-images.githubusercontent.com/70826772/121426767-f5461480-c941-11eb-8f9a-5a8e1b4c17bc.png)
+
+
+Here is an example of an if statement.
+
+![votes](https://user-images.githubusercontent.com/70826772/121437095-b5862980-c94f-11eb-91c0-3cda631e9efb.png)
+
 
