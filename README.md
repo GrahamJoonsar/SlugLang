@@ -84,4 +84,6 @@ Here is an example of an if statement.
 
 ![votes](https://user-images.githubusercontent.com/70826772/121437095-b5862980-c94f-11eb-91c0-3cda631e9efb.png)
 
+First, the program declares an `integer` called `age`. Although unneccesary, this shows how to properly declare a variable in slug. Then the program prompts the user for their age, which is stored in the variable `age`. Then, two bools are created for the if statements in the program. The first, `over18` is the bool that represents if the user is >= 18 years old. Secondly, the `bool` `is17` tells if the user is 17 years old. Then the program moves onto the if statements. If `over18` is true, then the user is prompted to vote for either apples or cheese. Their input is tested into bools that check if they voted for apples or cheese. If they voted apple, the program says. else if they voted for cheese, the program says. If `over18` is false and `is17` is true (elseif), It says "So close". Else, it says they are too young.
+
 
