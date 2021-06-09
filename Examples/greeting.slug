@@ -1,0 +1,4 @@
+print $"Hello, What's your name?"
+readStr name
+print $"Hi"
+print name
