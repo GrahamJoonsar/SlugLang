@@ -1,6 +1,8 @@
 # SlugLang
 A simple interpreted programming language. The read=son behind the name is the language's methodology, "One step at a time". Lots of things that would be one line in other languages are seperated into multiple lines for clarity. There should only be one operation, or something happening, per line, although technically there can be more.
 
+Take a look at some [Examples](#examples)
+
 # Documentation
 A brief overview on how to use the slug programming language
 
