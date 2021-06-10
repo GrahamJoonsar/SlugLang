@@ -239,15 +239,16 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     std::vector<std::string> tokens;
     std::string token;
     bool isString = false;
+    bool charSeen;
     int tabLevel = 0;
+    int spaceNum = 0;
     for (int i = 0; i < passedInString.length(); i++){ // looping through string
         if (passedInString[i] != ' ' && !isString){
+            charSeen = true;
             if (passedInString[i] == '"'){ // string started
                 isString = true;
             } else if (passedInString[i] == '#'){ // Comment
                 break;
-            } else if (passedInString[i] == '~'){ // tab
-                tabLevel++;
             } else {
                 token += passedInString[i];
             }
@@ -257,7 +258,12 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             } else {
                 isString = false;
             }
-        } else {
+        } else { // space
+            spaceNum++;
+            if (spaceNum == 4 && !charSeen){
+                tabLevel++;
+                spaceNum = 0;
+            }
             if (token != ""){
                 tokens.push_back(token);
                 token = "";
