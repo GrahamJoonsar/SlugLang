@@ -1,0 +1,36 @@
+int age 0 # Declaring the age variable
+          # Completely unnecessary
+
+# Asking the user for their age
+
+println $"What is your age"
+readInt age
+
+# Making bools for the if statements
+# This is ane example of the 
+# "One step at a time" methodology.
+
+bool over18 int age >= 18
+bool is17 int age == 17
+
+print $"You said "
+print age
+println $" years old."
+
+if over18 # if the user is over 18
+    println $"You can vote"
+    println $"Who do you want to vote for?"
+    println $"apple or cheese"
+    readStr vote # reading the vote
+    bool votedCheese string vote == $"cheese"
+    bool votedApple string vote == $"apple"
+    if votedCheese 
+        println $"You voted cheese"
+    elseif votedApple
+        println $"You voted apple"
+elseif is17
+    println $"So close"
+else
+    println $"Too young"
+
+println $"Thanks for coming to the polls"
