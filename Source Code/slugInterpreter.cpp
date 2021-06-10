@@ -23,6 +23,19 @@ std::string takeOffFrontChar(std::string str){
 // Printing a string literal or var to the string
 void print(std::string * printString, Interpreter * interp){ // ptinting a string
     if (interp->inInts(printString[0])){ // integer var
+        std::cout << interp->integers.at(printString[0]);
+    } else if (interp->inFloats(printString[0])){ // float var
+        std::cout << interp->floats.at(printString[0]);
+    } else if (interp->inStrings(printString[0])){ // string var
+        std::cout << interp->strings.at(printString[0]);
+    } else { // string literal
+        std::cout << takeOffFrontChar(printString[0]);
+    } // substr so we ignore the dollar sign at the front
+}
+
+// Printing a string literal or var to the string with a newline
+void println(std::string * printString, Interpreter * interp){ // ptinting a string
+    if (interp->inInts(printString[0])){ // integer var
         std::cout << interp->integers.at(printString[0]) << std::endl;
     } else if (interp->inFloats(printString[0])){ // float var
         std::cout << interp->floats.at(printString[0]) << std::endl;
@@ -143,9 +156,10 @@ void readFloat(std::string * args, Interpreter * interp){
 }
 
 // Getting a string from the user
-void readStr(std::string * args, Interpreter * interp){
-    std::cin.ignore(); // Getting rid of the newline
-    std::getline(std::cin, interp->strings[args[0]]); // getting a full line to account for spaces
+void readStr(std::string * args, Interpreter * interp){ // The only way I could get it top consistently work
+    while(std::getline(std::cin, interp->strings[args[0]])){ 
+        if (interp->strings[args[0]] != ""){break;}
+    } // getting a full line to account for spaces
 }
 
 /* conditionals */
@@ -191,6 +205,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     booleans["boolTest"] = true;
     /* standard functions */
     functions.push_back({"print", 1, &print}); // adding the print function
+    functions.push_back({"println", 1, &println}); // adding the print function
     functions.push_back({"int", 2, &declareInt}); // the int declaration.
     functions.push_back({"float", 2, &declareFloat}); // the float declaration
     functions.push_back({"string", 2, &declareStr}); // the float declaration
