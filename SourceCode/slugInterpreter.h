@@ -20,6 +20,8 @@ struct Function{
 class Interpreter{
     public:
         int argcountForFunc = 1;
+        int argsPassedIn = 1;
+
         int funcNum;
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
         int curlyBraceNum = 0;
