@@ -6,6 +6,31 @@
 
 Interpreter slugInterp;
 
+void proccessLine(std::string line){
+    std::string args[10]; // Hopefully not more that 10 arguments
+    std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);
+    if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0]){ // if statement succeded
+        for (int i = 0; i < currentLineTokens.size(); i++){ // looping through tokens
+            if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
+                if (slugInterp.argcountForFunc != -1){ // not a variable argument amount
+                    for (int j = 0; j < slugInterp.argcountForFunc; j++){
+                        i++;
+                        args[j] = currentLineTokens[i];
+                    }
+                    slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
+                } else { // variable arg amount
+                    slugInterp.argsPassedIn = currentLineTokens.size() - 1;
+                    for (int j = 1; j < currentLineTokens.size(); j++){
+                        i++;
+                        args[j] = currentLineTokens[i];
+                    }
+                    slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char * argv[]){
     // Reading the command line arguments
     if (argc == 2){
@@ -31,22 +56,9 @@ int main(int argc, char * argv[]){
 
     // Reading through the file line by line
     std::string currentLine;
-    std::vector<std::string> currentLineTokens;
-    std::string args[10]; // Hopefully not more that 10 arguments
 
     while (getline(inputFile, currentLine)){ // Looping through the file
-        currentLineTokens = slugInterp.tokenizer(currentLine);
-        if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0]){ // if statement succeded
-            for (int i = 0; i < currentLineTokens.size(); i++){ // looping through tokens
-                if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
-                    for (int j = 0; j < slugInterp.argcountForFunc; j++){
-                        i++;
-                        args[j] = currentLineTokens[i];
-                    }
-                    slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
-                }
-            }
-        }
+        proccessLine(currentLine);
     }
     // Closing the file
     inputFile.close();
