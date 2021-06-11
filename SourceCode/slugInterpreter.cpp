@@ -20,30 +20,43 @@ std::string takeOffFrontChar(std::string str){
     return str.substr(1, str.length() - 1);
 }
 
+// Getting the string value of whatever has been passed in
+std::string getStrValOf(std::string val, Interpreter * interp){
+    if (interp->inInts(val)){ // integer var
+        return std::to_string(interp->integers[val]);
+    } else if (interp->inFloats(val)){ // float var
+        return std::to_string(interp->floats[val]);
+    } else if (interp->inStrings(val)){ // string var
+        return interp->strings[val];
+    } else { // string literal
+        std::string literal = takeOffFrontChar(val);
+        if (literal == "\n"){ // newline
+            return std::to_string('\n');
+        } else if (literal == "\t"){ // tab
+            return std::to_string('\t');
+        } else {
+            return literal;
+        }
+    } // ignore the dollar sign at the front
+}
+
 // Printing a string literal or var to the string
 void print(std::string * printString, Interpreter * interp){ // ptinting a string
-    if (interp->inInts(printString[0])){ // integer var
-        std::cout << interp->integers.at(printString[0]);
-    } else if (interp->inFloats(printString[0])){ // float var
-        std::cout << interp->floats.at(printString[0]);
-    } else if (interp->inStrings(printString[0])){ // string var
-        std::cout << interp->strings.at(printString[0]);
-    } else { // string literal
-        std::cout << takeOffFrontChar(printString[0]);
-    } // substr so we ignore the dollar sign at the front
+    std::cout << getStrValOf(printString[0], interp);
 }
 
 // Printing a string literal or var to the string with a newline
 void println(std::string * printString, Interpreter * interp){ // ptinting a string
-    if (interp->inInts(printString[0])){ // integer var
-        std::cout << interp->integers.at(printString[0]) << std::endl;
-    } else if (interp->inFloats(printString[0])){ // float var
-        std::cout << interp->floats.at(printString[0]) << std::endl;
-    } else if (interp->inStrings(printString[0])){ // string var
-        std::cout << interp->strings.at(printString[0]) << std::endl;
-    } else { // string literal
-        std::cout << takeOffFrontChar(printString[0]) << std::endl;
-    } // substr so we ignore the dollar sign at the front
+    std::cout << getStrValOf(printString[0], interp) << std::endl;
+}
+
+void slugPrintf(std::string * args, Interpreter * interp){
+    std::string strToBeOutputted;
+    // No idea why it has to start at one more, but it works
+    for (int i = 1; i < interp->argsPassedIn + 1; i++){
+        strToBeOutputted += getStrValOf(args[i], interp);
+    }
+    std::cout << strToBeOutputted << std::endl;
 }
 
 /* Declaring and printing data types */
@@ -174,8 +187,7 @@ void ifSlug(std::string * args, Interpreter * interp){
 }
 
 void elseifSlug(std::string * args, Interpreter * interp){
-    bool t = !interp->curlyBraceLevel[interp->curlyBraceNum + 1][1];
-    if (t){ // past if statement failed
+    if (!interp->curlyBraceLevel[interp->curlyBraceNum + 1][1]){ // past if statement failed
         if (interp->booleans[args[0]]){
             interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true;
             interp->curlyBraceLevel[interp->curlyBraceNum + 1][1] = true;
@@ -188,8 +200,7 @@ void elseifSlug(std::string * args, Interpreter * interp){
 }
 
 void elseSlug(std::string * args, Interpreter * interp){
-    bool t = !interp->curlyBraceLevel[interp->curlyBraceNum + 1][1];
-    if (t){ // past if statement failed
+    if (!interp->curlyBraceLevel[interp->curlyBraceNum + 1][1]){ // past if statement failed
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true;
     } else {
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = false;
@@ -200,16 +211,33 @@ void test(std::string * args, Interpreter * interp){
     std::cout << "Test" << std::endl;
 }
 
+// The function that performs mathematical operations
+void eval(std::string * args, Interpreter * interp){
+
+}
+
+// Easter egg, wont be included in the docs
+void dispSlug(std::string * args, Interpreter * interp){
+    std::cout << "            ______      (o)o)     " << std::endl;
+    std::cout << "          _'      '_    ////      " << std::endl;
+    std::cout << "        _'          '-.///        " << std::endl;
+    std::cout << "     .-'               //         " << std::endl;
+    std::cout << "     '---..____...---''           " << std::endl;
+}
+
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     curlyBraceLevel[0][0] = true; // When there are no curly braces
-    booleans["boolTest"] = true;
     /* standard functions */
+    // print functions
     functions.push_back({"print", 1, &print}); // adding the print function
     functions.push_back({"println", 1, &println}); // adding the print function
+    functions.push_back({"printf", -1, &slugPrintf}); // adding the printf function
+    // Declaration functions
     functions.push_back({"int", 2, &declareInt}); // the int declaration.
     functions.push_back({"float", 2, &declareFloat}); // the float declaration
     functions.push_back({"string", 2, &declareStr}); // the float declaration
     functions.push_back({"bool", 5, &declareBool}); // the boolean declaration
+    // Input functions
     functions.push_back({"readInt", 1, &readInt}); // reading an integer from the user
     functions.push_back({"readFloat", 1, &readFloat}); // reading a float from the user
     functions.push_back({"readStr", 1, &readStr}); // reading a string from the user
@@ -219,6 +247,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"else", 0, &elseSlug});
     // Other stuff
     functions.push_back({"test", 0, &test});
+    functions.push_back({"slug", 0, &dispSlug});
 }
 
 bool Interpreter::inFunctions(std::string potentialFunc){
