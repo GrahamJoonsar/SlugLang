@@ -1,6 +1,7 @@
 #include "slugInterpreter.h"
 #include <iostream>
 #include <ctype.h>
+#include <math.h>
 
 /***** Standard functions *****/
 
@@ -53,7 +54,7 @@ void println(std::string * printString, Interpreter * interp){ // ptinting a str
 void slugPrintf(std::string * args, Interpreter * interp){
     std::string strToBeOutputted;
     // No idea why it has to start at one more, but it works
-    for (int i = 1; i < interp->argsPassedIn + 1; i++){
+    for (int i = 0; i < interp->argsPassedIn; i++){
         strToBeOutputted += getStrValOf(args[i], interp);
     }
     std::cout << strToBeOutputted << std::endl;
@@ -211,9 +212,84 @@ void test(std::string * args, Interpreter * interp){
     std::cout << "Test" << std::endl;
 }
 
-// The function that performs mathematical operations
-void eval(std::string * args, Interpreter * interp){
+float evalNum(std::string num, Interpreter * interp){
+    if (!isdigit(num[0])){ // not a number literal for the first num passed in.
+        if (interp->inInts(num)){
+            return interp->integers[num];
+        } else if (interp->inFloats(num)){
+            return interp->floats[num];
+        }
+    } else {// Is a number literal
+        return std::stof(num, nullptr);
+    }
+}
 
+void operateOnAns(float * ans, char op, float num){
+    switch (op){
+        case '+': // Addition
+            *ans += num;
+            break;
+        case '-': // Subtraction
+            *ans -= num;
+            break;
+        case '*': // Multiplication
+            *ans *= num;
+            break;
+        case '/': // Division
+            *ans /= num;
+            break;
+        case '%': // Modulus
+            *ans = (int)(*ans) % (int)num;
+            break;
+    }
+}
+
+// The function that performs mathematical operations
+// There has to be at least 4 arguments
+// 1: The variable to store the answer in
+// 2: The first number to operate on
+// 3: The operator
+// 4: The second number to operate on
+// Additional args must go operator, number, operator, number... ending in a number
+// does not do PEMDAS, but goes from left to right
+// This includes the variable that it is going to in the assignment
+void evalSet(std::string * args, Interpreter * interp){
+    float ans = evalNum(args[0], interp); // Starting off with the var
+
+    for (int i = 1; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
+        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp));
+    }
+
+    // Storing the answer in the variable
+    if (interp->inInts(args[0])){ // If the var passed in is an integer variable
+        interp->integers[args[0]] = (int) ans;
+    } else { // must be float
+        interp->floats[args[0]] = ans;
+    }
+}
+
+void evalAssign(std::string * args, Interpreter * interp){
+    float ans = evalNum(args[1], interp); // Starting off with the var
+
+    for (int i = 2; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
+        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp));
+    }
+
+    // Storing the answer in the variable
+    if (interp->inInts(args[0])){ // If the var passed in is an integer variable
+        interp->integers[args[0]] = (int) ans;
+    } else { // must be float
+        interp->floats[args[0]] = ans;
+    }
+}
+
+// takes in one argument, a var to sqrt
+void slugSQRT(std::string * args, Interpreter * interp){
+    if (interp->inInts(args[0])){ // integer var passed in
+        interp->integers[args[0]] = sqrt(interp->integers[args[0]]);
+    } else { // float var passed in
+        interp->floats[args[0]] = sqrt(interp->floats[args[0]]);
+    }
 }
 
 // Easter egg, wont be included in the docs
@@ -244,9 +320,13 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     /* Conditional functions */
     functions.push_back({"if", 1, &ifSlug}); // the if statement 
     functions.push_back({"elseif", 1, &elseifSlug}); // the else if statement
-    functions.push_back({"else", 0, &elseSlug});
+    functions.push_back({"else", 0, &elseSlug}); // the else statement
+    // Mathematical functions
+    functions.push_back({"evalSet", -1, &evalSet}); // This is for math that includes the variable it assigns to in the operations
+    functions.push_back({"evalAssign", -1, &evalAssign}); // This is for math that does not include the number in the equation
+    functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
     // Other stuff
-    functions.push_back({"test", 0, &test});
+    //functions.push_back({"test", 0, &test});
     functions.push_back({"slug", 0, &dispSlug});
 }
 
