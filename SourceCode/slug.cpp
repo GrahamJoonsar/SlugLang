@@ -12,7 +12,7 @@ void proccessLine(std::string line){
     if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0]){ // if statement succeded
         for (int i = 0; i < currentLineTokens.size(); i++){ // looping through tokens
             if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
-                if (slugInterp.argcountForFunc != -1){ // not a variable argument amount
+                if (slugInterp.argcountForFunc >= 0){ // not a variable argument amount
                     for (int j = 0; j < slugInterp.argcountForFunc; j++){
                         i++;
                         args[j] = currentLineTokens[i];
@@ -20,9 +20,10 @@ void proccessLine(std::string line){
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 } else { // variable arg amount
                     slugInterp.argsPassedIn = currentLineTokens.size() - 1;
-                    for (int j = 1; j < currentLineTokens.size(); j++){
+                    for (int j = 0; j < currentLineTokens.size() - 1; j++){
                         i++;
                         args[j] = currentLineTokens[i];
+                        // std::cout << '"' << currentLineTokens[i] << '"' << std::endl;
                     }
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 }
