@@ -1,0 +1,35 @@
+# This is a slug program that computes the solutions to a quadratic equation
+# (-b±√(b²-4ac))/(2a)
+
+printf $"Solving a quadratic equation"
+
+$ Getting the required variables
+printf $"Enter A"
+readFloat a
+printf $"Enter B"
+readFloat b
+printf $"Enter C"
+readFloat c
+
+float fac -4.0 # Starting off with the 4ac portion
+
+evalSet fac * a * c
+evalAssign underSqrt b * b + fac # the portion that is under the sqrt | √(b²-4ac)
+sqrt underSqrt # sqrting it
+
+float x1 -1 # Starting out with the two possible answers
+float x2 -1
+
+evalSet x1 * b + underSqrt # The top part of the fraction | (-b±√(b²-4ac))
+evalSet x2 * b - underSqrt # ±
+
+float twoa 2 # The bottom part of the fraction
+
+evalSet twoa * a # (2a)
+
+evalSet x1 / twoa # Top over 2A
+evalSet x2 / twoa
+
+# Printing out the answers
+printf $"X1 is " x1
+printf $"X2 is " x2
