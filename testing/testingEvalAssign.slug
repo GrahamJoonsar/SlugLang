@@ -1,0 +1,11 @@
+# This is for testing evalAssign, which is not working as intended
+
+readFloat a
+readFloat c
+
+evalAssign fac -4 * a * c
+
+printf fac
+
+# Found out the reason it does not working
+# It did not recognize negative number literals, it is fixed now.

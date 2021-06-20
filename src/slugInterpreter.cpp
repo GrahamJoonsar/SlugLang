@@ -213,7 +213,7 @@ void test(std::string * args, Interpreter * interp){
 }
 
 float evalNum(std::string num, Interpreter * interp){
-    if (!isdigit(num[0])){ // not a number literal for the first num passed in.
+    if (!isdigit(num[0]) && num[0] != '-'){ // not a number literal and not a negative number literal
         if (interp->inInts(num)){
             return interp->integers[num];
         } else if (interp->inFloats(num)){
