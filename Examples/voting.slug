@@ -13,9 +13,7 @@ readInt age
 bool over18 int age >= 18
 bool is17 int age == 17
 
-print $"You said "
-print age
-println $" years old."
+printf $"You said " age $" years old."
 
 if over18 # if the user is over 18
     println $"You can vote"
