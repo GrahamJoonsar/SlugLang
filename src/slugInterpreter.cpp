@@ -51,9 +51,9 @@ void println(std::string * printString, Interpreter * interp){ // ptinting a str
     std::cout << getStrValOf(printString[0], interp) << std::endl;
 }
 
+// A print that takes in a varied amount of arguments.
 void slugPrintf(std::string * args, Interpreter * interp){
     std::string strToBeOutputted;
-    // No idea why it has to start at one more, but it works
     for (int i = 0; i < interp->argsPassedIn; i++){
         strToBeOutputted += getStrValOf(args[i], interp);
     }
@@ -83,7 +83,7 @@ void declareStr(std::string * declaration, Interpreter * interp){
 // 4: boolean operator Ex: >, <, ==
 // 5: second val to be evaluated Ex: 10
 void declareBool(std::string * args, Interpreter * interp){
-    if (args[1] == "int"){ // comparing numbers
+    if (args[1] == "int"){ // comparing integers
         int a;
         int b;
         if (!isdigit(args[2][0])){ // No variable should be declared with a number in front
@@ -109,7 +109,7 @@ void declareBool(std::string * args, Interpreter * interp){
         } else if (args[3] == "!="){
             interp->booleans[args[0]] = (a != b);
         }
-    } else if (args[1] == "float"){ // comparing numbers
+    } else if (args[1] == "float"){ // comparing integers
         float a;
         float b;
         if (!isdigit(args[2][0])){ // No variable should be declared with a number in front
@@ -269,7 +269,7 @@ void evalSet(std::string * args, Interpreter * interp){
 }
 
 void evalAssign(std::string * args, Interpreter * interp){
-    float ans = evalNum(args[1], interp); // Starting off with the var
+    float ans = evalNum(args[1], interp); // Starting off with the first number/variable, not the variable it will be assigned into.
 
     for (int i = 2; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
         operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp));
