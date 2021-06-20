@@ -1,5 +1,5 @@
 # SlugLang
-A simple interpreted programming language. The read=son behind the name is the language's methodology, "One step at a time". Lots of things that would be one line in other languages are seperated into multiple lines for clarity. There should only be one operation, or something happening, per line, although technically there can be more.
+A simple interpreted programming language. The reason behind the name is the language's methodology, "One step at a time". Lots of things that would be one line in other languages are seperated into multiple lines for clarity. There should only be one operation, or something happening, per line, although technically there can be more.
 
 Take a look at some [Examples](#examples)
 
@@ -20,7 +20,7 @@ Here is the code used to declare these three datatypes.
 
 ![declarations](https://user-images.githubusercontent.com/70826772/121429336-caa98b00-c944-11eb-864f-2321a470c650.png)
 
-There is another, more complicated datatype to declare, the `bool`. Intead of passing in true or false as most other languages, there is a different way of doing it in slug. First, you pass in the name of the `bool`, Next, the types of values you are declaring. Third, You put in the first value/variable to be compared. Fourthly, the dev puts in the boolean operator, like `==` or `>`. Lastly you put in the second value/variable to be compared. Here is an example.
+There is another, more complicated datatype to declare, the `bool`. Intead of passing in true or false as most other languages, there is a different way of doing it in slug. First, you pass in the name of the `bool`, Next, the types of values you are comparing. Third, You put in the first value/variable to be compared. Fourthly, you put in the boolean operator, like `==` or `>`. Lastly you put in the second value/variable to be compared. Here is an example.
 
 `bool myBool int 3 > 0`
 
