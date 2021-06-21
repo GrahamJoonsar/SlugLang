@@ -3,6 +3,10 @@ A simple interpreted programming language. The reason behind the name is the lan
 
 Take a look at some [Examples](#examples)
 
+## More info
+
+I released a slug extension on the VSCode marketplace for syntax hilighting. So far it is updated for version 1.0. To find it, just search SLUG in the extensions searchbar.
+
 # Documentation
 A brief overview on how to use the slug programming language
 
