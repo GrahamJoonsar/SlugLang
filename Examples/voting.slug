@@ -1,5 +1,5 @@
 int age 0 # Declaring the age variable
-          # Completely unnecessary
+# Completely unnecessary
 
 # Asking the user for their age
 
@@ -31,4 +31,4 @@ elseif is17
 else
     println $"Too young"
 
-println $"Thanks for coming to the polls"
+println $"Thanks for coming to the polls" # Thanking the user

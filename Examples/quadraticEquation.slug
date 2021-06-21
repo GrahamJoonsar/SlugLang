@@ -3,7 +3,7 @@
 
 printf $"Solving a quadratic equation"
 
-$ Getting the required variables
+# Getting the required variables
 printf $"Enter A"
 readFloat a
 printf $"Enter B"
