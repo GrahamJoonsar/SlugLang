@@ -212,6 +212,10 @@ void test(std::string * args, Interpreter * interp){
     std::cout << "Test" << std::endl;
 }
 
+void slugSystem(std::string * args, Interpreter * interp){
+    system(getStrValOf(args[0], interp).c_str());
+}
+
 float evalNum(std::string num, Interpreter * interp){
     if (!isdigit(num[0]) && num[0] != '-'){ // not a number literal and not a negative number literal
         if (interp->inInts(num)){
@@ -328,6 +332,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Other stuff
     //functions.push_back({"test", 0, &test});
     functions.push_back({"slug", 0, &dispSlug});
+    functions.push_back({"system", 1, &slugSystem});
 }
 
 bool Interpreter::inFunctions(std::string potentialFunc){

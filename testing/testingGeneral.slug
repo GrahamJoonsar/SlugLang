@@ -1,0 +1,2 @@
+println $"Testing the system command"
+system $"echo Hello World"
