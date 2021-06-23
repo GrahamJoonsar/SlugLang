@@ -41,6 +41,19 @@ std::string getStrValOf(std::string val, Interpreter * interp){
     } // ignore the dollar sign at the front
 }
 
+// Getting the numerical value of whatever's been passed in
+float evalNum(std::string num, Interpreter * interp){
+    if (!isdigit(num[0]) && num[0] != '-'){ // not a number literal and not a negative number literal
+        if (interp->inInts(num)){
+            return interp->integers[num];
+        } else if (interp->inFloats(num)){
+            return interp->floats[num];
+        }
+    } else {// Is a number literal
+        return std::stof(num, nullptr);
+    }
+}
+
 // Printing a string literal or var to the string
 void print(std::string * printString, Interpreter * interp){ // ptinting a string
     std::cout << getStrValOf(printString[0], interp);
@@ -78,82 +91,33 @@ void declareStr(std::string * declaration, Interpreter * interp){
 
 // takes in five arguments
 // 1: name of bool
-// 2: type of vals that are compared
-// 3: first val to be evaluated. Ex: 20
-// 4: boolean operator Ex: >, <, ==
-// 5: second val to be evaluated Ex: 10
+// 2: first val to be evaluated. Ex: 20
+// 3: boolean operator Ex: >, <, ==
+// 4: second val to be evaluated Ex: 10
 void declareBool(std::string * args, Interpreter * interp){
-    if (args[1] == "int"){ // comparing integers
-        int a;
-        int b;
-        if (!isdigit(args[2][0])){ // No variable should be declared with a number in front
-            a = interp->integers[args[2]];
-        } else {
-            a = std::stoi(args[2], nullptr, 10);
+    if (args[1][0] == '$' || interp->inStrings(args[1])){ // Comparison of string literal or string var
+        std::string a = getStrValOf(args[1], interp);
+        std::string b = getStrValOf(args[3], interp);
+        if (args[2] == "=="){
+            interp->booleans[args[0]] = a == b;
+        } else if (args[2] == "<"){
+            interp->booleans[args[0]] = a < b;
+        } else if (args[2] == ">"){
+            interp->booleans[args[0]] = a > b;
         }
-        if (!isdigit(args[4][0])){
-            b = interp->integers[args[4]];
-        } else {
-            b = std::stoi(args[4], nullptr, 10);
-        }
-        if (args[3] == "=="){
-            interp->booleans[args[0]] = (a == b);
-        } else if (args[3] == ">"){
-            interp->booleans[args[0]] = (a > b);
-        } else if (args[3] == "<"){
-            interp->booleans[args[0]] = (a < b);
-        } else if (args[3] == ">="){
-            interp->booleans[args[0]] = (a >= b);
-        } else if (args[3] == "<="){
-            interp->booleans[args[0]] = (a <= b);
-        } else if (args[3] == "!="){
-            interp->booleans[args[0]] = (a != b);
-        }
-    } else if (args[1] == "float"){ // comparing integers
-        float a;
-        float b;
-        if (!isdigit(args[2][0])){ // No variable should be declared with a number in front
-            a = interp->floats[args[2]];
-        } else {
-            a = std::stof(args[2], nullptr);
-        }
-        if (!isdigit(args[4][0])){ // No variable should be declared with a number in front
-            b = interp->floats[args[4]];
-        } else {
-            b = std::stof(args[4], nullptr);
-        }
-        if (args[3] == "=="){
-            interp->booleans[args[0]] = (a == b);
-        } else if (args[3] == ">"){
-            interp->booleans[args[0]] = (a > b);
-        } else if (args[3] == "<"){
-            interp->booleans[args[0]] = (a < b);
-        } else if (args[3] == ">="){
-            interp->booleans[args[0]] = (a >= b);
-        } else if (args[3] == "<="){
-            interp->booleans[args[0]] = (a <= b);
-        } else if (args[3] == "!="){
-            interp->booleans[args[0]] = (a != b);
-        }
-    } else if (args[1] == "string"){
-        if (args[2][0] == '$'){ // string literals should start with $
-            args[2] = takeOffFrontChar(args[2]);
-        } else {
-            args[2] = interp->strings[args[2]];
-        }
-        if (args[4][0] == '$'){
-            args[4] = takeOffFrontChar(args[4]);
-        } else {
-            args[4] = interp->strings[args[4]];
-        }
-        if (args[3] == "=="){
-            interp->booleans[args[0]] = (args[2] == args[4]);
-        } else if (args[3] == ">"){
-            interp->booleans[args[0]] = (args[2] > args[4]);
-        } else if (args[3] == "<"){
-            interp->booleans[args[0]] = (args[2] < args[4]);
-        } else if (args[3] == "!="){
-            interp->booleans[args[0]] = (args[2] != args[4]);
+    } else if (/*Number Literal*/(args[1][0] == '-' || isdigit(args[1][0])) || /*A number var*/(interp->inInts(args[1]) || interp->inFloats(args[1]))){
+        float a = evalNum(args[1], interp);
+        float b = evalNum(args[3], interp);
+        if (args[2] == "=="){
+            interp->booleans[args[0]] = a == b;
+        } else if (args[2] == "<"){
+            interp->booleans[args[0]] = a < b;
+        } else if (args[2] == ">"){
+            interp->booleans[args[0]] = a > b;
+        } else if (args[2] == "<="){
+            interp->booleans[args[0]] = a <= b;
+        } else if (args[2] == ">="){
+            interp->booleans[args[0]] = a >= b;
         }
     }
 }
@@ -214,18 +178,6 @@ void test(std::string * args, Interpreter * interp){
 
 void slugSystem(std::string * args, Interpreter * interp){
     system(getStrValOf(args[0], interp).c_str());
-}
-
-float evalNum(std::string num, Interpreter * interp){
-    if (!isdigit(num[0]) && num[0] != '-'){ // not a number literal and not a negative number literal
-        if (interp->inInts(num)){
-            return interp->integers[num];
-        } else if (interp->inFloats(num)){
-            return interp->floats[num];
-        }
-    } else {// Is a number literal
-        return std::stof(num, nullptr);
-    }
 }
 
 void operateOnAns(float * ans, char op, float num){
@@ -316,7 +268,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"int", 2, &declareInt}); // the int declaration.
     functions.push_back({"float", 2, &declareFloat}); // the float declaration
     functions.push_back({"string", 2, &declareStr}); // the float declaration
-    functions.push_back({"bool", 5, &declareBool}); // the boolean declaration
+    functions.push_back({"bool", 4, &declareBool}); // the boolean declaration
     // Input functions
     functions.push_back({"readInt", 1, &readInt}); // reading an integer from the user
     functions.push_back({"readFloat", 1, &readFloat}); // reading a float from the user

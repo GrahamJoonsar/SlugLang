@@ -10,8 +10,8 @@ readInt age
 # This is ane example of the 
 # "One step at a time" methodology.
 
-bool over18 int age >= 18
-bool is17 int age == 17
+bool over18 age >= 18
+bool is17 age == 17
 
 printf $"You said " age $" years old."
 
@@ -20,8 +20,8 @@ if over18 # if the user is over 18
     println $"Who do you want to vote for?"
     println $"apple or cheese"
     readStr vote # reading the vote
-    bool votedCheese string vote == $"cheese"
-    bool votedApple string vote == $"apple"
+    bool votedCheese vote == $"cheese"
+    bool votedApple vote == $"apple"
     if votedCheese 
         println $"You voted cheese"
     elseif votedApple
