@@ -1,2 +1,7 @@
-println $"Testing the system command"
-system $"echo Hello World"
+println $"Testing the error handling"
+
+float num 1
+
+evalSet num / 9
+
+printf num

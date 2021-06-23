@@ -22,7 +22,7 @@ if over18 # if the user is over 18
     readStr vote # reading the vote
     bool votedCheese vote == $"cheese"
     bool votedApple vote == $"apple"
-    if votedCheese 
+    if votedCheese
         println $"You voted cheese"
     elseif votedApple
         println $"You voted apple"

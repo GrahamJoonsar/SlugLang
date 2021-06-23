@@ -2,25 +2,42 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <stdlib.h>
 #include "slugInterpreter.h"
 
 Interpreter slugInterp;
 
 void proccessLine(std::string line){
+    int amountOfTokens = 0;
     std::string args[10]; // Hopefully not more that 10 arguments
     std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);
+    amountOfTokens = currentLineTokens.size();
     if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0]){ // if statement succeded
-        for (int i = 0; i < currentLineTokens.size(); i++){ // looping through tokens
+        for (int i = 0; i < amountOfTokens; i++){ // looping through tokens
             if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
                 if (slugInterp.argcountForFunc >= 0){ // not a variable argument amount
+                    if (slugInterp.argcountForFunc != amountOfTokens - 1){ // Wrong amount of arguments
+                        std::cout << line << std::endl;
+                        std::cout << "Error: " << slugInterp.argcountForFunc << 
+                        " arguments were expected, but " << amountOfTokens - 1 << 
+                        " were recieved." << std::endl;
+                        exit(EXIT_FAILURE);
+                    }
                     for (int j = 0; j < slugInterp.argcountForFunc; j++){
                         i++;
                         args[j] = currentLineTokens[i];
                     }
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 } else { // variable arg amount
-                    slugInterp.argsPassedIn = currentLineTokens.size() - 1;
-                    for (int j = 0; j < currentLineTokens.size() - 1; j++){
+                    slugInterp.argsPassedIn = amountOfTokens - 1;
+                    if (slugInterp.argsPassedIn < -slugInterp.argcountForFunc){ // Not enough arguments
+                        std::cout << line << std::endl;
+                        std::cout << "Error: At least " << -slugInterp.argcountForFunc <<
+                        " arguments were expected, but " << slugInterp.argsPassedIn << 
+                        " were recieved." << std::endl;
+                        exit(EXIT_FAILURE);
+                    }
+                    for (int j = 0; j < amountOfTokens - 1; j++){
                         i++;
                         args[j] = currentLineTokens[i];
                         // std::cout << '"' << currentLineTokens[i] << '"' << std::endl;

@@ -201,12 +201,6 @@ void operateOnAns(float * ans, char op, float num){
 }
 
 // The function that performs mathematical operations
-// There has to be at least 4 arguments
-// 1: The variable to store the answer in
-// 2: The first number to operate on
-// 3: The operator
-// 4: The second number to operate on
-// Additional args must go operator, number, operator, number... ending in a number
 // does not do PEMDAS, but goes from left to right
 // This includes the variable that it is going to in the assignment
 void evalSet(std::string * args, Interpreter * interp){
@@ -224,8 +218,9 @@ void evalSet(std::string * args, Interpreter * interp){
     }
 }
 
+// Starting off with the first number/variable, not the variable it will be assigned into.
 void evalAssign(std::string * args, Interpreter * interp){
-    float ans = evalNum(args[1], interp); // Starting off with the first number/variable, not the variable it will be assigned into.
+    float ans = evalNum(args[1], interp); 
 
     for (int i = 2; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
         operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp));
@@ -258,6 +253,7 @@ void dispSlug(std::string * args, Interpreter * interp){
 }
 
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
+    // For negative argcounts, The number is the minimum amount of args that could be passed in
     curlyBraceLevel[0][0] = true; // When there are no curly braces
     /* standard functions */
     // print functions
@@ -278,8 +274,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"elseif", 1, &elseifSlug}); // the else if statement
     functions.push_back({"else", 0, &elseSlug}); // the else statement
     // Mathematical functions
-    functions.push_back({"evalSet", -1, &evalSet}); // This is for math that includes the variable it assigns to in the operations
-    functions.push_back({"evalAssign", -1, &evalAssign}); // This is for math that does not include the number in the equation
+    functions.push_back({"evalSet", -3, &evalSet}); // This is for math that includes the variable it assigns to in the operations
+    functions.push_back({"evalAssign", -4, &evalAssign}); // This is for math that does not include the number in the equation
     functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
     // Other stuff
     //functions.push_back({"test", 0, &test});
@@ -314,7 +310,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             if (passedInString[i] == '"'){ // string started
                 isString = true;
             } else if (passedInString[i] == '#'){ // Comment
-                break;
+                return tokens;
             } else {
                 token += passedInString[i];
             }
@@ -330,13 +326,15 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 tabLevel++;
                 spaceNum = 0;
             }
-            if (token != ""){
+            if (token != "" && charSeen){
                 tokens.push_back(token);
                 token = "";
             }
         }
     }
-    tokens.push_back(token); // adding last token
+    if (token != ""){
+        tokens.push_back(token); // adding last token
+    }
     curlyBraceNum = tabLevel;
     return tokens;
 }
