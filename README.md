@@ -22,6 +22,10 @@ Declaring variables is technically calling a function, but I will seperate it fo
 
 Here is the code used to declare these three datatypes.
 
+![Declaring vars](https://user-images.githubusercontent.com/70826772/122975628-8dd88d80-d361-11eb-9c52-2d37a18c3202.png)
+
+And here is the actual code in C++
+
 ![declarations](https://user-images.githubusercontent.com/70826772/121429336-caa98b00-c944-11eb-864f-2321a470c650.png)
 
 There is another, more complicated datatype to declare, the `bool`. Intead of passing in true or false as most other languages, there is a different way of doing it in slug. First, you pass in the name of the `bool`, Next, the types of values you are comparing. Third, You put in the first value/variable to be compared. Fourthly, you put in the boolean operator, like `==` or `>`. Lastly you put in the second value/variable to be compared. Here is an example.
