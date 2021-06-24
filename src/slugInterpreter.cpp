@@ -252,6 +252,7 @@ void dispSlug(std::string * args, Interpreter * interp){
     std::cout << "     '---..____...---''           " << std::endl;
 }
 
+/* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
     curlyBraceLevel[0][0] = true; // When there are no curly braces
@@ -278,7 +279,6 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"evalAssign", -4, &evalAssign}); // This is for math that does not include the number in the equation
     functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
     // Other stuff
-    //functions.push_back({"test", 0, &test});
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"system", 1, &slugSystem});
 }
@@ -287,7 +287,6 @@ bool Interpreter::inFunctions(std::string potentialFunc){
     int i = 0;
     for (Function fun : functions){
         if (potentialFunc == fun.name){
-            //std::cout << fun.name << std::endl;
             argcountForFunc = fun.argc;
             funcNum = i;
             return true;
@@ -301,7 +300,7 @@ void Interpreter::callError(std::string errorMsg){
     std::cout << "Error on line: " << lineNum << std::endl;
     std::cout << currentLineOfFile << std::endl;
     std::cout << errorMsg << std::endl;
-    exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE); // Stopping the program
 }
 
 std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
@@ -318,7 +317,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             if (passedInString[i] == '"'){ // string started
                 isString = true;
             } else if (passedInString[i] == '#'){ // Comment
-                return tokens;
+                return tokens; // Stop Tokenization
             } else {
                 token += passedInString[i];
             }

@@ -35,7 +35,6 @@ void proccessLine(std::string line){
                     for (int j = 0; j < amountOfTokens - 1; j++){
                         i++;
                         args[j] = currentLineTokens[i];
-                        // std::cout << '"' << currentLineTokens[i] << '"' << std::endl;
                     }
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 }
@@ -46,25 +45,18 @@ void proccessLine(std::string line){
 
 int main(int argc, char * argv[]){
     // Reading the command line arguments
-    if (argc == 2){
-        std::cout << "Starting interpretation" << std::endl;
-    } else {
+    if (argc != 2){
         std::cout << "Invalid command line arguments" << std::endl;
         return 8; // error
     }
 
     std::ifstream inputFile(argv[1]); // Opening the file provided
 
-    if (inputFile.is_open()){
-        std::cout << "File opened" << std::endl;
-    } else {
+    if (!inputFile.is_open()){
         std::cout << "File not found" << std::endl;
         return 8; // error
     }
-
-    std::cout << "Ready to start" << std::endl;
-    system("pause"); // waiting for the user to press enter
-
+    
     system("cls"); // Clear screen
 
     // Reading through the file line by line
