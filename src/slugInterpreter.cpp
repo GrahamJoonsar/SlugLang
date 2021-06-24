@@ -135,9 +135,11 @@ void readFloat(std::string * args, Interpreter * interp){
 
 // Getting a string from the user
 void readStr(std::string * args, Interpreter * interp){ // The only way I could get it top consistently work
-    while(std::getline(std::cin, interp->strings[args[0]])){ 
-        if (interp->strings[args[0]] != ""){break;}
+    std::string inStr;
+    while(std::getline(std::cin, inStr)){ 
+        if (inStr != ""){break;}
     } // getting a full line to account for spaces
+    interp->strings[args[0]] = inStr;
 }
 
 /* conditionals */
