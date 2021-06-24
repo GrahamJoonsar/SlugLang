@@ -1,7 +1,5 @@
 println $"Testing the error handling"
 
-float num 1
-
-evalSet num / 9
+evalAssign num 1 / 9 * 5
 
 printf num

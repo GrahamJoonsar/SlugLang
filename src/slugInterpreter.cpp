@@ -297,7 +297,15 @@ bool Interpreter::inFunctions(std::string potentialFunc){
     return false;
 }
 
+void Interpreter::callError(std::string errorMsg){
+    std::cout << "Error on line: " << lineNum << std::endl;
+    std::cout << currentLineOfFile << std::endl;
+    std::cout << errorMsg << std::endl;
+    exit(EXIT_FAILURE);
+}
+
 std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
+    currentLineOfFile = passedInString;
     std::vector<std::string> tokens;
     std::string token;
     bool isString = false;

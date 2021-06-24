@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <stdlib.h>
 #include "slugInterpreter.h"
 
 Interpreter slugInterp;
@@ -17,11 +16,9 @@ void proccessLine(std::string line){
             if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
                 if (slugInterp.argcountForFunc >= 0){ // not a variable argument amount
                     if (slugInterp.argcountForFunc != amountOfTokens - 1){ // Wrong amount of arguments
-                        std::cout << line << std::endl;
-                        std::cout << "Error: " << slugInterp.argcountForFunc << 
-                        " arguments were expected, but " << amountOfTokens - 1 << 
-                        " were recieved." << std::endl;
-                        exit(EXIT_FAILURE);
+                        slugInterp.callError("Error: " + std::to_string(slugInterp.argcountForFunc) + 
+                        " arguments were expected, but " + std::to_string(amountOfTokens - 1) + 
+                        " were recieved.");
                     }
                     for (int j = 0; j < slugInterp.argcountForFunc; j++){
                         i++;
@@ -31,11 +28,9 @@ void proccessLine(std::string line){
                 } else { // variable arg amount
                     slugInterp.argsPassedIn = amountOfTokens - 1;
                     if (slugInterp.argsPassedIn < -slugInterp.argcountForFunc){ // Not enough arguments
-                        std::cout << line << std::endl;
-                        std::cout << "Error: At least " << -slugInterp.argcountForFunc <<
-                        " arguments were expected, but " << slugInterp.argsPassedIn << 
-                        " were recieved." << std::endl;
-                        exit(EXIT_FAILURE);
+                        slugInterp.callError("Error: At least " +  std::to_string(-slugInterp.argcountForFunc) +
+                        " arguments were expected, but " + std::to_string(slugInterp.argsPassedIn) + 
+                        " were recieved.");
                     }
                     for (int j = 0; j < amountOfTokens - 1; j++){
                         i++;
@@ -77,6 +72,7 @@ int main(int argc, char * argv[]){
 
     while (getline(inputFile, currentLine)){ // Looping through the file
         proccessLine(currentLine);
+        slugInterp.lineNum++;
     }
     // Closing the file
     inputFile.close();

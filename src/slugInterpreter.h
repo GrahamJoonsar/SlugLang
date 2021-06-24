@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <stdlib.h>
 
 class Interpreter;
 
@@ -21,6 +22,8 @@ class Interpreter{
     public:
         int argcountForFunc = 1;
         int argsPassedIn = 1;
+        int lineNum = 1;
+        std::string currentLineOfFile;
 
         int funcNum;
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
@@ -42,4 +45,5 @@ class Interpreter{
         bool inStrings(std::string potentialInt);
 
         std::vector<std::string> tokenizer(std::string passedInString);
+        void callError(std::string errorMsg);
 };
