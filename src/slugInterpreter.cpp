@@ -30,14 +30,7 @@ std::string getStrValOf(std::string val, Interpreter * interp){
     } else if (interp->inStrings(val)){ // string var
         return interp->strings[val];
     } else { // string literal
-        std::string literal = takeOffFrontChar(val);
-        if (literal == "\n"){ // newline
-            return std::to_string('\n');
-        } else if (literal == "\t"){ // tab
-            return std::to_string('\t');
-        } else {
-            return literal;
-        }
+        return takeOffFrontChar(val);
     } // ignore the dollar sign at the front
 }
 
@@ -76,17 +69,17 @@ void slugPrintf(std::string * args, Interpreter * interp){
 /* Declaring and printing data types */
 // takes in two arguments, name of var and value to set it to
 void declareInt(std::string * declaration, Interpreter * interp){
-    interp->integers[declaration[0]] = std::stoi(declaration[1], nullptr, 10);
+    interp->integers[declaration[0]] = evalNum(declaration[1], interp);
 }
 
 // takes in two arguments, name of var and value to set it to
 void declareFloat(std::string * declaration, Interpreter * interp){
-    interp->floats[declaration[0]] = std::stof(declaration[1], nullptr);
+    interp->floats[declaration[0]] = evalNum(declaration[1], interp);
 }
 
 // takes in two arguments, name of var and value to set it to
 void declareStr(std::string * declaration, Interpreter * interp){
-    interp->strings[declaration[0]] = declaration[1];
+    interp->strings[declaration[0]] = getStrValOf(declaration[1], interp);
 }
 
 // takes in five arguments
@@ -180,6 +173,40 @@ void test(std::string * args, Interpreter * interp){
 
 void slugSystem(std::string * args, Interpreter * interp){
     system(getStrValOf(args[0], interp).c_str());
+}
+
+/* String manipulation functions */
+// Standard sting concatenation
+void slugConcat(std::string * args, Interpreter * interp){
+    std::string fullStr = interp->strings[args[0]];
+    for (int i = 1; i < interp->argsPassedIn; i++){
+        fullStr += getStrValOf(args[i], interp);
+    }
+    interp->strings[args[0]] = fullStr;
+}
+
+// Reversing the string passed in
+void reverseStr(std::string * args, Interpreter * interp){
+    std::string reversedStr;
+    std::string trueStr = getStrValOf(args[0], interp);
+    for (int i = trueStr.length() - 1; i >= 0; i--){
+        reversedStr += trueStr[i];
+    }
+    interp->strings[args[0]] = reversedStr;
+}
+
+// Getting the length of a string
+// First val is the string
+// Second val id the int to store the result in
+void strLength(std::string * args, Interpreter * interp){
+    interp->integers[args[1]] = getStrValOf(args[0], interp).length();
+}
+
+void slugSubstr(std::string * args, Interpreter * interp){
+    std::string strVal = getStrValOf(args[0], interp);
+    std::string result;
+    result = strVal.substr((int)evalNum(args[2], interp), (int)evalNum(args[3], interp) - (int)evalNum(args[2], interp) + 1);
+    interp->strings[args[1]] = result;
 }
 
 void operateOnAns(float * ans, char op, float num){
@@ -280,6 +307,12 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"evalSet", -3, &evalSet}); // This is for math that includes the variable it assigns to in the operations
     functions.push_back({"evalAssign", -4, &evalAssign}); // This is for math that does not include the number in the equation
     functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
+    // String operations
+    functions.push_back({"concat", -2, &slugConcat});
+    functions.push_back({"reverseStr", 1, &reverseStr});
+    functions.push_back({"strLength", 2, &strLength});
+    functions.push_back({"substr", 4, &slugSubstr});
+
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"system", 1, &slugSystem});

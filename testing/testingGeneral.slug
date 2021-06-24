@@ -1,5 +1,22 @@
-println $"Testing the error handling"
+println $"Testing the string functions"
 
-evalAssign num 1 / 9 * 5
+string testStr $"H"
+string testStr2 $"orld!"
 
-printf num
+concat testStr $"ello " $"W" testStr2
+
+printf testStr
+
+reverseStr testStr
+
+printf testStr
+
+reverseStr testStr
+
+strLength testStr lenOfTestStr
+
+printf testStr $" is " lenOfTestStr $" chars long"
+
+substr testStr partOfStr 1 6
+
+printf partOfStr
