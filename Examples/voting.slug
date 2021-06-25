@@ -3,7 +3,7 @@ int age 0 # Declaring the age variable
 
 # Asking the user for their age
 
-println $"What is your age"
+println "What is your age"
 readInt age
 
 # Making bools for the if statements
@@ -13,22 +13,22 @@ readInt age
 bool over18 age >= 18
 bool is17 age == 17
 
-printf $"You said " age $" years old."
+printf "You said " age " years old."
 
 if over18 # if the user is over 18
-    println $"You can vote"
-    println $"Who do you want to vote for?"
-    println $"apple or cheese"
+    println "You can vote"
+    println "Who do you want to vote for?"
+    println "apple or cheese"
     readStr vote # reading the vote
-    bool votedCheese vote == $"cheese"
-    bool votedApple vote == $"apple"
+    bool votedCheese vote == "cheese"
+    bool votedApple vote == "apple"
     if votedCheese
-        println $"You voted cheese"
+        println "You voted cheese"
     elseif votedApple
-        println $"You voted apple"
+        println "You voted apple"
 elseif is17
-    println $"So close"
+    println "So close"
 else
-    println $"Too young"
+    println "Too young"
 
-println $"Thanks for coming to the polls" # Thanking the user
+println "Thanks for coming to the polls" # Thanking the user

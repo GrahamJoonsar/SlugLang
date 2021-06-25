@@ -1,9 +1,9 @@
-println $"Testing the string functions"
+println "Testing the string functions"
 
-string testStr $"H"
-string testStr2 $"orld!"
+string testStr "H"
+string testStr2 "orld!"
 
-concat testStr $"ello " $"W" testStr2
+concat testStr "ello " "W" testStr2
 
 printf testStr
 
@@ -15,8 +15,9 @@ reverseStr testStr
 
 strLength testStr lenOfTestStr
 
-printf testStr $" is " lenOfTestStr $" chars long"
+printf testStr " is " lenOfTestStr " chars long"
 
 substr testStr partOfStr 0 4
 
 printf partOfStr
+println "testStr"

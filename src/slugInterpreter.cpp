@@ -90,7 +90,7 @@ void declareStr(std::string * declaration, Interpreter * interp){
 // 3: boolean operator Ex: >, <, ==
 // 4: second val to be evaluated Ex: 10
 void declareBool(std::string * args, Interpreter * interp){
-    if (args[1][0] == '$' || interp->inStrings(args[1])){ // Comparison of string literal or string var
+    if (args[1][0] == '"' || interp->inStrings(args[1])){ // Comparison of string literal or string var
         std::string a = getStrValOf(args[1], interp);
         std::string b = getStrValOf(args[3], interp);
         if (args[2] == "=="){
@@ -352,6 +352,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
         if (passedInString[i] != ' ' && !isString){
             charSeen = true;
             if (passedInString[i] == '"'){ // string started
+                token += '"';
                 isString = true;
             } else if (passedInString[i] == '#'){ // Comment
                 return tokens; // Stop Tokenization

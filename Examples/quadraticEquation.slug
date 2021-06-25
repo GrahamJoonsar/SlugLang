@@ -1,14 +1,14 @@
 # This is a slug program that computes the solutions to a quadratic equation
 # (-b±√(b²-4ac))/(2a)
 
-printf $"Solving a quadratic equation"
+printf "Solving a quadratic equation"
 
 # Getting the required variables
-printf $"Enter A"
+printf "Enter A"
 readFloat a
-printf $"Enter B"
+printf "Enter B"
 readFloat b
-printf $"Enter C"
+printf "Enter C"
 readFloat c
 
 evalAssign fac -4 * a * c
@@ -24,5 +24,5 @@ evalSet x1 / twoa # Top over 2A
 evalSet x2 / twoa
 
 # Printing out the answers
-printf $"X1 is " x1
-printf $"X2 is " x2
+printf "X1 is " x1
+printf "X2 is " x2
