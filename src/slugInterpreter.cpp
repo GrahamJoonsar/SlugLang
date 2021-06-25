@@ -1,7 +1,7 @@
 #include "slugInterpreter.h"
 #include <iostream>
 #include <ctype.h>
-#include <math.h>
+#include <cmath>
 
 /***** Standard functions *****/
 
@@ -15,6 +15,10 @@ bool Interpreter::inFloats(std::string potentialFloat){
 
 bool Interpreter::inStrings(std::string potentialStr){
     return strings.find(potentialStr) != strings.end();
+}
+
+bool Interpreter::inBools(std::string potentialBool){
+    return booleans.find(potentialBool) != booleans.end();
 }
 
 std::string takeOffFrontChar(std::string str){
@@ -31,9 +35,11 @@ std::string getStrValOf(std::string val, Interpreter * interp){
         return interp->strings[val];
     } else if (isdigit(val[0]) || val[0] == '-'){ // Number literal
         return val;
-    } else { // string literal
+    } else if (val[0] == '"'){ // string literal
         return takeOffFrontChar(val);
-    } // ignore the dollar sign at the front
+    } else {
+        interp->callError("Error converting '" + val + "' to string");
+    }
 }
 
 // Getting the numerical value of whatever's been passed in
@@ -45,7 +51,11 @@ float evalNum(std::string num, Interpreter * interp){
             return interp->floats[num];
         }
     } else {// Is a number literal
-        return std::stof(num, nullptr);
+        float temp = std::stof(num, nullptr);
+        if (std::to_string(temp) == "nan") {
+            interp->callError("Error converting '" + num + "' to float");
+        }
+        return temp;
     }
 }
 
@@ -283,6 +293,21 @@ void dispSlug(std::string * args, Interpreter * interp){
     std::cout << "     '---..____...---''           " << std::endl;
 }
 
+// Deleting a variable
+void slugDelete(std::string * args, Interpreter * interp){
+    if (interp->inInts(args[0])){
+        interp->integers.erase(args[0]);
+    } else if (interp->inFloats(args[0])){
+        interp->floats.erase(args[0]);
+    } else if (interp->inStrings(args[0])){
+        interp->strings.erase(args[0]);
+    } else if (interp->inBools(args[0])){
+        interp->booleans.erase(args[0]);
+    } else {
+        interp->callError("Error deleting variable: '" + args[0] + "' does not exist");
+    }
+}
+
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
@@ -318,6 +343,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"system", 1, &slugSystem});
+    functions.push_back({"delete", 1, &slugDelete});
 }
 
 bool Interpreter::inFunctions(std::string potentialFunc){

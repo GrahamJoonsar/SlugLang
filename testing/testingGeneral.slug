@@ -1,23 +1,11 @@
-println "Testing the string functions"
+println "Testing the delete Function"
 
-string testStr "H"
-string testStr2 "orld!"
+int number 5
 
-concat testStr "ello " "W" testStr2
+printf "Number is " number
 
-printf testStr
+delete number
 
-reverseStr testStr
+evalAssign otherNum klsl * iu
 
-printf testStr
-
-reverseStr testStr
-
-strLength testStr lenOfTestStr
-
-printf testStr " is " lenOfTestStr " chars long"
-
-substr testStr partOfStr 0 4
-
-printf partOfStr
-println "testStr"
+printf otherNum

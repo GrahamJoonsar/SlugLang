@@ -40,9 +40,10 @@ class Interpreter{
         Interpreter();
 
         bool inFunctions(std::string potentialFunc);
-        bool inInts(std::string potentialInt);
-        bool inFloats(std::string potentialInt);
-        bool inStrings(std::string potentialInt);
+        bool inInts(std::string);
+        bool inFloats(std::string);
+        bool inStrings(std::string);
+        bool inBools(std::string);
 
         std::vector<std::string> tokenizer(std::string passedInString);
         void callError(std::string errorMsg);
