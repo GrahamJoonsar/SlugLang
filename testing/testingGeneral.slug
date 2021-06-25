@@ -17,6 +17,6 @@ strLength testStr lenOfTestStr
 
 printf testStr $" is " lenOfTestStr $" chars long"
 
-substr testStr partOfStr 1 6
+substr testStr partOfStr 0 4
 
 printf partOfStr

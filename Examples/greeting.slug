@@ -1,4 +1,5 @@
-# This progeam asks the user for their name and greets them.
+# This program asks the user for their name and greets them.
+
 println $"Hello, What's your name?"
 readStr name
 printf $"Hi " name $"!"

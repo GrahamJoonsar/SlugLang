@@ -29,6 +29,8 @@ std::string getStrValOf(std::string val, Interpreter * interp){
         return std::to_string(interp->floats[val]);
     } else if (interp->inStrings(val)){ // string var
         return interp->strings[val];
+    } else if (isdigit(val[0]) || val[0] == '-'){ // Number literal
+        return val;
     } else { // string literal
         return takeOffFrontChar(val);
     } // ignore the dollar sign at the front
