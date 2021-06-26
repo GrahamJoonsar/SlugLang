@@ -308,6 +308,15 @@ void slugDelete(std::string * args, Interpreter * interp){
     }
 }
 
+/* Goto Statements */
+void slugPoint(std::string * args, Interpreter * interp){
+    interp->pointNums[args[0]] = interp->lineNum;
+}
+
+void slugGoto(std::string * args, Interpreter * interp){
+    interp->lineNum = interp->pointNums[args[0]];
+}
+
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
@@ -339,7 +348,9 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"reverseStr", 1, &reverseStr});
     functions.push_back({"strLength", 2, &strLength});
     functions.push_back({"substr", 4, &slugSubstr});
-
+    // Goto statements
+    functions.push_back({"point", 1, &slugPoint});
+    functions.push_back({"goto", 1, &slugGoto});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"system", 1, &slugSystem});
@@ -360,14 +371,13 @@ bool Interpreter::inFunctions(std::string potentialFunc){
 }
 
 void Interpreter::callError(std::string errorMsg){
-    std::cout << "Error on line: " << lineNum << std::endl;
-    std::cout << currentLineOfFile << std::endl;
+    std::cout << "Error on line: " << lineNum + 1 << std::endl;
+    std::cout << fullFile[lineNum] << std::endl;
     std::cout << errorMsg << std::endl;
     exit(EXIT_FAILURE); // Stopping the program
 }
 
 std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
-    currentLineOfFile = passedInString;
     std::vector<std::string> tokens;
     std::string token;
     bool isString = false;
@@ -380,7 +390,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             if (passedInString[i] == '"'){ // string started
                 token += '"';
                 isString = true;
-            } else if (passedInString[i] == '#'){ // Comment
+            } else if (passedInString[i] == '#' || passedInString[i] == '{' || passedInString[i] == '}'){ // Comment
                 return tokens; // Stop Tokenization
             } else {
                 token += passedInString[i];

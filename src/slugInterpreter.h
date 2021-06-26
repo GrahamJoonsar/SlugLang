@@ -23,7 +23,7 @@ class Interpreter{
         int argcountForFunc = 1;
         int argsPassedIn = 1;
         int lineNum = 1;
-        std::string currentLineOfFile;
+        std::vector<std::string> fullFile;
 
         int funcNum;
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
@@ -36,6 +36,8 @@ class Interpreter{
         std::map<std::string, float> floats; // floats that are declared
         std::map<std::string, std::string> strings; // stringss that are declared
         std::map<std::string, bool> booleans; // booleans that are declared
+
+        std::map<std::string, int> pointNums;
 
         Interpreter();
 

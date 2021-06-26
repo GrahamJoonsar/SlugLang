@@ -1,11 +1,15 @@
-println "Testing the delete Function"
+println "Testing the goto statement"
 
-int number 5
+int i 0
 
-printf "Number is " number
+point LOOP {
+    
+printf i
+evalSet i + 1
+bool cond i < 100
+if cond
+    goto LOOP
 
-delete number
+}
 
-evalAssign otherNum klsl * iu
-
-printf otherNum
+printf "Done!"

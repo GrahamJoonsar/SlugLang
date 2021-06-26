@@ -63,9 +63,13 @@ int main(int argc, char * argv[]){
     std::string currentLine;
 
     while (getline(inputFile, currentLine)){ // Looping through the file
-        proccessLine(currentLine);
-        slugInterp.lineNum++;
+        slugInterp.fullFile.push_back(currentLine);
     }
+
+    for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
+        proccessLine(slugInterp.fullFile[slugInterp.lineNum]);
+    }
+
     // Closing the file
     inputFile.close();
 }
