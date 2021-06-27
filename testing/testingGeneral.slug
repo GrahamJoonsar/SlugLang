@@ -1,15 +1,7 @@
-println "Testing the goto statement"
+println "Input a number"
 
-int i 0
+readInt num
 
-point LOOP {
-    
-printf i
-evalSet i + 1
-bool cond i < 100
-if cond
-    goto LOOP
-
-}
-
-printf "Done!"
+# Num is inbetween 500 and 0 and is not 90 or num is 999
+if 500 > num and num > 0 and num != 90 or num == 999
+    printf num " is in between 500 and 0"

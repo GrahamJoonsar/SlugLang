@@ -59,6 +59,76 @@ float evalNum(std::string num, Interpreter * interp){
     }
 }
 
+bool evalBool(std::string * args, Interpreter * interp){
+    if (interp->inBools(args[0])){
+        return interp->booleans[args[0]];
+    }
+    if (args[0][0] == '"' || interp->inStrings(args[0])){ // Comparison of string literal or string var
+        std::string a = getStrValOf(args[0], interp);
+        std::string b = getStrValOf(args[2], interp);
+        if (args[1] == "=="){
+            return a == b;
+        } else if (args[1] == "<"){
+            return a < b;
+        } else if (args[1] == ">"){
+            return a > b;
+        } else if (args[1] == "!="){
+            return a != b;
+        }
+    } else if (/*Number Literal*/(args[0][0] == '-' || isdigit(args[0][0])) || /*A number var*/(interp->inInts(args[0]) || interp->inFloats(args[0]))){
+        float a = evalNum(args[0], interp);
+        float b = evalNum(args[2], interp);
+        if (args[1] == "=="){
+            return a == b;
+        } else if (args[1] == "<"){
+            return a < b;
+        } else if (args[1] == ">"){
+            return a > b;
+        } else if (args[1] == "<="){
+            return a <= b;
+        } else if (args[1] == ">="){
+            return a >= b;
+        } else if (args[1] == "!="){
+            return a != b;
+        }
+    }
+}
+
+bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
+    bool temp = false;
+    std::vector<bool> parts;
+    bool currentPart;
+    std::string andOr;
+    for (int i = 0; i < argc; i++){
+        if (args[i] == "and"){ // and operation
+            andOr += "a";
+        } else if (args[i] == "or"){ // or operation
+            andOr += "o";
+        } else if (interp->inBools(args[i])){
+            parts.push_back(interp->booleans[args[i]]);
+        } else { // Evaluating the boolean expression
+            std::string sTemp[3] = {args[i]};
+            i++;
+            sTemp[1] = args[i];
+            i++;
+            sTemp[2] = args[i];
+            parts.push_back(evalBool(sTemp, interp));
+        }
+    }
+    if (parts.size() == 1){
+        return parts[0];
+    }
+    temp = parts[0];
+    for (int i = 1; i < parts.size(); i++){
+        if (andOr[i - 1] == 'a'){ // and
+            temp = temp && parts[i];
+        } else if (andOr[i - 1] == 'o'){ // or
+            temp = temp || parts[i];
+        }
+    }
+    return temp;
+}
+
 // Printing a string literal or var to the string
 void print(std::string * printString, Interpreter * interp){ // ptinting a string
     std::cout << getStrValOf(printString[0], interp);
@@ -100,31 +170,12 @@ void declareStr(std::string * declaration, Interpreter * interp){
 // 3: boolean operator Ex: >, <, ==
 // 4: second val to be evaluated Ex: 10
 void declareBool(std::string * args, Interpreter * interp){
-    if (args[1][0] == '"' || interp->inStrings(args[1])){ // Comparison of string literal or string var
-        std::string a = getStrValOf(args[1], interp);
-        std::string b = getStrValOf(args[3], interp);
-        if (args[2] == "=="){
-            interp->booleans[args[0]] = a == b;
-        } else if (args[2] == "<"){
-            interp->booleans[args[0]] = a < b;
-        } else if (args[2] == ">"){
-            interp->booleans[args[0]] = a > b;
-        }
-    } else if (/*Number Literal*/(args[1][0] == '-' || isdigit(args[1][0])) || /*A number var*/(interp->inInts(args[1]) || interp->inFloats(args[1]))){
-        float a = evalNum(args[1], interp);
-        float b = evalNum(args[3], interp);
-        if (args[2] == "=="){
-            interp->booleans[args[0]] = a == b;
-        } else if (args[2] == "<"){
-            interp->booleans[args[0]] = a < b;
-        } else if (args[2] == ">"){
-            interp->booleans[args[0]] = a > b;
-        } else if (args[2] == "<="){
-            interp->booleans[args[0]] = a <= b;
-        } else if (args[2] == ">="){
-            interp->booleans[args[0]] = a >= b;
-        }
+    std::string temp[10];
+    for (int i = 1; i < interp->argsPassedIn; i++){
+        temp[i-1] = args[i];
+        std::cout << temp[i-1] <<std::endl;
     }
+    interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
 }
 
 /* Getting user input */
@@ -150,7 +201,7 @@ void readStr(std::string * args, Interpreter * interp){ // The only way I could 
 /* conditionals */
 // Takes one argument, a boolean variable
 void ifSlug(std::string * args, Interpreter * interp){
-    if (interp->booleans[args[0]]){
+    if (getBooleanValOf(args, interp, interp->argsPassedIn)){
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true;
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][1] = true;
     } else {
@@ -160,7 +211,7 @@ void ifSlug(std::string * args, Interpreter * interp){
 
 void elseifSlug(std::string * args, Interpreter * interp){
     if (!interp->curlyBraceLevel[interp->curlyBraceNum + 1][1]){ // past if statement failed
-        if (interp->booleans[args[0]]){
+        if (getBooleanValOf(args, interp, interp->argsPassedIn)){
             interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true;
             interp->curlyBraceLevel[interp->curlyBraceNum + 1][1] = true;
         } else {
@@ -317,6 +368,11 @@ void slugGoto(std::string * args, Interpreter * interp){
     interp->lineNum = interp->pointNums[args[0]];
 }
 
+/* Loops */
+void slugWhile(std::string * args, Interpreter * interp){
+
+}
+
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
@@ -330,14 +386,14 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"int", 2, &declareInt}); // the int declaration.
     functions.push_back({"float", 2, &declareFloat}); // the float declaration
     functions.push_back({"string", 2, &declareStr}); // the float declaration
-    functions.push_back({"bool", 4, &declareBool}); // the boolean declaration
+    functions.push_back({"bool", -2, &declareBool}); // the boolean declaration
     // Input functions
     functions.push_back({"readInt", 1, &readInt}); // reading an integer from the user
     functions.push_back({"readFloat", 1, &readFloat}); // reading a float from the user
     functions.push_back({"readStr", 1, &readStr}); // reading a string from the user
     /* Conditional functions */
-    functions.push_back({"if", 1, &ifSlug}); // the if statement 
-    functions.push_back({"elseif", 1, &elseifSlug}); // the else if statement
+    functions.push_back({"if", -1, &ifSlug}); // the if statement 
+    functions.push_back({"elseif", -1, &elseifSlug}); // the else if statement
     functions.push_back({"else", 0, &elseSlug}); // the else statement
     // Mathematical functions
     functions.push_back({"evalSet", -3, &evalSet}); // This is for math that includes the variable it assigns to in the operations

@@ -8,7 +8,7 @@ Interpreter slugInterp;
 
 void proccessLine(std::string line){
     int amountOfTokens = 0;
-    std::string args[10]; // Hopefully not more that 10 arguments
+    std::string args[20]; // Hopefully not more that 10 arguments
     std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);
     amountOfTokens = currentLineTokens.size();
     if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0]){ // if statement succeded
