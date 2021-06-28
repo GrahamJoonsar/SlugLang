@@ -27,6 +27,7 @@ class Interpreter{
 
         int funcNum;
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
+        int loopLevel[10];
         int curlyBraceNum = 0;
         bool isValid = true;
         std::vector<Function> functions; // standard functions for the interpreter

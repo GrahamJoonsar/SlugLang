@@ -370,7 +370,12 @@ void slugGoto(std::string * args, Interpreter * interp){
 
 /* Loops */
 void slugWhile(std::string * args, Interpreter * interp){
-
+    if (getBooleanValOf(args, interp, interp->argsPassedIn)){
+        interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true; // the next tablevel will be processed
+        interp->loopLevel[interp->curlyBraceNum] = interp->lineNum - 1;
+    } else {
+        interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = false;
+    }
 }
 
 /* Interpreter Functions */
@@ -400,13 +405,15 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"evalAssign", -4, &evalAssign}); // This is for math that does not include the number in the equation
     functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
     // String operations
-    functions.push_back({"concat", -2, &slugConcat});
-    functions.push_back({"reverseStr", 1, &reverseStr});
-    functions.push_back({"strLength", 2, &strLength});
-    functions.push_back({"substr", 4, &slugSubstr});
+    functions.push_back({"concat", -2, &slugConcat}); // String concatenation
+    functions.push_back({"reverseStr", 1, &reverseStr}); // Reversing the string passed in
+    functions.push_back({"strLength", 2, &strLength}); // Getting the length of the string passed in
+    functions.push_back({"substr", 4, &slugSubstr}); // substr of a string passed in
     // Goto statements
     functions.push_back({"point", 1, &slugPoint});
     functions.push_back({"goto", 1, &slugGoto});
+    // Loops
+    functions.push_back({"while", -1, &slugWhile});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"system", 1, &slugSystem});
@@ -446,8 +453,12 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             if (passedInString[i] == '"'){ // string started
                 token += '"';
                 isString = true;
-            } else if (passedInString[i] == '#' || passedInString[i] == '{' || passedInString[i] == '}'){ // Comment
+            } else if (passedInString[i] == '#' || passedInString[i] == '{'){ // Comments and ignored characters
                 return tokens; // Stop Tokenization
+            } else if (passedInString[i] == '}'){ // End of a loop
+                if (curlyBraceLevel[tabLevel + 1][0]){ // Loop succeded before
+                    lineNum = loopLevel[tabLevel];
+                }
             } else {
                 token += passedInString[i];
             }

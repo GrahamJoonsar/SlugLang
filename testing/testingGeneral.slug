@@ -1,7 +1,8 @@
-println "Input a number"
+println "Testing while"
 
-readInt num
+int x 0
 
-# Num is inbetween 500 and 0 and is not 90 or num is 999
-if 500 > num and num > 0 and num != 90 or num == 999
-    printf num " is in between 500 and 0"
+while x < 100 {
+    printf x
+    evalSet x + 1
+}
