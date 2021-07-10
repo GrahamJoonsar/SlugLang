@@ -360,15 +360,16 @@ void slugDelete(std::string * args, Interpreter * interp){
 }
 
 /* Goto Statements */
-void slugPoint(std::string * args, Interpreter * interp){
+void slugPoint(std::string * args, Interpreter * interp){ // Setting where the goto goes
     interp->pointNums[args[0]] = interp->lineNum;
 }
 
-void slugGoto(std::string * args, Interpreter * interp){
+void slugGoto(std::string * args, Interpreter * interp){ // Actually going to the point
     interp->lineNum = interp->pointNums[args[0]];
 }
 
 /* Loops */
+// Deprecated
 void slugWhile(std::string * args, Interpreter * interp){
     if (getBooleanValOf(args, interp, interp->argsPassedIn)){
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true; // the next tablevel will be processed
@@ -412,8 +413,6 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Goto statements
     functions.push_back({"point", 1, &slugPoint});
     functions.push_back({"goto", 1, &slugGoto});
-    // Loops
-    functions.push_back({"while", -1, &slugWhile});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"system", 1, &slugSystem});
@@ -455,10 +454,6 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 isString = true;
             } else if (passedInString[i] == '#' || passedInString[i] == '{'){ // Comments and ignored characters
                 return tokens; // Stop Tokenization
-            } else if (passedInString[i] == '}'){ // End of a loop
-                if (curlyBraceLevel[tabLevel + 1][0]){ // Loop succeded before
-                    lineNum = loopLevel[tabLevel];
-                }
             } else {
                 token += passedInString[i];
             }

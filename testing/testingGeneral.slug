@@ -1,8 +1,0 @@
-println "Testing while"
-
-int x 0
-
-while x < 100 {
-    printf x
-    evalSet x + 1
-}
