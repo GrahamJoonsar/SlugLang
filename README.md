@@ -22,34 +22,29 @@ Declaring variables is technically calling a function, but I will seperate it fo
 
 Here is the code used to declare these three datatypes.
 
-![Declaring vars](https://user-images.githubusercontent.com/70826772/122975628-8dd88d80-d361-11eb-9c52-2d37a18c3202.png)
+![carbon (1)](https://user-images.githubusercontent.com/70826772/125175813-ab4c8a80-e19c-11eb-9c78-06081c792c5a.png)
 
-And here is the actual code in C++
+There is another, more complicated datatype to declare, the `bool`. Intead of passing in true or false as most other languages, there is a different way of doing it in slug. First, you pass in the name of the `bool`, Next, you put in the first value/variable to be compared. Then, you put in the boolean operator, like `==` or `>`. Lastly you put in the second value/variable to be compared. Here is an example.
 
-![declarations](https://user-images.githubusercontent.com/70826772/121429336-caa98b00-c944-11eb-864f-2321a470c650.png)
-
-There is another, more complicated datatype to declare, the `bool`. Intead of passing in true or false as most other languages, there is a different way of doing it in slug. First, you pass in the name of the `bool`, Next, the types of values you are comparing. Third, You put in the first value/variable to be compared. Fourthly, you put in the boolean operator, like `==` or `>`. Lastly you put in the second value/variable to be compared. Here is an example.
-
-`bool myBool int 3 > 0`
-
-Here is the code for making bools.
-
-![boolDeclaration](https://user-images.githubusercontent.com/70826772/121434120-d5671e80-c94a-11eb-8587-78993f4f3009.png)
-
+`bool myBool 3 > 0`
 
 ## Base functions
 
 `print` is the function that outputs to the console. It can either output a string literal, an `int`, a `float`, and a `string`. It does not add a newline after what you give it.
 
-![print](https://user-images.githubusercontent.com/70826772/121434432-558d8400-c94b-11eb-8b3d-4d0df3883b9f.png)
-
 `println` is the same as print but it adds a newline at the end.
 
-![println](https://user-images.githubusercontent.com/70826772/121434547-7b1a8d80-c94b-11eb-93bc-2d71056fd363.png)
+![printandprintln](https://user-images.githubusercontent.com/70826772/125176271-2f544180-e1a0-11eb-9b99-bf8f77f9437b.png)
+
+`Output: Hello World! (With a newline)`
+
+`printf` is the preferred way of outputting to the console. It takes in a varied amount of arguments, and prints them.
+
+![printf](https://user-images.githubusercontent.com/70826772/125176154-49d9eb00-e19f-11eb-8276-27921f38de80.png)
 
 For getting user input, there are three main functions. `readInt`, `readFloat`, and `readStr`. These are pretty self-explanatory, so I won't go in depth. These functions take input in the forms of the three main datatypes. The only parameter they take is the name of the variable to put the input in.
 
-![read](https://user-images.githubusercontent.com/70826772/121435299-a18cf880-c94c-11eb-9cae-308bc5bd8da2.png)
+![input](https://user-images.githubusercontent.com/70826772/125176611-bb676880-e1a2-11eb-903d-cf25fbc060bc.png)
 
 Next are the main conditional functions `if`, `elseif`, `else`. They are basically the same as other languages, but they are technically functions. They take one parameter, a boolean variable. To tell what is under the if statements, the slug language uses `~` for indentation, like a tab in python. The reason I didn't just use tabs is completely arbitrary, and I recommend that if you decide to build the compiler yourself, you change the following code in `slugInterpreter.cpp`.
 
@@ -73,15 +68,13 @@ Then the string literal `$"Hi "` is outputted using the `print` statement, which
 
 Next, whatever the user inputted is outputted by `print`.
 
-Finally, the string literal `$"!"` is outputted with a newline using `println`.
+Finally, the string literal `"!"` is outputted with a newline using `println`.
 
 File:
 
 [greeting.slug](Examples/greeting.slug)
 
 #### Notes:
-
-All string literals must be preceded with a `$`. This is so strings aren't confused with variable names
 
 Variables do not have to be declared before use. This is because of how variables are stored in the interpreter.
 
@@ -94,7 +87,7 @@ Here is an example of an if statement.
 
 ![betterIf](https://user-images.githubusercontent.com/70826772/121551612-caa99980-c9dd-11eb-9743-37651d87202c.png)
 
-First, the program declares an `integer` called `age`. Although unneccesary, this shows how to properly declare a variable in slug. Then the program prompts the user for their age, which is stored in the variable `age`. Then, two bools are created for the if statements in the program. The first, `over18` is the bool that represents if the user is >= 18 years old. Secondly, the `bool` `is17` tells if the user is 17 years old. Then the program moves onto the if statements. If `over18` is true, then the user is prompted to vote for either apples or cheese. Their input is tested into bools that check if they voted for apples or cheese. If they voted apple, the program says. else if they voted for cheese, the program says. If `over18` is false and `is17` is true (elseif), It says "So close". Else, it says they are too young.
+First, the program declares an `int` called `age`. Although unneccesary, this shows how to properly declare a variable in slug. Then the program prompts the user for their age, which is stored in the variable `age`. Then, two bools are created for the if statements in the program. The first, `over18` is the bool that represents if the user is >= 18 years old. Secondly, the `bool` `is17` tells if the user is 17 years old. Then the program moves onto the if statements. If `over18` is true, then the user is prompted to vote for either apples or cheese. Their input is tested into bools that check if they voted for apples or cheese. If they voted apple, the program says. else if they voted for cheese, the program says. If `over18` is false and `is17` is true (elseif), It says "So close". Else, it says they are too young.
 
 [voting.slug](Examples/voting.slug)
 
