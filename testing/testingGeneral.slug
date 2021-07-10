@@ -1,0 +1,9 @@
+int i 0
+
+point l1
+
+printf "I is: " i
+evalSet i + 1
+
+if i < 100
+    goto l1
