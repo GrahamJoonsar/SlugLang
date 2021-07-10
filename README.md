@@ -1,5 +1,5 @@
 # SlugLang
-A simple interpreted programming language. The reason behind the name is the language's methodology, "One step at a time". Lots of things that would be one line in other languages are seperated into multiple lines for clarity. There should only be one operation, or something happening, per line, although technically there can be more.
+A simple interpreted programming language. The reason behind the name is the language's methodology, "One step at a time". Lots of things that would be one line in other languages are seperated into multiple lines for clarity. There should only be one operation, or something happening, per line, although technically there can be more. Also, Slug has a lot less characters used for proccesses, like declaring a variable. For example, `int num 5` is used instead of `int num = 5`, as the equal sign is assumed.
 
 Take a look at some [Examples](#examples)
 
