@@ -46,9 +46,9 @@ For getting user input, there are three main functions. `readInt`, `readFloat`, 
 
 ![input](https://user-images.githubusercontent.com/70826772/125176611-bb676880-e1a2-11eb-903d-cf25fbc060bc.png)
 
-Next are the main conditional functions `if`, `elseif`, `else`. They are basically the same as other languages, but they are technically functions. They take one parameter, a boolean variable. To tell what is under the if statements, the slug language uses `~` for indentation, like a tab in python. The reason I didn't just use tabs is completely arbitrary, and I recommend that if you decide to build the compiler yourself, you change the following code in `slugInterpreter.cpp`.
+Next are the main conditional functions `if`, `elseif`, `else`. They are basically the same as other languages, but they are technically functions. They take one parameter, a boolean operation. To tell what is under the if statements, the slug language uses 4 spaces for indentation, like a tab in python.
 
-![change](https://user-images.githubusercontent.com/70826772/121436470-a6eb4280-c94e-11eb-9be8-f4286eae7224.png)
+![ifStatements](https://user-images.githubusercontent.com/70826772/125179656-499d1800-e1be-11eb-8131-5bbaf2660278.png)
 
 An example of a full if statement is in Examples.
 
