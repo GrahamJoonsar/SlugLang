@@ -1,6 +1,6 @@
 #include "slugInterpreter.h"
 #include <iostream>
-#include <ctype.h>
+//#include <ctype.h>
 #include <cmath>
 
 /***** Standard functions *****/
@@ -51,11 +51,7 @@ float evalNum(std::string num, Interpreter * interp){
             return interp->floats[num];
         }
     } else {// Is a number literal
-        float temp = std::stof(num, nullptr);
-        if (std::to_string(temp) == "nan") {
-            interp->callError("Error converting '" + num + "' to float");
-        }
-        return temp;
+        return std::stof(num, nullptr);
     }
 }
 

@@ -1,9 +1,8 @@
-int i 0
+readInt num
 
-point l1
-
-printf "I is: " i
-evalSet i + 1
-
-if i < 100
-    goto l1
+if num == 5
+    printf "Num is 5"
+elseif num < 5
+    printf "Num is less"
+else
+    printf "Num is more"

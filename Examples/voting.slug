@@ -6,27 +6,18 @@ int age 0 # Declaring the age variable
 println "What is your age"
 readInt age
 
-# Making bools for the if statements
-# This is ane example of the 
-# "One step at a time" methodology.
-
-bool over18 age >= 18
-bool is17 age == 17
-
 printf "You said " age " years old."
 
-if over18 # if the user is over 18
+if age >= 18 # if the user is over 18
     println "You can vote"
     println "Who do you want to vote for?"
     println "apple or cheese"
     readStr vote # reading the vote
-    bool votedCheese vote == "cheese"
-    bool votedApple vote == "apple"
-    if votedCheese
+    if vote == "cheese"
         println "You voted cheese"
-    elseif votedApple
+    elseif vote == "apple"
         println "You voted apple"
-elseif is17
+elseif age == 17
     println "So close"
 else
     println "Too young"
