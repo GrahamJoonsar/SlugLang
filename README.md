@@ -56,7 +56,7 @@ An example of a full if statement is in Examples.
 
 Here is an example program that greets the user.
 
-![carbon (1)](https://user-images.githubusercontent.com/70826772/121422408-3687f580-c93d-11eb-85ec-9401ecac4ffa.png)
+![greeting](https://user-images.githubusercontent.com/70826772/125179990-f8dbee00-e1c2-11eb-8738-ab2ea436ed2d.png)
 
 The first line starts with a hashtag/octothorpe. This indicates a comment, similar to python.
 
@@ -64,11 +64,7 @@ Then, a line is printed with a newline at the end using the `println` function. 
 
 Next, the program takes input in the form of a string using the `readStr` function. This puts the user input into the string var specified.
 
-Then the string literal `$"Hi "` is outputted using the `print` statement, which does not output a new line.
-
-Next, whatever the user inputted is outputted by `print`.
-
-Finally, the string literal `"!"` is outputted with a newline using `println`.
+Finally, the `printf` statement is used to output the string literal `"Hi "` then the variable `name`, and finally the string literal `"!"`.
 
 File:
 
