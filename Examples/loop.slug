@@ -1,9 +1,14 @@
 int i 0
 
+println "Enter a top bound:"
+readInt topBound
+
 point l1
 
 printf "I is: " i
 evalSet i + 1
 
-if i < 100
+if i < topBound
     goto l1
+
+println "Loop is done"
