@@ -11,18 +11,9 @@ readFloat b
 printf "Enter C"
 readFloat c
 
-evalAssign fac -4 * a * c
-evalAssign underSqrt b * b + fac # the portion that is under the sqrt | √(b²-4ac)
-sqrt underSqrt # sqrting it
-
-evalAssign x1 -1 * b + underSqrt # The top part of the fraction | (-b±√(b²-4ac))
-evalAssign x2 -1 * b - underSqrt # ±
-
-evalAssign twoa 2 * a # (2a) # The bottom part of the fraction
-
-evalSet x1 / twoa # Top over 2A
-evalSet x2 / twoa
+float x1 ((0-b+((b*b)-(4*a*c))^0.5)/(2*a))
+float x2 ((0-b-((b*b)-(4*a*c))^0.5)/(2*a))
 
 # Printing out the answers
-printf "X1 is " x1
-printf "X2 is " x2
+
+printf x1

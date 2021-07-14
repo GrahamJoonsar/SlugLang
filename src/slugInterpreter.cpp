@@ -173,7 +173,7 @@ float evalNum(std::string num, Interpreter * interp){
     } else { // Is a number literal
         return std::stof(num, nullptr);
     }
-    return 0;
+    return 0; // In case all else fails
 }
 
 void NumberStack::push(std::string val, Interpreter * interp){
@@ -566,14 +566,20 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     bool charSeen;
     int tabLevel = 0;
     int spaceNum = 0;
+    int pareNum = 0;
+    bool seenParen = false;
     for (int i = 0; i < passedInString.length(); i++){ // looping through string
-        if (passedInString[i] != ' ' && !isString){
+        if (passedInString[i] != ' ' && !isString && !seenParen){
             charSeen = true;
             if (passedInString[i] == '"'){ // string started
                 token += '"';
                 isString = true;
             } else if (passedInString[i] == '#' || passedInString[i] == '{'){ // Comments and ignored characters
                 return tokens; // Stop Tokenization
+            } else if (passedInString[i] == '('){
+                seenParen = true;
+                token += '(';
+                pareNum++;
             } else {
                 token += passedInString[i];
             }
@@ -582,6 +588,18 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 token += passedInString[i];
             } else {
                 isString = false;
+            }
+        } else if (seenParen){
+            token += passedInString[i];
+            if (passedInString[i] == '('){
+                pareNum++;
+            } else if (passedInString[i] == ')'){
+                pareNum--;
+                if (pareNum == 0){
+                    seenParen = false; 
+                    tokens.push_back(token); 
+                    token = "";
+                }
             }
         } else { // space
             spaceNum++;

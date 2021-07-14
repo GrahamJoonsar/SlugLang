@@ -1,5 +1,5 @@
 
-int whatever 12
-int other 2
+int whatever 70756
+float o 0.5
 
-printf (64^0.5) # Should be 16
+printf (whatever ^ o)
