@@ -4,7 +4,6 @@
 #include <cmath>
 
 /***** Standard functions *****/
-
 bool Interpreter::inInts(std::string potentialInt){
     return integers.find(potentialInt) != integers.end();
 }
@@ -25,6 +24,162 @@ std::string takeOffFrontChar(std::string str){
     return str.substr(1, str.length() - 1);
 }
 
+int getPrecedence(char op){
+    if (op == '+' || op == '-'){
+        return 1;
+    } else if (op == '*' || op == '/'){
+        return 2;
+    } else if (op == '%'){
+        return 3;
+    } else if (op == '^'){
+        return 4;
+    } else {
+        return -1;
+    }
+}
+
+
+void operateOnAns(float * ans, char op, float num, Interpreter * interp){
+    switch (op){
+        case '+': // Addition
+            *ans += num;
+            break;
+        case '-': // Subtraction
+            *ans -= num;
+            break;
+        case '*': // Multiplication
+            *ans *= num;
+            break;
+        case '/': // Division
+            *ans /= num;
+            break;
+        case '%': // Modulus
+            *ans = (int)(*ans) % (int)num;
+            break;
+        case '^':
+            *ans = powf(*ans, num);
+            break;
+        default:
+            std::cout << "OP: " << op << std::endl;
+            break;
+    }
+}
+
+bool isOp(char op){
+    return op == '+' || op == '-' || op == '*' || op == '/' || op == '%' || op == '^';
+}
+
+class NumberStack{
+    private:
+        std::vector<float> stack;
+    public:
+        void push(std::string val, Interpreter * interp);
+        void push(float val){
+            stack.push_back(val);
+        }
+        float pop(){
+            float temp = stack.back();
+            stack.pop_back();
+            return temp;
+        }
+};
+
+std::vector<std::string> tinyTokenizer(std::string s){
+    bool alphanum = true;
+    bool parens = false;
+    int parensNum = 0;
+    std::vector<std::string> tokens;
+    std::string current_token = "";
+    s = s.substr(1, s.size() - 2); // Removing outer parentheses
+    std::string truStr = "";
+    for (int i = 0; i < s.size(); i++){if(s[i] != ' '){truStr+=s[i];}} // Removing spaces
+    for (int i = 0; i < truStr.size(); i++){
+        if ((isalnum(truStr[i]) || truStr[i] == '.') && !parens){// var or number literal
+            if (!alphanum){ // Token changed
+                alphanum = true;
+                tokens.push_back(current_token);
+                current_token = "";
+            }
+            current_token += truStr[i];
+        } else if (isOp(truStr[i]) && !parens){ // operator or parentheses
+            if (alphanum){
+                alphanum = false;
+                tokens.push_back(current_token);
+                current_token = "";
+            }
+            current_token += truStr[i];
+        } else if (truStr[i] == '('){ // Start parentheses
+            if (parensNum == 0){
+                tokens.push_back(current_token);
+                current_token = "(";
+            }
+            parensNum++;
+            parens = true;
+        } else if (truStr[i] == ')'){ // End parentheses
+            parensNum--;
+            current_token += truStr[i];
+            if (parensNum == 0){
+                parens = false;
+                tokens.push_back(current_token);
+                current_token = "";
+            }
+        } else if (parens){
+            current_token += truStr[i];
+        }
+    }
+    if (current_token != ""){
+        tokens.push_back(current_token);
+    }
+    return tokens;
+}
+
+// Getting the numerical value of whatever's been passed in
+float evalNum(std::string num, Interpreter * interp){
+    if (!isdigit(num[0]) && num[0] != '-' && num[0] != '('){ // not a number literal and not a negative number literal
+        if (interp->inInts(num)){
+            return interp->integers[num];
+        } else if (interp->inFloats(num)){
+            return interp->floats[num];
+        }
+    } else if (num[0] == '('){ // Expression
+        // Shunting yard algorithm
+        // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+        NumberStack s;
+        auto tokens = tinyTokenizer(num);
+        std::vector<std::string> polishTokens;
+        // Convert to reverse polish
+        for (std::vector<std::string>::size_type i = 0; i < tokens.size(); i++){ // Looping through tokens
+            if (isOp(tokens[i][0])){ // Operator
+                auto temp = tokens[i]; // Store the operator
+                i++;
+                polishTokens.push_back(tokens[i]); // The value
+                polishTokens.push_back(temp); // The operator
+            } else {
+                polishTokens.push_back(tokens[i]);
+            }
+        }
+
+        for (auto t : polishTokens){ // Looping through
+            if (isOp(t[0])){
+                float a = s.pop();
+                float b = s.pop();
+                operateOnAns(&b, t[0], a, interp);
+                s.push(b);
+            } else {
+                s.push(t, interp);
+            }
+        }
+        return s.pop();
+    } else { // Is a number literal
+        return std::stof(num, nullptr);
+    }
+    return 0;
+}
+
+void NumberStack::push(std::string val, Interpreter * interp){
+    stack.push_back(evalNum(val, interp));
+}
+
 // Getting the string value of whatever has been passed in
 std::string getStrValOf(std::string val, Interpreter * interp){
     if (interp->inInts(val)){ // integer var
@@ -35,23 +190,12 @@ std::string getStrValOf(std::string val, Interpreter * interp){
         return interp->strings[val];
     } else if (isdigit(val[0]) || val[0] == '-'){ // Number literal
         return val;
+    } else if (val[0] == '('){ // Expression
+        return std::to_string(evalNum(val, interp));
     } else if (val[0] == '"'){ // string literal
         return takeOffFrontChar(val);
     } else {
         interp->callError("Error converting '" + val + "' to string");
-    }
-}
-
-// Getting the numerical value of whatever's been passed in
-float evalNum(std::string num, Interpreter * interp){
-    if (!isdigit(num[0]) && num[0] != '-'){ // not a number literal and not a negative number literal
-        if (interp->inInts(num)){
-            return interp->integers[num];
-        } else if (interp->inFloats(num)){
-            return interp->floats[num];
-        }
-    } else {// Is a number literal
-        return std::stof(num, nullptr);
     }
 }
 
@@ -166,10 +310,10 @@ void declareStr(std::string * declaration, Interpreter * interp){
 // 3: boolean operator Ex: >, <, ==
 // 4: second val to be evaluated Ex: 10
 void declareBool(std::string * args, Interpreter * interp){
-    std::string temp[10];
-    for (int i = 1; i < interp->argsPassedIn; i++){
+    std::string temp[32];
+    for (int i = 1; i < interp->argsPassedIn; i++){ // Collecting everything but the variable name
         temp[i-1] = args[i];
-        std::cout << temp[i-1] <<std::endl;
+        std::cout << temp[i-1] << std::endl;
     }
     interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
 }
@@ -268,26 +412,6 @@ void slugSubstr(std::string * args, Interpreter * interp){
     interp->strings[args[1]] = result;
 }
 
-void operateOnAns(float * ans, char op, float num){
-    switch (op){
-        case '+': // Addition
-            *ans += num;
-            break;
-        case '-': // Subtraction
-            *ans -= num;
-            break;
-        case '*': // Multiplication
-            *ans *= num;
-            break;
-        case '/': // Division
-            *ans /= num;
-            break;
-        case '%': // Modulus
-            *ans = (int)(*ans) % (int)num;
-            break;
-    }
-}
-
 // The function that performs mathematical operations
 // does not do PEMDAS, but goes from left to right
 // This includes the variable that it is going to in the assignment
@@ -295,7 +419,7 @@ void evalSet(std::string * args, Interpreter * interp){
     float ans = evalNum(args[0], interp); // Starting off with the var
 
     for (int i = 1; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
-        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp));
+        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp), interp);
     }
 
     // Storing the answer in the variable
@@ -311,7 +435,7 @@ void evalAssign(std::string * args, Interpreter * interp){
     float ans = evalNum(args[1], interp); 
 
     for (int i = 2; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
-        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp));
+        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp), interp);
     }
 
     // Storing the answer in the variable

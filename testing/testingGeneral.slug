@@ -1,8 +1,5 @@
-readInt num
 
-if num == 5
-    printf "Num is 5"
-elseif num < 5
-    printf "Num is less"
-else
-    printf "Num is more"
+int whatever 12
+int other 2
+
+printf (64^0.5) # Should be 16
