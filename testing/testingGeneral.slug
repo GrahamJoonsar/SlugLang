@@ -1,5 +1,6 @@
 
-int whatever 70756
+int whatever 100
 float o 0.5
 
-printf (whatever ^ o)
+printf (5 + ((whatever * 69) * 5))
+printf (whatever + ((whatever * 2) * o))

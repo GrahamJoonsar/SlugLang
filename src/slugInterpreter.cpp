@@ -84,6 +84,7 @@ class NumberStack{
         }
 };
 
+// For tokenizing expressions
 std::vector<std::string> tinyTokenizer(std::string s){
     bool alphanum = true;
     bool parens = false;
@@ -111,16 +112,17 @@ std::vector<std::string> tinyTokenizer(std::string s){
         } else if (truStr[i] == '('){ // Start parentheses
             if (parensNum == 0){
                 tokens.push_back(current_token);
-                current_token = "(";
+                current_token = "";
             }
             parensNum++;
             parens = true;
+            current_token += '(';
         } else if (truStr[i] == ')'){ // End parentheses
             parensNum--;
-            current_token += truStr[i];
+            current_token += ')';
             if (parensNum == 0){
                 parens = false;
-                tokens.push_back(current_token);
+                if (current_token != ""){tokens.push_back(current_token);}
                 current_token = "";
             }
         } else if (parens){
@@ -154,7 +156,7 @@ float evalNum(std::string num, Interpreter * interp){
                 i++;
                 polishTokens.push_back(tokens[i]); // The value
                 polishTokens.push_back(temp); // The operator
-            } else {
+            } else if (tokens[i] != ""){ // Removing blanks that generate
                 polishTokens.push_back(tokens[i]);
             }
         }
