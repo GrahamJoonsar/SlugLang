@@ -444,12 +444,27 @@ void slugSubstr(std::string * args, Interpreter * interp){
 // This includes the variable that it is going to in the assignment
 void evalSet(std::string * args, Interpreter * interp){
     float ans = evalNum(args[1], interp); // Starting off with the var
-
     // Storing the answer in the variable
     if (interp->inInts(args[0])){ // If the var passed in is an integer variable
         interp->integers[args[0]] = (int) ans;
     } else { // must be float
         interp->floats[args[0]] = ans;
+    }
+}
+
+void slugIncrement(std::string * args, Interpreter * interp){
+    if (interp->inInts(args[0])){
+        (interp->integers[args[0]]) = (interp->integers[args[0]]) + 1;
+    } else if (interp->inFloats(args[0])){
+        (interp->floats[args[0]]) = (interp->floats[args[0]]) + 1;
+    }
+}
+
+void slugDecrement(std::string * args, Interpreter * interp){
+    if (interp->inInts(args[0])){
+        (interp->integers[args[0]]) = (interp->integers[args[0]]) - 1;
+    } else if (interp->inFloats(args[0])){
+        (interp->floats[args[0]]) = (interp->floats[args[0]]) - 1;
     }
 }
 
@@ -539,6 +554,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Mathematical functions
     functions.push_back({"eval", 2, &evalSet}); // Assigning the var to the expression
     functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
+    functions.push_back({"incr", 1, &slugIncrement}); // sqrts the variable passed in.
+    functions.push_back({"decr", 1, &slugDecrement}); // sqrts the variable passed in.
     // String operations
     functions.push_back({"concat", -2, &slugConcat}); // String concatenation
     functions.push_back({"reverseStr", 1, &reverseStr}); // Reversing the string passed in

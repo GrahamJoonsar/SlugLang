@@ -20,7 +20,7 @@ point l1 # Main game loop
 
 readInt guess
 
-eval times_guessed (times_guessed + 1)
+incr times_guessed
 
 if guess == number
     println "Player two wins!"

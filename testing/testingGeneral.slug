@@ -1,3 +1,9 @@
-# Testing invalid variable names
+int test 0
 
-int p*k 8
+incr test
+
+println test
+
+decr test
+
+println test
