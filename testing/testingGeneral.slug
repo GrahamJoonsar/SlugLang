@@ -1,5 +1,3 @@
+# Testing invalid variable names
 
-bool test false
-
-if test
-    printf "IT"
+int p*k 8

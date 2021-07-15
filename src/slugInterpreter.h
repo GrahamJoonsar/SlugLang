@@ -21,11 +21,11 @@ struct Function{
 class Interpreter{
     public:
         int argcountForFunc = 1;
-        int argsPassedIn = 1;
-        int lineNum = 1;
+        unsigned short int argsPassedIn = 1;
+        unsigned int lineNum = 1;
         std::vector<std::string> fullFile;
 
-        int funcNum;
+        unsigned int funcNum;
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
         int loopLevel[10];
         int curlyBraceNum = 0;

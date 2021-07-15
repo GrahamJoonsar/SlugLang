@@ -38,6 +38,19 @@ int getPrecedence(char op){
     }
 }
 
+// Checks if a variable name is valid
+bool isValidVarName(std::string name){
+    if (isalpha(name[0]) || name[0] == '_'){
+        if (name.length() == 1){return true;}
+        for (int i = 1; i < name.length(); i++){
+            if (!isalnum(name[i]) && name[i] != '_'){return false;}
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 void operateOnAns(float * ans, char op, float num, Interpreter * interp){
     switch (op){
@@ -60,7 +73,6 @@ void operateOnAns(float * ans, char op, float num, Interpreter * interp){
             *ans = powf(*ans, num);
             break;
         default:
-            std::cout << "OP: " << op << std::endl;
             break;
     }
 }
@@ -293,17 +305,30 @@ void slugPrintf(std::string * args, Interpreter * interp){
 /* Declaring and printing data types */
 // takes in two arguments, name of var and value to set it to
 void declareInt(std::string * declaration, Interpreter * interp){
-    interp->integers[declaration[0]] = evalNum(declaration[1], interp);
+    if (isValidVarName(declaration[0])){
+        interp->integers[declaration[0]] = evalNum(declaration[1], interp);
+    } else {
+        interp->callError(declaration[0] + " is not a valid variable name.");
+    }
+
 }
 
 // takes in two arguments, name of var and value to set it to
 void declareFloat(std::string * declaration, Interpreter * interp){
-    interp->floats[declaration[0]] = evalNum(declaration[1], interp);
+    if (isValidVarName(declaration[0])){
+        interp->floats[declaration[0]] = evalNum(declaration[1], interp);
+    } else {
+        interp->callError(declaration[0] + " is not a valid variable name.");
+    }
 }
 
 // takes in two arguments, name of var and value to set it to
 void declareStr(std::string * declaration, Interpreter * interp){
-    interp->strings[declaration[0]] = getStrValOf(declaration[1], interp);
+    if (isValidVarName(declaration[0])){
+        interp->strings[declaration[0]] = getStrValOf(declaration[1], interp);
+    } else {
+        interp->callError(declaration[0] + " is not a valid variable name.");
+    }
 }
 
 // takes in a bollean expression
@@ -312,7 +337,11 @@ void declareBool(std::string * args, Interpreter * interp){
     for (int i = 1; i < interp->argsPassedIn; i++){ // Collecting everything but the variable name
         temp[i-1] = args[i];
     }
-    interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
+    if (isValidVarName(args[0])){
+        interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
+    } else {
+        interp->callError(args[0] + " is not a valid variable name.");
+    }
 }
 
 /* Getting user input */
