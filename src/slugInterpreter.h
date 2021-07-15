@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <stdlib.h>
 
 class Interpreter;
@@ -33,12 +33,12 @@ class Interpreter{
         std::vector<Function> functions; // standard functions for the interpreter
 
         /* User declared Variables */
-        std::map<std::string, int> integers; // integers that are declared
-        std::map<std::string, float> floats; // floats that are declared
-        std::map<std::string, std::string> strings; // stringss that are declared
-        std::map<std::string, bool> booleans; // booleans that are declared
+        std::unordered_map<std::string, int> integers; // integers that are declared
+        std::unordered_map<std::string, float> floats; // floats that are declared
+        std::unordered_map<std::string, std::string> strings; // stringss that are declared
+        std::unordered_map<std::string, bool> booleans; // booleans that are declared
 
-        std::map<std::string, int> pointNums;
+        std::unordered_map<std::string, int> pointNums;
 
         Interpreter();
 
