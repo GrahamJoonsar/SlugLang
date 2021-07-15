@@ -11,10 +11,11 @@ readFloat b
 printf "Enter C"
 readFloat c
 
-float x1 ((0-b+(((b*b)-(4*a*c))^0.5))/(2*a))
-float x2 ((0-b-(((b*b)-(4*a*c))^0.5))/(2*a))
+# Doing the calculations
+float x1 ((0-b - (((b*b) - (4*a*c)) ^ 0.5)) / (2*a))
+float x2 ((0-b + (((b*b) - (4*a*c)) ^ 0.5)) / (2*a))
 
 # Printing out the answers
 
-printf x1
-printf x2
+printf "X1: " x1
+printf "X2: " x2

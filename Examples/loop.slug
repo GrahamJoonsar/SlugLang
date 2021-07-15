@@ -1,14 +1,14 @@
-int i 0
+int i 1
 
 println "Enter a top bound:"
 readInt topBound
 
 point l1
 
-printf "I is: " i
-evalSet i + 1
+printf "I is: " (topBound / i)
+eval i (i + 1)
 
-if i < topBound
+if i <= topBound
     goto l1
 
 println "Loop is done"

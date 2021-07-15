@@ -95,7 +95,7 @@ std::vector<std::string> tinyTokenizer(std::string s){
     std::string truStr = "";
     for (int i = 0; i < s.size(); i++){if(s[i] != ' '){truStr+=s[i];}} // Removing spaces
     for (int i = 0; i < truStr.size(); i++){
-        if ((isalnum(truStr[i]) || truStr[i] == '.') && !parens){// var or number literal
+        if ((isalnum(truStr[i]) || truStr[i] == '.' || truStr[i] == '_') && !parens){// var or number literal
             if (!alphanum){ // Token changed
                 alphanum = true;
                 tokens.push_back(current_token);
@@ -217,7 +217,7 @@ bool evalBool(std::string * args, Interpreter * interp){
         } else if (args[1] == "!="){
             return a != b;
         }
-    } else if (/*Number Literal*/(args[0][0] == '-' || isdigit(args[0][0])) || /*A number var*/(interp->inInts(args[0]) || interp->inFloats(args[0]))){
+    } else if (/*Number Literal*/(args[0][0] == '-' || isdigit(args[0][0])) || /*A number var*/(interp->inInts(args[0]) || interp->inFloats(args[0])) || args[0][0] == '('){
         float a = evalNum(args[0], interp);
         float b = evalNum(args[2], interp);
         if (args[1] == "=="){
@@ -306,16 +306,11 @@ void declareStr(std::string * declaration, Interpreter * interp){
     interp->strings[declaration[0]] = getStrValOf(declaration[1], interp);
 }
 
-// takes in five arguments
-// 1: name of bool
-// 2: first val to be evaluated. Ex: 20
-// 3: boolean operator Ex: >, <, ==
-// 4: second val to be evaluated Ex: 10
+// takes in a bollean expression
 void declareBool(std::string * args, Interpreter * interp){
     std::string temp[32];
     for (int i = 1; i < interp->argsPassedIn; i++){ // Collecting everything but the variable name
         temp[i-1] = args[i];
-        std::cout << temp[i-1] << std::endl;
     }
     interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
 }
@@ -343,6 +338,7 @@ void readStr(std::string * args, Interpreter * interp){ // The only way I could 
 /* conditionals */
 // Takes one argument, a boolean variable
 void ifSlug(std::string * args, Interpreter * interp){
+    interp->curlyBraceLevel[interp->curlyBraceNum + 1][1] = false;
     if (getBooleanValOf(args, interp, interp->argsPassedIn)){
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true;
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][1] = true;
@@ -418,27 +414,7 @@ void slugSubstr(std::string * args, Interpreter * interp){
 // does not do PEMDAS, but goes from left to right
 // This includes the variable that it is going to in the assignment
 void evalSet(std::string * args, Interpreter * interp){
-    float ans = evalNum(args[0], interp); // Starting off with the var
-
-    for (int i = 1; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
-        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp), interp);
-    }
-
-    // Storing the answer in the variable
-    if (interp->inInts(args[0])){ // If the var passed in is an integer variable
-        interp->integers[args[0]] = (int) ans;
-    } else { // must be float
-        interp->floats[args[0]] = ans;
-    }
-}
-
-// Starting off with the first number/variable, not the variable it will be assigned into.
-void evalAssign(std::string * args, Interpreter * interp){
-    float ans = evalNum(args[1], interp); 
-
-    for (int i = 2; i < interp->argsPassedIn; i += 2){ // Looping through all of the 
-        operateOnAns(&ans, args[i][0], evalNum(args[i + 1], interp), interp);
-    }
+    float ans = evalNum(args[1], interp); // Starting off with the var
 
     // Storing the answer in the variable
     if (interp->inInts(args[0])){ // If the var passed in is an integer variable
@@ -490,6 +466,12 @@ void slugGoto(std::string * args, Interpreter * interp){ // Actually going to th
     interp->lineNum = interp->pointNums[args[0]];
 }
 
+/* System like commands */
+// Force end the program
+void slugQuit(std::string * args, Interpreter * interp){
+    exit(EXIT_SUCCESS);
+}
+
 /* Loops */
 // Deprecated
 void slugWhile(std::string * args, Interpreter * interp){
@@ -505,6 +487,8 @@ void slugWhile(std::string * args, Interpreter * interp){
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
     curlyBraceLevel[0][0] = true; // When there are no curly braces
+    booleans["true"] = true;
+    booleans["false"] = false;
     /* standard functions */
     // print functions
     functions.push_back({"print", 1, &print}); // adding the print function
@@ -524,8 +508,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"elseif", -1, &elseifSlug}); // the else if statement
     functions.push_back({"else", 0, &elseSlug}); // the else statement
     // Mathematical functions
-    functions.push_back({"evalSet", -3, &evalSet}); // This is for math that includes the variable it assigns to in the operations
-    functions.push_back({"evalAssign", -4, &evalAssign}); // This is for math that does not include the number in the equation
+    functions.push_back({"eval", 2, &evalSet}); // Assigning the var to the expression
     functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
     // String operations
     functions.push_back({"concat", -2, &slugConcat}); // String concatenation
@@ -535,9 +518,11 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Goto statements
     functions.push_back({"point", 1, &slugPoint});
     functions.push_back({"goto", 1, &slugGoto});
+    // System commands
+    functions.push_back({"system", 1, &slugSystem});
+    functions.push_back({"quit", 0, &slugQuit});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
-    functions.push_back({"system", 1, &slugSystem});
     functions.push_back({"delete", 1, &slugDelete});
 }
 
