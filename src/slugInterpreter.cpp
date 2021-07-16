@@ -148,7 +148,7 @@ std::vector<std::string> tinyTokenizer(std::string s){
 }
 
 // Getting the numerical value of whatever's been passed in
-float evalNum(std::string num, Interpreter * interp){
+extern float evalNum(std::string num, Interpreter * interp){
     if (!isdigit(num[0]) && num[0] != '-' && num[0] != '('){ // not a number literal and not a negative number literal
         if (interp->inInts(num)){
             return interp->integers[num];
@@ -195,7 +195,7 @@ void NumberStack::push(std::string val, Interpreter * interp){
 }
 
 // Getting the string value of whatever has been passed in
-std::string getStrValOf(std::string val, Interpreter * interp){
+extern std::string getStrValOf(std::string val, Interpreter * interp){
     if (interp->inInts(val)){ // integer var
         return std::to_string(interp->integers[val]);
     } else if (interp->inFloats(val)){ // float var
@@ -439,6 +439,11 @@ void slugSubstr(std::string * args, Interpreter * interp){
     interp->strings[args[1]] = result;
 }
 
+// Indexing a string
+void slugGetchar(std::string * args, Interpreter * interp){
+    interp->strings[args[2]] = getStrValOf(args[0], interp)[(int)evalNum(args[1], interp)];
+}
+
 // The function that performs mathematical operations
 // does not do PEMDAS, but goes from left to right
 // This includes the variable that it is going to in the assignment
@@ -540,6 +545,9 @@ std::vector<std::string> funcTokenizer(std::string str){
             }
         }
     }
+    if (token != ""){
+        tokens.push_back(token);
+    }
     return tokens;
 }
 
@@ -547,8 +555,13 @@ std::vector<std::string> funcTokenizer(std::string str){
 void defineFunc(std::string * args, Interpreter * interp){
     auto name = args[0]; // function name
     auto params = funcTokenizer(args[1].substr(0, args[1].length() - 1));
-    int argc = params.size()/2;
-    auto func = UserDefinedFunction(argc, name);
+    int argc;
+    if (args[1] == "}"){
+        argc = 0;
+    } else {
+        argc = params.size()/2;
+    }
+    auto func = UserDefinedFunction(argc, name, params);
     interp->UFunctions.push_back(func);
     interp->isDefiningFunction = true;
 }
@@ -587,6 +600,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"reverseStr", 1, &reverseStr}); // Reversing the string passed in
     functions.push_back({"strLength", 2, &strLength}); // Getting the length of the string passed in
     functions.push_back({"substr", 4, &slugSubstr}); // substr of a string passed in
+    functions.push_back({"getch", 3, &slugGetchar});
     // Goto statements
     functions.push_back({"point", 1, &slugPoint});
     functions.push_back({"goto", 1, &slugGoto});
@@ -595,6 +609,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"quit", 0, &slugQuit});
     // Functions
     functions.push_back({"func", 2, &defineFunc});
+    // End is not technically a function, but a marker
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"delete", 1, &slugDelete});

@@ -1,11 +1,23 @@
 # Making functions
 
-func testt {}
-    println "test"
-    if 1 > 0
+int i 0
+
+println "start"
+
+func testt {int x float y string z bool w}
+    printf "num " x " y " y
+    println z
+    if w
         println "true"
 end
 
-testt
-testt
-testt
+func test2 {}
+    println "222"
+end
+
+testt 400 9.5 "Hello World" true
+
+test2
+
+
+#Recursion works, lets go

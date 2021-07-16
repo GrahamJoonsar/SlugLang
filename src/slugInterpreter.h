@@ -22,9 +22,11 @@ struct UserDefinedFunction{
     std::string name;
     int argc;
     std::vector<std::string> linesOfFunction;
-    UserDefinedFunction(int _argc, std::string _name){
+    std::vector<std::string> params;
+    UserDefinedFunction(int _argc, std::string _name, std::vector<std::string> _params){
         argc = _argc;
         name = _name;
+        params = _params;
     }
 };
 
@@ -65,3 +67,6 @@ class Interpreter{
         std::vector<std::string> tokenizer(std::string passedInString);
         void callError(std::string errorMsg);
 };
+
+extern float evalNum(std::string num, Interpreter * interp);
+extern std::string getStrValOf(std::string val, Interpreter * interp);
