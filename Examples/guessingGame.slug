@@ -19,7 +19,6 @@ println "Player one put in a number, now you have to guess."
 point l1 # Main game loop
 
 readInt guess
-
 incr times_guessed
 
 if guess == number

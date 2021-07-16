@@ -11,7 +11,7 @@ void proccessLine(std::string line){
     std::string args[32]; // Hopefully not more that 10 arguments
     std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);
     amountOfTokens = currentLineTokens.size();
-    if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0]){ // if statement succeded
+    if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0] && !slugInterp.isDefiningFunction){ // if statement succeded
         for (int i = 0; i < amountOfTokens; i++){ // looping through tokens
             if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
                 if (slugInterp.argcountForFunc >= 0){ // not a variable argument amount
@@ -38,8 +38,19 @@ void proccessLine(std::string line){
                     }
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 }
+            } else if (slugInterp.inUFunctions(currentLineTokens[i])){
+                for (auto uf : slugInterp.UFunctions[slugInterp.funcNum].linesOfFunction){
+                    proccessLine(uf);
+                }
             }
         }
+    } else if (slugInterp.isDefiningFunction){
+        if (line == "end"){ // End function
+            slugInterp.isDefiningFunction = false;
+            return;
+        }
+        // Adding to the function and taking off the first 4 spaces
+        slugInterp.UFunctions.back().linesOfFunction.push_back(line.substr(4, line.length() - 3));
     }
 }
 

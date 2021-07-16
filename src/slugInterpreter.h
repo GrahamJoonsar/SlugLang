@@ -18,6 +18,16 @@ struct Function{
     }
 };
 
+struct UserDefinedFunction{
+    std::string name;
+    int argc;
+    std::vector<std::string> linesOfFunction;
+    UserDefinedFunction(int _argc, std::string _name){
+        argc = _argc;
+        name = _name;
+    }
+};
+
 class Interpreter{
     public:
         int argcountForFunc = 1;
@@ -32,6 +42,9 @@ class Interpreter{
         bool isValid = true;
         std::vector<Function> functions; // standard functions for the interpreter
 
+        bool isDefiningFunction = false;
+        std::vector<UserDefinedFunction> UFunctions;
+
         /* User declared Variables */
         std::unordered_map<std::string, int> integers; // integers that are declared
         std::unordered_map<std::string, float> floats; // floats that are declared
@@ -43,6 +56,7 @@ class Interpreter{
         Interpreter();
 
         bool inFunctions(std::string potentialFunc);
+        bool inUFunctions(std::string potentialUFunc);
         bool inInts(std::string);
         bool inFloats(std::string);
         bool inStrings(std::string);

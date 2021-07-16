@@ -527,6 +527,32 @@ void slugWhile(std::string * args, Interpreter * interp){
     }
 }
 
+std::vector<std::string> funcTokenizer(std::string str){
+    std::vector<std::string> tokens;
+    std::string token;
+    for (int i = 0; i < str.length(); i++){
+        if (str[i] != ' '){
+            token += str[i];
+        } else {
+            if (token != ""){
+                tokens.push_back(token);
+                token = "";
+            }
+        }
+    }
+    return tokens;
+}
+
+/* Functions */
+void defineFunc(std::string * args, Interpreter * interp){
+    auto name = args[0]; // function name
+    auto params = funcTokenizer(args[1].substr(0, args[1].length() - 1));
+    int argc = params.size()/2;
+    auto func = UserDefinedFunction(argc, name);
+    interp->UFunctions.push_back(func);
+    interp->isDefiningFunction = true;
+}
+
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
@@ -567,6 +593,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // System commands
     functions.push_back({"system", 1, &slugSystem});
     functions.push_back({"quit", 0, &slugQuit});
+    // Functions
+    functions.push_back({"func", 2, &defineFunc});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"delete", 1, &slugDelete});
@@ -576,6 +604,19 @@ bool Interpreter::inFunctions(std::string potentialFunc){
     int i = 0;
     for (Function fun : functions){
         if (potentialFunc == fun.name){
+            argcountForFunc = fun.argc;
+            funcNum = i;
+            return true;
+        }
+        i++;
+    }
+    return false;
+}
+
+bool Interpreter::inUFunctions(std::string potentialUFunc){
+    int i = 0;
+    for (UserDefinedFunction fun : UFunctions){
+        if (potentialUFunc == fun.name){
             argcountForFunc = fun.argc;
             funcNum = i;
             return true;
@@ -596,23 +637,30 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     std::vector<std::string> tokens;
     std::string token;
     bool isString = false;
-    bool charSeen;
+    bool charSeen = false;
     int tabLevel = 0;
     int spaceNum = 0;
     int pareNum = 0;
     bool seenParen = false;
+    bool definingFunc = false;
     for (int i = 0; i < passedInString.length(); i++){ // looping through string
         if (passedInString[i] != ' ' && !isString && !seenParen){
             charSeen = true;
             if (passedInString[i] == '"'){ // string started
                 token += '"';
                 isString = true;
-            } else if (passedInString[i] == '#' || passedInString[i] == '{'){ // Comments and ignored characters
+            } else if (passedInString[i] == '#'){ // Comments and ignored characters
                 return tokens; // Stop Tokenization
-            } else if (passedInString[i] == '('){
+            } else if (passedInString[i] == '('){ // Expression
                 seenParen = true;
                 token += '(';
                 pareNum++;
+            } else if (passedInString[i] == '{'){ // Parameters for a function
+                definingFunc = true;
+                if (token != ""){
+                    tokens.push_back(token);
+                }
+                token = "";
             } else {
                 token += passedInString[i];
             }
@@ -630,9 +678,17 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 pareNum--;
                 if (pareNum == 0){
                     seenParen = false; 
-                    tokens.push_back(token); 
+                    tokens.push_back(token);
                     token = "";
                 }
+            }
+        } else if (definingFunc){
+            if (passedInString[i] != '}'){
+                token += passedInString[i];
+            } else {
+                tokens.push_back(takeOffFrontChar(token));
+                token = "";
+                definingFunc = false;
             }
         } else { // space
             spaceNum++;

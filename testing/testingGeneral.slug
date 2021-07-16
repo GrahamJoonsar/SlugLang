@@ -1,9 +1,11 @@
-int test 0
+# Making functions
 
-incr test
+func testt {}
+    println "test"
+    if 1 > 0
+        println "true"
+end
 
-println test
-
-decr test
-
-println test
+testt
+testt
+testt
