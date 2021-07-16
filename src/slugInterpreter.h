@@ -70,3 +70,4 @@ class Interpreter{
 
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
+extern void slugDelete(std::string * args, Interpreter * interp);

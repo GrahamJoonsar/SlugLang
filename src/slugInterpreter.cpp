@@ -492,17 +492,19 @@ void dispSlug(std::string * args, Interpreter * interp){
 }
 
 // Deleting a variable
-void slugDelete(std::string * args, Interpreter * interp){
-    if (interp->inInts(args[0])){
-        interp->integers.erase(args[0]);
-    } else if (interp->inFloats(args[0])){
-        interp->floats.erase(args[0]);
-    } else if (interp->inStrings(args[0])){
-        interp->strings.erase(args[0]);
-    } else if (interp->inBools(args[0])){
-        interp->booleans.erase(args[0]);
-    } else {
-        interp->callError("Error deleting variable: '" + args[0] + "' does not exist");
+extern void slugDelete(std::string * args, Interpreter * interp){
+    for (int i = 0; i < interp->argsPassedIn; i++){
+        if (interp->inInts(args[i])){
+            interp->integers.erase(args[i]);
+        } else if (interp->inFloats(args[i])){
+            interp->floats.erase(args[i]);
+        } else if (interp->inStrings(args[i])){
+            interp->strings.erase(args[i]);
+        } else if (interp->inBools(args[i])){
+            interp->booleans.erase(args[i]);
+        } else {
+            interp->callError("Error deleting variable: '" + args[i] + "' does not exist");
+        }
     }
 }
 
@@ -612,7 +614,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // End is not technically a function, but a marker
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
-    functions.push_back({"delete", 1, &slugDelete});
+    functions.push_back({"delete", -1, &slugDelete});
 }
 
 bool Interpreter::inFunctions(std::string potentialFunc){

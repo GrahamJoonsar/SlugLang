@@ -8,6 +8,7 @@ Interpreter slugInterp;
 
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
+extern void slugDelete(std::string * args, Interpreter * interp);
 
 void proccessLine(std::string line){
     int amountOfTokens = 0;
@@ -43,6 +44,7 @@ void proccessLine(std::string line){
                 }
             } else if (slugInterp.inUFunctions(currentLineTokens[i])){
                 // Passing in parameters
+                int trueFuncNum = slugInterp.funcNum;
                 for (std::vector<std::string>::size_type i = 0; i < slugInterp.UFunctions[slugInterp.funcNum].params.size(); i++){
                     switch (slugInterp.UFunctions[slugInterp.funcNum].params[i][0]){
                     case 'i': // int
@@ -65,6 +67,9 @@ void proccessLine(std::string line){
                 }
                 for (auto uf : slugInterp.UFunctions[slugInterp.funcNum].linesOfFunction){
                     proccessLine(uf);
+                }
+                for (std::vector<std::string>::size_type k = 1; k < slugInterp.UFunctions[trueFuncNum].params.size(); k += 2){
+                    slugDelete(&slugInterp.UFunctions[trueFuncNum].params[k], &slugInterp);
                 }
             }
         }
