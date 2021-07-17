@@ -47,27 +47,34 @@ void proccessLine(std::string line){
                 int trueFuncNum = slugInterp.funcNum;
                 for (std::vector<std::string>::size_type i = 0; i < slugInterp.UFunctions[slugInterp.funcNum].params.size(); i++){
                     switch (slugInterp.UFunctions[slugInterp.funcNum].params[i][0]){
-                    case 'i': // int
-                        i++;
-                        slugInterp.integers[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
-                        break;
-                    case 'f': // float
-                        i++;
-                        slugInterp.floats[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
-                        break;
-                    case 's': // string
-                        i++;
-                        slugInterp.strings[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = getStrValOf(currentLineTokens[1+(i/2)], &slugInterp);
-                        break;
-                    case 'b': // bool (Must be stored in a var)
-                        i++;
-                        slugInterp.booleans[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = slugInterp.booleans[currentLineTokens[1+(i/2)]];
+                        case 'i': // int
+                            i++;
+                            slugInterp.integers[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
+                            break;
+                        case 'f': // float
+                            i++;
+                            slugInterp.floats[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
+                            break;
+                        case 's': // string
+                            i++;
+                            slugInterp.strings[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = getStrValOf(currentLineTokens[1+(i/2)], &slugInterp);
+                            break;
+                        case 'b': // bool (Must be stored in a var)
+                            i++;
+                            slugInterp.booleans[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = slugInterp.booleans[currentLineTokens[1+(i/2)]];
+                            break;
+                    }
+                }
+                // Running the function
+                for (auto uf : slugInterp.UFunctions[trueFuncNum].linesOfFunction){
+                    proccessLine(uf);
+                    if (slugInterp.isReturning){ // Stopping the function when it is returned from
+                        slugInterp.isReturning = false;
                         break;
                     }
                 }
-                for (auto uf : slugInterp.UFunctions[slugInterp.funcNum].linesOfFunction){
-                    proccessLine(uf);
-                }
+                // Deleting the variables passed in
+                slugInterp.argsPassedIn = 1; // To correct slugDelete
                 for (std::vector<std::string>::size_type k = 1; k < slugInterp.UFunctions[trueFuncNum].params.size(); k += 2){
                     slugDelete(&slugInterp.UFunctions[trueFuncNum].params[k], &slugInterp);
                 }

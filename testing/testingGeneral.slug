@@ -4,20 +4,26 @@ int i 0
 
 println "start"
 
-func testt {int x float y string z bool w}
+func testt {int x int y}
     printf "num " x " y " y
-    println z
-    if w
-        println "true"
+    return float 3.141
 end
 
 func test2 {}
     println "222"
 end
 
-testt 400 9.5 "Hello World" true
+func test3 {string y}
+    printf "Y: " y
+    return int 69
+end
 
-test2
+println "After Def"
 
+testt 5 6
+into gamer
+test3 "y tho"
+
+println gamer
 
 #Recursion works, lets go

@@ -568,6 +568,50 @@ void defineFunc(std::string * args, Interpreter * interp){
     interp->isDefiningFunction = true;
 }
 
+void slugReturn(std::string * args, Interpreter * interp){
+    switch(args[0][0]){
+        case 'i': // int
+            interp->returnedVal.i = evalNum(args[1], interp);
+            interp->rt = INT;
+            break;
+        case 'f': // float
+            interp->returnedVal.f = evalNum(args[1], interp);
+            interp->rt = FLOAT;
+            break;
+        case 's': // String
+            interp->returnedVal.s = getStrValOf(args[1], interp);
+            interp->rt = STRING;
+            break;
+        case 'b': // Bool
+            std::string temp[32];
+            for (int i = 1; i < interp->argsPassedIn; i++){ // Collecting everything but the variable name
+                temp[i-1] = args[i];
+            }
+            interp->returnedVal.b = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
+            interp->rt = BOOL;
+            break;
+    }
+    interp->isReturning = true;
+}
+
+void slugInto(std::string * args, Interpreter * interp){
+    std::cout << "INTO CALLED" << std::endl;
+    switch(interp->rt){
+        case INT:
+            interp->integers[args[0]] = interp->returnedVal.i;
+            break;
+        case FLOAT:
+            interp->floats[args[0]] = interp->returnedVal.f;
+            break;
+        case STRING:
+            interp->strings[args[0]] = interp->returnedVal.s;
+            break;
+        case BOOL:
+            interp->booleans[args[0]] = interp->returnedVal.b;
+            break;
+    }
+} 
+
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
@@ -611,6 +655,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"quit", 0, &slugQuit});
     // Functions
     functions.push_back({"func", 2, &defineFunc});
+    functions.push_back({"return", -1, &slugReturn});
+    functions.push_back({"into", 1, &slugInto}); // Collects a returned val and puts it in a var
     // End is not technically a function, but a marker
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});

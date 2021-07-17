@@ -30,6 +30,22 @@ struct UserDefinedFunction{
     }
 };
 
+union VAL_RETURNED{
+    int i;
+    float f;
+    std::string s;
+    bool b;
+    VAL_RETURNED(){}
+    ~VAL_RETURNED(){}
+};
+
+enum RETURN_TYPE{
+    INT,
+    FLOAT,
+    STRING,
+    BOOL
+};
+
 class Interpreter{
     public:
         int argcountForFunc = 1;
@@ -46,6 +62,10 @@ class Interpreter{
 
         bool isDefiningFunction = false;
         std::vector<UserDefinedFunction> UFunctions;
+
+        VAL_RETURNED returnedVal;
+        RETURN_TYPE rt;
+        bool isReturning = false;
 
         /* User declared Variables */
         std::unordered_map<std::string, int> integers; // integers that are declared
