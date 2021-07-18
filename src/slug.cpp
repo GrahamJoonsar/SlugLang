@@ -11,6 +11,9 @@ auto float_temp = slugInterp.floats;
 auto string_temp = slugInterp.strings;
 auto bool_temp = slugInterp.booleans;
 
+bool inFunc = false;
+int baseFuncNum;
+
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
 extern void slugDelete(std::string * args, Interpreter * interp);
@@ -49,10 +52,14 @@ extern void proccessLine(std::string line){
                 }
             } else if (slugInterp.inUFunctions(currentLineTokens[i])){
                 // Storing the variables so the function does not affect the outside
-                int_temp = slugInterp.integers;
-                float_temp = slugInterp.floats;
-                string_temp = slugInterp.strings;
-                bool_temp = slugInterp.booleans;
+                if (!inFunc){
+                    int_temp = slugInterp.integers;
+                    float_temp = slugInterp.floats;
+                    string_temp = slugInterp.strings;
+                    bool_temp = slugInterp.booleans;
+                    inFunc = true;
+                    baseFuncNum = slugInterp.funcNum;
+                }
                 // Passing in parameters
                 int trueFuncNum = slugInterp.funcNum;
                 for (std::vector<std::string>::size_type i = 0; i < slugInterp.UFunctions[slugInterp.funcNum].params.size(); i++){
@@ -84,10 +91,13 @@ extern void proccessLine(std::string line){
                     }
                 }
                 // Resetting all variables
-                slugInterp.integers = int_temp;
-                slugInterp.floats = float_temp;
-                slugInterp.strings = string_temp;
-                slugInterp.booleans = bool_temp;
+                if (baseFuncNum == trueFuncNum){ // This hopefully prevents weirdness with the variables when
+                    slugInterp.integers = int_temp; // another UFunc is called inside this one
+                    slugInterp.floats = float_temp;
+                    slugInterp.strings = string_temp;
+                    slugInterp.booleans = bool_temp;
+                    inFunc = false;
+                }
             }
         }
     } else if (slugInterp.isDefiningFunction){

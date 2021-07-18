@@ -675,7 +675,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"into", 1, &slugInto}); // Collects a returned val and puts it in a var
     // End is not technically a function, but a marker
     // File functions
-    functions.push_back({"?include", 1, &slugInclude});
+    functions.push_back({"include", 1, &slugInclude});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"delete", -1, &slugDelete});

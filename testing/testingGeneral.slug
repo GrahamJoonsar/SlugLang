@@ -1,10 +1,28 @@
 # Testing ?include
 
-println "SEEN"
-
-?include "C:\\Users\\Graham\\Desktop\\Code\\C programs\\C++\\SlugLang\\bin\\math.slug"
+include "bin/math.slug"
 
 abs -90
 into hll
 
-printf "IT is " hll
+radtodeg 3.141592
+into thing
+
+printf PI
+printf "ABS is " hll
+printf "DEG is " thing
+
+func other {}
+    eval thing (thing*100)
+    printf "NEWERTHING " thing
+end
+
+func change {}
+    eval thing (thing/10)
+    printf "NEWTHING " thing
+    other
+end
+
+change
+
+printf "OLDTHING " thing

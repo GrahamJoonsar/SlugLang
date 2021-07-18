@@ -1,12 +1,14 @@
 # This is the source file for math constants and functions
 
-float PI 3.141592
-float E 2.718281
+float PI 3.141592 # The PI constant
+float E 2.718281 # Euler's number
 
+# Returns the inverse of a number
 func inverse {float num}
     return float (1/num)
 end
 
+# Returns the absolute value of the number passed in
 func abs {float num}
     if num < 0
         return float (0-num)
@@ -42,8 +44,6 @@ end
 func degtorad {float num}
     return float (num/180*PI)
 end
-
-println "FILE OPENED"
 
 
 
