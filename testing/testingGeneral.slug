@@ -1,6 +1,7 @@
 # Testing ?include
 
 include "bin/math.slug"
+include "bin/test.slug"
 
 abs -90
 into hll
@@ -17,12 +18,16 @@ func other {}
     printf "NEWERTHING " thing
 end
 
-func change {}
+func change {int test}
     eval thing (thing/10)
-    printf "NEWTHING " thing
-    other
+    printf "T: " test
+    if test == 1
+        printf "CALLING AGAIN"
+    else
+        eval thing 69
+        printf "DABABY " thing
 end
 
-change
+change 1
 
 printf "OLDTHING " thing

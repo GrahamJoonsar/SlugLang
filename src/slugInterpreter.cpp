@@ -615,6 +615,12 @@ void slugInto(std::string * args, Interpreter * interp){
 // File inclusion
 void slugInclude(std::string * args, Interpreter * interp){
     auto path = getStrValOf(args[0], interp);
+    for (auto t : interp->includedFiles){ // So files aren't proccessed twice
+        if (t == path){ // Don't want to reinclude
+            return;
+        }
+    }
+    interp->includedFiles.push_back(path);
     std::ifstream inputFile;
     std::string line;
     inputFile.open(path.c_str());
@@ -623,7 +629,7 @@ void slugInclude(std::string * args, Interpreter * interp){
             proccessLine(line);
         }
     } else {
-        interp->callError(path + " cannot be found.");
+        interp->callError("The file " + path + " cannot be found.");
     }
     inputFile.close();
 }

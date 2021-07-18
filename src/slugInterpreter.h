@@ -63,6 +63,8 @@ class Interpreter{
         bool isDefiningFunction = false;
         std::vector<UserDefinedFunction> UFunctions;
 
+        std::vector<std::string> includedFiles; // For checking if a file has been included
+
         VAL_RETURNED returnedVal;
         RETURN_TYPE rt;
         bool isReturning = false;
@@ -73,7 +75,7 @@ class Interpreter{
         std::unordered_map<std::string, std::string> strings; // stringss that are declared
         std::unordered_map<std::string, bool> booleans; // booleans that are declared
 
-        std::unordered_map<std::string, int> pointNums;
+        std::unordered_map<std::string, unsigned int> pointNums;
 
         Interpreter();
 
