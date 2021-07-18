@@ -6,11 +6,16 @@
 
 Interpreter slugInterp;
 
+auto int_temp = slugInterp.integers;
+auto float_temp = slugInterp.floats;
+auto string_temp = slugInterp.strings;
+auto bool_temp = slugInterp.booleans;
+
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
 extern void slugDelete(std::string * args, Interpreter * interp);
 
-void proccessLine(std::string line){
+extern void proccessLine(std::string line){
     int amountOfTokens = 0;
     std::string args[32]; // Hopefully not more that 10 arguments
     std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);
@@ -43,6 +48,11 @@ void proccessLine(std::string line){
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 }
             } else if (slugInterp.inUFunctions(currentLineTokens[i])){
+                // Storing the variables so the function does not affect the outside
+                int_temp = slugInterp.integers;
+                float_temp = slugInterp.floats;
+                string_temp = slugInterp.strings;
+                bool_temp = slugInterp.booleans;
                 // Passing in parameters
                 int trueFuncNum = slugInterp.funcNum;
                 for (std::vector<std::string>::size_type i = 0; i < slugInterp.UFunctions[slugInterp.funcNum].params.size(); i++){
@@ -73,11 +83,11 @@ void proccessLine(std::string line){
                         break;
                     }
                 }
-                // Deleting the variables passed in
-                slugInterp.argsPassedIn = 1; // To correct slugDelete
-                for (std::vector<std::string>::size_type k = 1; k < slugInterp.UFunctions[trueFuncNum].params.size(); k += 2){
-                    slugDelete(&slugInterp.UFunctions[trueFuncNum].params[k], &slugInterp);
-                }
+                // Resetting all variables
+                slugInterp.integers = int_temp;
+                slugInterp.floats = float_temp;
+                slugInterp.strings = string_temp;
+                slugInterp.booleans = bool_temp;
             }
         }
     } else if (slugInterp.isDefiningFunction){

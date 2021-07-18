@@ -1,0 +1,49 @@
+# This is the source file for math constants and functions
+
+float PI 3.141592
+float E 2.718281
+
+func inverse {float num}
+    return float (1/num)
+end
+
+func abs {float num}
+    if num < 0
+        return float (0-num)
+    else
+        return float num
+end
+
+# func factorial {int num}
+#     if num <= 1
+#         return int 1
+#     int temp num
+#     factorial (num-1)
+#     into temp2
+#     return int (temp * temp2)
+# end
+
+# checks if the number passed in is an even number
+func iseven {int num}  
+    return bool (num%2) == 0
+end
+
+# checks if the number passed in is negative
+func isneg {float num}
+    return bool num < 0
+end
+
+# Changes the degree to radians
+func radtodeg {float num}
+    return float (num/PI*180)
+end
+
+# Changes the radian to degrees
+func degtorad {float num}
+    return float (num/180*PI)
+end
+
+println "FILE OPENED"
+
+
+

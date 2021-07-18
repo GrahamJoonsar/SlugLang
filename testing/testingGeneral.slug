@@ -1,29 +1,10 @@
-# Making functions
+# Testing ?include
 
-int i 0
+println "SEEN"
 
-println "start"
+?include "C:\\Users\\Graham\\Desktop\\Code\\C programs\\C++\\SlugLang\\bin\\math.slug"
 
-func testt {int x int y}
-    printf "num " x " y " y
-    return float 3.141
-end
+abs -90
+into hll
 
-func test2 {}
-    println "222"
-end
-
-func test3 {string y}
-    printf "Y: " y
-    return int 69
-end
-
-println "After Def"
-
-testt 5 6
-into gamer
-test3 "y tho"
-
-println gamer
-
-#Recursion works, lets go
+printf "IT is " hll

@@ -1,7 +1,10 @@
 #include "slugInterpreter.h"
 #include <iostream>
+#include <fstream>
 //#include <ctype.h>
 #include <cmath>
+
+extern void proccessLine(std::string line);
 
 /***** Standard functions *****/
 bool Interpreter::inInts(std::string potentialInt){
@@ -502,8 +505,6 @@ extern void slugDelete(std::string * args, Interpreter * interp){
             interp->strings.erase(args[i]);
         } else if (interp->inBools(args[i])){
             interp->booleans.erase(args[i]);
-        } else {
-            interp->callError("Error deleting variable: '" + args[i] + "' does not exist");
         }
     }
 }
@@ -538,7 +539,7 @@ std::vector<std::string> funcTokenizer(std::string str){
     std::vector<std::string> tokens;
     std::string token;
     for (int i = 0; i < str.length(); i++){
-        if (str[i] != ' '){
+        if (str[i] != ' ' && str[i] != '}'){
             token += str[i];
         } else {
             if (token != ""){
@@ -556,7 +557,7 @@ std::vector<std::string> funcTokenizer(std::string str){
 /* Functions */
 void defineFunc(std::string * args, Interpreter * interp){
     auto name = args[0]; // function name
-    auto params = funcTokenizer(args[1].substr(0, args[1].length() - 1));
+    auto params = funcTokenizer(args[1]);
     int argc;
     if (args[1] == "}"){
         argc = 0;
@@ -595,7 +596,6 @@ void slugReturn(std::string * args, Interpreter * interp){
 }
 
 void slugInto(std::string * args, Interpreter * interp){
-    std::cout << "INTO CALLED" << std::endl;
     switch(interp->rt){
         case INT:
             interp->integers[args[0]] = interp->returnedVal.i;
@@ -611,6 +611,22 @@ void slugInto(std::string * args, Interpreter * interp){
             break;
     }
 } 
+
+// File inclusion
+void slugInclude(std::string * args, Interpreter * interp){
+    auto path = getStrValOf(args[0], interp);
+    std::ifstream inputFile;
+    std::string line;
+    inputFile.open(path.c_str());
+    if (inputFile.is_open()){
+        while (getline(inputFile, line)){
+            proccessLine(line);
+        }
+    } else {
+        interp->callError(path + " cannot be found.");
+    }
+    inputFile.close();
+}
 
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
@@ -658,6 +674,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"return", -1, &slugReturn});
     functions.push_back({"into", 1, &slugInto}); // Collects a returned val and puts it in a var
     // End is not technically a function, but a marker
+    // File functions
+    functions.push_back({"?include", 1, &slugInclude});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"delete", -1, &slugDelete});
@@ -713,6 +731,9 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 token += '"';
                 isString = true;
             } else if (passedInString[i] == '#'){ // Comments and ignored characters
+                if (token != ""){
+                    tokens.push_back(token);
+                }
                 return tokens; // Stop Tokenization
             } else if (passedInString[i] == '('){ // Expression
                 seenParen = true;
@@ -749,9 +770,11 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             if (passedInString[i] != '}'){
                 token += passedInString[i];
             } else {
+                std::cout << "TOKEN: " << token << std::endl;
                 tokens.push_back(takeOffFrontChar(token));
                 token = "";
                 definingFunc = false;
+                return tokens; // Shouldnt be anything else after this
             }
         } else { // space
             spaceNum++;
