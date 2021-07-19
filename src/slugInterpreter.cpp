@@ -623,7 +623,7 @@ void slugInclude(std::string * args, Interpreter * interp){
     interp->includedFiles.push_back(path);
     std::ifstream inputFile;
     std::string line;
-    inputFile.open(path.c_str());
+    inputFile.open(path);
     if (inputFile.is_open()){
         while (getline(inputFile, line)){
             proccessLine(line);

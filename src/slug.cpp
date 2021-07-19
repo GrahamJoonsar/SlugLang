@@ -16,7 +16,6 @@ int baseFuncNum;
 
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
-extern void slugDelete(std::string * args, Interpreter * interp);
 
 extern void proccessLine(std::string line){
     int amountOfTokens = 0;
@@ -27,7 +26,7 @@ extern void proccessLine(std::string line){
         for (int i = 0; i < amountOfTokens; i++){ // looping through tokens
             if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
                 if (slugInterp.argcountForFunc >= 0){ // not a variable argument amount
-                    if (slugInterp.argcountForFunc != amountOfTokens - 1){ // Wrong amount of arguments
+                    if (slugInterp.argcountForFunc != amountOfTokens - 1 && currentLineTokens[i] != "into"){ // Wrong amount of arguments
                         slugInterp.callError("Error: " + std::to_string(slugInterp.argcountForFunc) + 
                         " arguments were expected, but " + std::to_string(amountOfTokens - 1) + 
                         " were recieved.");
@@ -51,6 +50,7 @@ extern void proccessLine(std::string line){
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
                 }
             } else if (slugInterp.inUFunctions(currentLineTokens[i])){
+                bool goingInto = false;
                 // Storing the variables so the function does not affect the outside
                 if (!inFunc){
                     int_temp = slugInterp.integers;
@@ -59,6 +59,13 @@ extern void proccessLine(std::string line){
                     bool_temp = slugInterp.booleans;
                     inFunc = true;
                     baseFuncNum = slugInterp.funcNum;
+                }
+
+                // Checking if the correct amount of args is passed in
+                if (amountOfTokens - 1 > slugInterp.UFunctions[slugInterp.funcNum].argc){
+                    if (currentLineTokens[slugInterp.UFunctions[slugInterp.funcNum].argc + 1] == "into"){
+                        goingInto = true;
+                    }
                 }
                 // Passing in parameters
                 int trueFuncNum = slugInterp.funcNum;
@@ -98,6 +105,24 @@ extern void proccessLine(std::string line){
                     slugInterp.booleans = bool_temp;
                     inFunc = false;
                 }
+                if (goingInto){
+                    goingInto = false;
+                    switch(slugInterp.rt){
+                        case INT:
+                            slugInterp.integers[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.i;
+                            break;
+                        case FLOAT:
+                            slugInterp.floats[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.f;
+                            break;
+                        case STRING:
+                            slugInterp.strings[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.s;
+                            break;
+                        case BOOL:
+                            slugInterp.booleans[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.b;
+                            break;
+                    }
+                }
+
             }
         }
     } else if (slugInterp.isDefiningFunction){
