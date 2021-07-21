@@ -6,11 +6,6 @@
 
 Interpreter slugInterp;
 
-auto int_temp = slugInterp.integers;
-auto float_temp = slugInterp.floats;
-auto string_temp = slugInterp.strings;
-auto bool_temp = slugInterp.booleans;
-
 bool inFunc = false;
 int baseFuncNum;
 
@@ -53,10 +48,10 @@ extern void proccessLine(std::string line){
                 bool goingInto = false;
                 // Storing the variables so the function does not affect the outside
                 if (!inFunc){
-                    int_temp = slugInterp.integers;
-                    float_temp = slugInterp.floats;
-                    string_temp = slugInterp.strings;
-                    bool_temp = slugInterp.booleans;
+                    slugInterp.int_temp = slugInterp.integers;
+                    slugInterp.float_temp = slugInterp.floats;
+                    slugInterp.string_temp = slugInterp.strings;
+                    slugInterp.bool_temp = slugInterp.booleans;
                     inFunc = true;
                     baseFuncNum = slugInterp.funcNum;
                 }
@@ -99,10 +94,10 @@ extern void proccessLine(std::string line){
                 }
                 // Resetting all variables
                 if (baseFuncNum == trueFuncNum){ // This hopefully prevents weirdness with the variables when
-                    slugInterp.integers = int_temp; // another UFunc is called inside this one
-                    slugInterp.floats = float_temp;
-                    slugInterp.strings = string_temp;
-                    slugInterp.booleans = bool_temp;
+                    slugInterp.integers = slugInterp.int_temp; // another UFunc is called inside this one
+                    slugInterp.floats = slugInterp.float_temp;
+                    slugInterp.strings = slugInterp.string_temp;
+                    slugInterp.booleans = slugInterp.bool_temp;
                     inFunc = false;
                 }
                 if (goingInto){

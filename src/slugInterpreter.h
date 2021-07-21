@@ -75,6 +75,11 @@ class Interpreter{
         std::unordered_map<std::string, std::string> strings; // stringss that are declared
         std::unordered_map<std::string, bool> booleans; // booleans that are declared
 
+        std::unordered_map<std::string, int> int_temp;
+        std::unordered_map<std::string, float> float_temp;
+        std::unordered_map<std::string, std::string> string_temp;
+        std::unordered_map<std::string, bool> bool_temp;
+
         std::unordered_map<std::string, unsigned int> pointNums;
 
         Interpreter();

@@ -610,7 +610,22 @@ void slugInto(std::string * args, Interpreter * interp){
             interp->booleans[args[0]] = interp->returnedVal.b;
             break;
     }
-} 
+}
+
+// Changing a global variable inside a function
+void slugMutate(std::string * args, Interpreter * interp){
+    for (int i = 0; i < interp->argsPassedIn; i++){
+        if (interp->inInts(args[i])){
+            interp->int_temp[args[i]] = interp->integers[args[0]];
+        } else if (interp->inFloats(args[i])){
+            interp->float_temp[args[i]] = interp->floats[args[0]];
+        } else if (interp->inStrings(args[i])){
+            interp->string_temp[args[i]] = interp->strings[args[0]];
+        } else if (interp->inBools(args[i])){
+            interp->bool_temp[args[i]] = interp->booleans[args[0]];
+        }
+    }
+}
 
 // File inclusion
 void slugInclude(std::string * args, Interpreter * interp){
@@ -675,10 +690,11 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // System commands
     functions.push_back({"system", 1, &slugSystem});
     functions.push_back({"quit", 0, &slugQuit});
-    // Functions
+    // Function functions
     functions.push_back({"func", 2, &defineFunc});
     functions.push_back({"return", -1, &slugReturn});
     functions.push_back({"into", 1, &slugInto}); // Collects a returned val and puts it in a var
+    functions.push_back({"mutate", -1, &slugMutate}); // Changes a variable globally
     // End is not technically a function, but a marker
     // File functions
     functions.push_back({"include", 1, &slugInclude});

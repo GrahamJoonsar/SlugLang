@@ -1,10 +1,22 @@
-# Testing ?include
+# testing mutate
 
-include "bin/math.slug"
+int toBeModified 60
 
-abs -90 into hll
+func modifyLocally {int toThis}
+    eval toBeModified (toBeModified/toThis)
+    printf "LOCAL 1: " toBeModified
+end
 
-radtodeg 3.141592 into thing
+func modifyGlobally {int toThis}
+    eval toBeModified (toBeModified/toThis)
+    printf "LOCAL 2: " toBeModified
+    mutate toBeModified
+end
 
-printf "OLDTHING " thing
-printf "HLL " hll
+modifyLocally 2
+
+printf "GLOBAL 1: " toBeModified
+
+modifyGlobally 3
+
+printf "GLOBAL 2: " toBeModified
