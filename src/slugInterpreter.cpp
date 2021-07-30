@@ -45,7 +45,7 @@ int getPrecedence(char op){
 bool isValidVarName(std::string name){
     if (isalpha(name[0]) || name[0] == '_'){
         if (name.length() == 1){return true;}
-        for (int i = 1; i < name.length(); i++){
+        for (unsigned int i = 1; i < name.length(); i++){
             if (!isalnum(name[i]) && name[i] != '_'){return false;}
         }
         return true;
@@ -108,8 +108,8 @@ std::vector<std::string> tinyTokenizer(std::string s){
     std::string current_token = "";
     s = s.substr(1, s.size() - 2); // Removing outer parentheses
     std::string truStr = "";
-    for (int i = 0; i < s.size(); i++){if(s[i] != ' '){truStr+=s[i];}} // Removing spaces
-    for (int i = 0; i < truStr.size(); i++){
+    for (unsigned int i = 0; i < s.size(); i++){if(s[i] != ' '){truStr+=s[i];}} // Removing spaces
+    for (unsigned int i = 0; i < truStr.size(); i++){
         if ((isalnum(truStr[i]) || truStr[i] == '.' || truStr[i] == '_') && !parens){// var or number literal
             if (!alphanum){ // Token changed
                 alphanum = true;
@@ -213,6 +213,7 @@ extern std::string getStrValOf(std::string val, Interpreter * interp){
         return takeOffFrontChar(val);
     } else {
         interp->callError("Error converting '" + val + "' to string");
+        return "";
     }
 }
 
@@ -249,12 +250,12 @@ bool evalBool(std::string * args, Interpreter * interp){
             return a != b;
         }
     }
+    return false;
 }
 
 bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
     bool temp = false;
     std::vector<bool> parts;
-    bool currentPart;
     std::string andOr;
     for (int i = 0; i < argc; i++){
         if (args[i] == "and"){ // and operation
@@ -276,7 +277,7 @@ bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
         return parts[0];
     }
     temp = parts[0];
-    for (int i = 1; i < parts.size(); i++){
+    for (unsigned int i = 1; i < parts.size(); i++){
         if (andOr[i - 1] == 'a'){ // and
             temp = temp && parts[i];
         } else if (andOr[i - 1] == 'o'){ // or
@@ -538,7 +539,7 @@ void slugWhile(std::string * args, Interpreter * interp){
 std::vector<std::string> funcTokenizer(std::string str){
     std::vector<std::string> tokens;
     std::string token;
-    for (int i = 0; i < str.length(); i++){
+    for (unsigned int i = 0; i < str.length(); i++){
         if (str[i] != ' ' && str[i] != '}'){
             token += str[i];
         } else {
@@ -746,7 +747,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     int pareNum = 0;
     bool seenParen = false;
     bool definingFunc = false;
-    for (int i = 0; i < passedInString.length(); i++){ // looping through string
+    for (unsigned int i = 0; i < passedInString.length(); i++){ // looping through string
         if (passedInString[i] != ' ' && !isString && !seenParen){
             charSeen = true;
             if (passedInString[i] == '"'){ // string started

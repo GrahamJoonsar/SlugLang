@@ -30,6 +30,24 @@ struct UserDefinedFunction{
     }
 };
 
+struct ScopedVariables{
+    std::unordered_map<std::string, int> integers; // integers that are declared
+    std::unordered_map<std::string, float> floats; // floats that are declared
+    std::unordered_map<std::string, std::string> strings; // stringss that are declared
+    std::unordered_map<std::string, bool> booleans; // booleans that are declared
+};
+
+// Storing the varibles for functions
+class VariableStack{
+    private:
+    std::vector<ScopedVariables> v; 
+    public:
+    void push(ScopedVariables sv);
+    ScopedVariables back();
+    void pop_back();
+    unsigned int length();
+};
+
 union VAL_RETURNED{
     int i;
     float f;
@@ -45,6 +63,10 @@ enum RETURN_TYPE{
     STRING,
     BOOL
 };
+/*
+class VariableStack{
+    std::vector<>
+};*/
 
 class Interpreter{
     public:
@@ -68,6 +90,8 @@ class Interpreter{
         VAL_RETURNED returnedVal;
         RETURN_TYPE rt;
         bool isReturning = false;
+
+        VariableStack vstack;
 
         /* User declared Variables */
         std::unordered_map<std::string, int> integers; // integers that are declared

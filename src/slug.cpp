@@ -47,14 +47,20 @@ extern void proccessLine(std::string line){
             } else if (slugInterp.inUFunctions(currentLineTokens[i])){
                 bool goingInto = false;
                 // Storing the variables so the function does not affect the outside
-                if (!inFunc){
+                slugInterp.vstack.push({slugInterp.integers, slugInterp.floats, slugInterp.strings, slugInterp.booleans});
+
+                // Storing the global variables
+                if (slugInterp.vstack.length() == 1){ // first layer
                     slugInterp.int_temp = slugInterp.integers;
                     slugInterp.float_temp = slugInterp.floats;
                     slugInterp.string_temp = slugInterp.strings;
                     slugInterp.bool_temp = slugInterp.booleans;
-                    inFunc = true;
-                    baseFuncNum = slugInterp.funcNum;
                 }
+                // Including the global variables
+                slugInterp.integers = slugInterp.int_temp;
+                slugInterp.floats = slugInterp.float_temp;
+                slugInterp.strings = slugInterp.string_temp;
+                slugInterp.booleans = slugInterp.bool_temp;
 
                 // Checking if the correct amount of args is passed in
                 if (amountOfTokens - 1 > slugInterp.UFunctions[slugInterp.funcNum].argc){
@@ -93,13 +99,14 @@ extern void proccessLine(std::string line){
                     }
                 }
                 // Resetting all variables
-                if (baseFuncNum == trueFuncNum){ // This hopefully prevents weirdness with the variables when
-                    slugInterp.integers = slugInterp.int_temp; // another UFunc is called inside this one
-                    slugInterp.floats = slugInterp.float_temp;
-                    slugInterp.strings = slugInterp.string_temp;
-                    slugInterp.booleans = slugInterp.bool_temp;
-                    inFunc = false;
-                }
+                auto oldVars = slugInterp.vstack.back();
+                slugInterp.vstack.pop_back();
+
+                slugInterp.integers = oldVars.integers;
+                slugInterp.floats = oldVars.floats;
+                slugInterp.strings = oldVars.strings;
+                slugInterp.booleans = oldVars.booleans;
+
                 if (goingInto){
                     goingInto = false;
                     switch(slugInterp.rt){
@@ -126,7 +133,9 @@ extern void proccessLine(std::string line){
             return;
         }
         // Adding to the function and taking off the first 4 spaces
-        slugInterp.UFunctions.back().linesOfFunction.push_back(line.substr(4, line.length() - 3));
+        if (line.length() > 4){
+            slugInterp.UFunctions.back().linesOfFunction.push_back(line.substr(4, line.length() - 3));
+        }
     }
 }
 
