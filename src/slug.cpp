@@ -98,14 +98,6 @@ extern void proccessLine(std::string line){
                         break;
                     }
                 }
-                // Resetting all variables
-                auto oldVars = slugInterp.vstack.back();
-                slugInterp.vstack.pop_back();
-
-                slugInterp.integers = oldVars.integers;
-                slugInterp.floats = oldVars.floats;
-                slugInterp.strings = oldVars.strings;
-                slugInterp.booleans = oldVars.booleans;
 
                 if (goingInto){
                     goingInto = false;
@@ -125,6 +117,11 @@ extern void proccessLine(std::string line){
                     }
                 }
 
+                // So the mutate keyword works
+                slugInterp.integers = slugInterp.int_temp;
+                slugInterp.floats = slugInterp.float_temp;
+                slugInterp.strings = slugInterp.string_temp;
+                slugInterp.booleans = slugInterp.bool_temp;
             }
         }
     } else if (slugInterp.isDefiningFunction){
