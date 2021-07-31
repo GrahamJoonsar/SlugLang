@@ -113,6 +113,7 @@ class Interpreter{
         VariableStack vstack;
         WhileLoopStack wstack;
         bool definingLoop = false;
+        bool breakingLoop = false;
 
         /* User declared Variables */
         std::unordered_map<std::string, int> integers; // integers that are declared

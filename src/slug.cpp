@@ -96,6 +96,7 @@ extern void proccessLine(std::string line){
                     proccessLine(uf);
                     if (slugInterp.isReturning){ // Stopping the function when it is returned from
                         slugInterp.isReturning = false;
+                        slugInterp.breakingLoop = false;
                         break;
                     }
                 }
@@ -141,12 +142,16 @@ extern void proccessLine(std::string line){
                 slugInterp.wstack.addl(line);
             } else {
                 slugInterp.definingLoop = false;
-                while(getBooleanValOf(slugInterp.wstack.back().booleanExpression, &slugInterp, slugInterp.wstack.back().length)){
+                while(getBooleanValOf(slugInterp.wstack.back().booleanExpression, &slugInterp, slugInterp.wstack.back().length) && !slugInterp.breakingLoop){
                     for (auto l : slugInterp.wstack.back().linesOfLoop){
                         proccessLine(l);
+                        if (slugInterp.breakingLoop){
+                            break;
+                        }
                     }
                 }
                 slugInterp.wstack.pop_back();
+                slugInterp.breakingLoop = false;
             }
         }
     }

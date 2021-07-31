@@ -510,7 +510,8 @@ extern void slugDelete(std::string * args, Interpreter * interp){
     }
 }
 
-/* Goto Statements */
+/* Goto Statements 
+// Deprecated
 void slugPoint(std::string * args, Interpreter * interp){ // Setting where the goto goes
     interp->pointNums[args[0]] = interp->lineNum;
 }
@@ -518,7 +519,7 @@ void slugPoint(std::string * args, Interpreter * interp){ // Setting where the g
 void slugGoto(std::string * args, Interpreter * interp){ // Actually going to the point
     interp->lineNum = interp->pointNums[args[0]];
 }
-
+*/
 /* System like commands */
 // Force end the program
 void slugQuit(std::string * args, Interpreter * interp){
@@ -583,6 +584,7 @@ void slugReturn(std::string * args, Interpreter * interp){
             break;
     }
     interp->isReturning = true;
+    interp->breakingLoop = true;
 }
 
 void slugInto(std::string * args, Interpreter * interp){
@@ -653,6 +655,10 @@ void slugWhile(std::string * args, Interpreter * interp){
     }
 }
 
+void slugBreak(std::string * args, Interpreter * interp){
+    interp->breakingLoop = true;
+}
+
 /**void slugEndWhile(std::string * args, Interpreter * interp){
     interp->definingLoop = false;
     while(getBooleanValOf(interp->wstack.back().booleanExpression, interp, interp->wstack.back().length)){
@@ -699,8 +705,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"substr", 4, &slugSubstr}); // substr of a string passed in
     functions.push_back({"getch", 3, &slugGetchar});
     // Goto statements
-    functions.push_back({"point", 1, &slugPoint});
-    functions.push_back({"goto", 1, &slugGoto});
+    /*functions.push_back({"point", 1, &slugPoint});
+    functions.push_back({"goto", 1, &slugGoto});*/
     // System commands
     functions.push_back({"system", 1, &slugSystem});
     functions.push_back({"quit", 0, &slugQuit});
@@ -712,6 +718,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // End is not technically a function, but a marker
     // Loops
     functions.push_back({"while", -1, &slugWhile});
+    functions.push_back({"break", 0, &slugBreak});
     //functions.push_back({"endw", 0, &slugEndWhile});
 
     // File functions
