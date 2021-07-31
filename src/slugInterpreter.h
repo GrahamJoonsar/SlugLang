@@ -63,10 +63,29 @@ enum RETURN_TYPE{
     STRING,
     BOOL
 };
-/*
-class VariableStack{
-    std::vector<>
-};*/
+
+class WhileLoop{
+    public:
+        std::vector<std::string> linesOfLoop;
+        std::string* booleanExpression;
+        int length;
+        std::string tabs = "";
+        WhileLoop(std::string* _bExpression, int _length){
+            booleanExpression = _bExpression;
+            length = _length;
+        }
+};
+
+class WhileLoopStack{
+    private:
+    std::vector<WhileLoop> v; 
+    public:
+    void push(WhileLoop sv);
+    WhileLoop back();
+    void pop_back();
+    unsigned int length();
+    void addl(std::string l);
+};
 
 class Interpreter{
     public:
@@ -92,6 +111,8 @@ class Interpreter{
         bool isReturning = false;
 
         VariableStack vstack;
+        WhileLoopStack wstack;
+        bool definingLoop = false;
 
         /* User declared Variables */
         std::unordered_map<std::string, int> integers; // integers that are declared
@@ -121,5 +142,5 @@ class Interpreter{
 
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
-extern void slugDelete(std::string * args, Interpreter * interp);
 extern void proccessLine(std::string line);
+extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc);

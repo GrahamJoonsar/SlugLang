@@ -11,13 +11,14 @@ int baseFuncNum;
 
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
+extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc);
 
 extern void proccessLine(std::string line){
     int amountOfTokens = 0;
     std::string args[32]; // Hopefully not more that 10 arguments
     std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);
     amountOfTokens = currentLineTokens.size();
-    if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0] && !slugInterp.isDefiningFunction){ // if statement succeded
+    if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0] && !slugInterp.isDefiningFunction && !slugInterp.definingLoop){ // if statement succeded
         for (int i = 0; i < amountOfTokens; i++){ // looping through tokens
             if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
                 if (slugInterp.argcountForFunc >= 0){ // not a variable argument amount
@@ -132,6 +133,21 @@ extern void proccessLine(std::string line){
         // Adding to the function and taking off the first 4 spaces
         if (line.length() > 4){
             slugInterp.UFunctions.back().linesOfFunction.push_back(line.substr(4, line.length() - 3));
+        }
+    } else if (slugInterp.definingLoop){ // Collecting and executing lines for loops
+        if (line.length() >= slugInterp.wstack.back().tabs.length()){
+            if (line != slugInterp.wstack.back().tabs + "endw"){ // Getting rid of spaces relative to tab level
+                line.erase(0, slugInterp.wstack.back().tabs.length()+4);
+                slugInterp.wstack.addl(line);
+            } else {
+                slugInterp.definingLoop = false;
+                while(getBooleanValOf(slugInterp.wstack.back().booleanExpression, &slugInterp, slugInterp.wstack.back().length)){
+                    for (auto l : slugInterp.wstack.back().linesOfLoop){
+                        proccessLine(l);
+                    }
+                }
+                slugInterp.wstack.pop_back();
+            }
         }
     }
 }

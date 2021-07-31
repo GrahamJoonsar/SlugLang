@@ -253,7 +253,7 @@ bool evalBool(std::string * args, Interpreter * interp){
     return false;
 }
 
-bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
+extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
     bool temp = false;
     std::vector<bool> parts;
     std::string andOr;
@@ -525,17 +525,6 @@ void slugQuit(std::string * args, Interpreter * interp){
     exit(EXIT_SUCCESS);
 }
 
-/* Loops */
-// Deprecated
-void slugWhile(std::string * args, Interpreter * interp){
-    if (getBooleanValOf(args, interp, interp->argsPassedIn)){
-        interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true; // the next tablevel will be processed
-        interp->loopLevel[interp->curlyBraceNum] = interp->lineNum - 1;
-    } else {
-        interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = false;
-    }
-}
-
 std::vector<std::string> funcTokenizer(std::string str){
     std::vector<std::string> tokens;
     std::string token;
@@ -650,6 +639,30 @@ void slugInclude(std::string * args, Interpreter * interp){
     inputFile.close();
 }
 
+// Loops
+void slugWhile(std::string * args, Interpreter * interp){
+    auto pargs = new std::string[interp->argsPassedIn]; // for the pointer
+    for (int i = 0; i < interp->argsPassedIn; i++){
+        std::string temp = args[i];
+        pargs[i] = temp;
+    }
+    interp->wstack.push({pargs, interp->argsPassedIn});
+    interp->definingLoop = true;
+    for (unsigned int i = 0; i < interp->argsPassedIn; i++){
+        interp->wstack.back().tabs += "    ";
+    }
+}
+
+/**void slugEndWhile(std::string * args, Interpreter * interp){
+    interp->definingLoop = false;
+    while(getBooleanValOf(interp->wstack.back().booleanExpression, interp, interp->wstack.back().length)){
+        for (auto l : interp->wstack.back().linesOfLoop){
+            proccessLine(l);
+        }
+    }
+    interp->wstack.pop_back();
+}*/
+
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
@@ -697,6 +710,10 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"into", 1, &slugInto}); // Collects a returned val and puts it in a var
     functions.push_back({"mutate", -1, &slugMutate}); // Changes a variable globally
     // End is not technically a function, but a marker
+    // Loops
+    functions.push_back({"while", -1, &slugWhile});
+    //functions.push_back({"endw", 0, &slugEndWhile});
+
     // File functions
     functions.push_back({"include", 1, &slugInclude});
     // Other stuff

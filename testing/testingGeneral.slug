@@ -1,22 +1,11 @@
 # testing mutate
 
-int outside 9966
-
-func modifyLocally {int cheese}
-    int beebe 132
-    printf "beebe is: " beebe
-    printf "cheese is: " cheese
-    int outside 8877
-    mutate outside
-end
-
-func modifyGlobally {}
-    modifyLocally 856
-    println outside
-    eval outside (outside/2)
-    printf "Inner out " outside
-end
-
-modifyGlobally
-
-printf "OUTOUT " outside
+int x 0
+while x < 100
+    int y 0
+    while y < 100
+        printf "x: " x " y: " y
+        incr y
+    endw
+    incr x
+endw
