@@ -669,6 +669,11 @@ void slugBreak(std::string * args, Interpreter * interp){
     interp->wstack.pop_back();
 }*/
 
+// Most powerful and useful function in sluglang, runs the string passed in
+void slugExecute(std::string * args, Interpreter * interp){
+    proccessLine(getStrValOf(args[0], interp));
+}
+
 /* Interpreter Functions */
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
@@ -720,11 +725,11 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"while", -1, &slugWhile});
     functions.push_back({"break", 0, &slugBreak});
     //functions.push_back({"endw", 0, &slugEndWhile});
-
     // File functions
     functions.push_back({"include", 1, &slugInclude});
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
+    functions.push_back({"exec", 1, &slugExecute});
     functions.push_back({"delete", -1, &slugDelete});
 }
 

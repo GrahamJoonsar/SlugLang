@@ -38,14 +38,16 @@ func max {float num1 float num2}
         return float num2
 end
 
-# func factorial {int num}
-#     if num <= 1
-#         return int 1
-#     int temp num
-#     factorial (num-1)
-#     into temp2
-#     return int (temp * temp2)
-# end
+# Returns the factorial of a number
+# (Recursion adds a lot of overhead)
+func factorial {int num}
+    int ans num
+    while num > 1
+        decr num
+        eval ans (ans*num)
+    endw
+    return int ans
+end
 
 ## Functions that return a bool ##
 
