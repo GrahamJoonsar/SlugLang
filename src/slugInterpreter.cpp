@@ -197,6 +197,43 @@ void NumberStack::push(std::string val, Interpreter * interp){
     stack.push_back(evalNum(val, interp));
 }
 
+class StringTokenization{
+    public:
+        std::vector<std::string> stringTokenizer(std::string val){
+            std::vector<std::string> tokens;
+            std::string token;
+            bool quote = false;
+            for (unsigned int i = 0; i < val.length(); i++){
+                if (val[i] != ' ' && !quote){
+                    if (val[i] == '"'){
+                        token += '"';
+                        quote = true;
+                    } else {
+                        token += val[i];
+                    }
+                } else if (quote){
+                    if (val[i] != '"'){
+                        token += val[i];
+                    } else {
+                        quote = false;
+                    }
+                } else {
+                    if (token != ""){
+                        tokens.push_back(token);
+                        token = "";
+                    }
+                }
+            }
+            if (token != ""){
+                tokens.push_back(token);
+                token = "";
+            }
+            return tokens;
+        }
+
+        std::string EvalStringExpression(std::string val, Interpreter * interp);
+};
+
 // Getting the string value of whatever has been passed in
 extern std::string getStrValOf(std::string val, Interpreter * interp){
     if (interp->inInts(val)){ // integer var
@@ -211,10 +248,23 @@ extern std::string getStrValOf(std::string val, Interpreter * interp){
         return std::to_string(evalNum(val, interp));
     } else if (val[0] == '"'){ // string literal
         return takeOffFrontChar(val);
+    } else if (val[0] == '%'){ // string literal
+        StringTokenization s;
+        return s.EvalStringExpression(val, interp);
     } else {
         interp->callError("Error converting '" + val + "' to string");
         return "";
     }
+    return "";
+}
+
+std::string StringTokenization::EvalStringExpression(std::string val, Interpreter * interp){
+    std::string base = "";
+    auto tokens = stringTokenizer(takeOffFrontChar(val));
+    for (auto t : tokens){
+        base += getStrValOf(t, interp);
+    }
+    return base;
 }
 
 bool evalBool(std::string * args, Interpreter * interp){
@@ -776,8 +826,9 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     int pareNum = 0;
     bool seenParen = false;
     bool definingFunc = false;
+    bool stringExpression = false;
     for (unsigned int i = 0; i < passedInString.length(); i++){ // looping through string
-        if (passedInString[i] != ' ' && !isString && !seenParen){
+        if (passedInString[i] != ' ' && !isString && !seenParen && !stringExpression){
             charSeen = true;
             if (passedInString[i] == '"'){ // string started
                 token += '"';
@@ -797,6 +848,9 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                     tokens.push_back(token);
                 }
                 token = "";
+            } else if (passedInString[i] == '%'){ // string expression
+                stringExpression = true;
+                token += '%';
             } else {
                 token += passedInString[i];
             }
@@ -805,6 +859,12 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 token += passedInString[i];
             } else {
                 isString = false;
+            }
+        } else if (stringExpression){
+            if (passedInString[i] != '%'){
+                token += passedInString[i];
+            } else {
+                stringExpression = false;
             }
         } else if (seenParen){
             token += passedInString[i];

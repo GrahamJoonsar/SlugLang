@@ -14,4 +14,6 @@ factorial 5 into queso
 
 basicallyPointers "queso"
 
-println queso
+string alal "HEy jude "
+
+println % "CEESE " alal "KLKLKLK" %
