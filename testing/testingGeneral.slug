@@ -1,19 +1,11 @@
-include "bin/math.slug"
+int x 0
+int y 0
 
-# sets the variable of whatever is passed in to -99
-func basicallyPointers {string ptr}
-    string change "eval "
-    concat change ptr " (0-99)"
-    exec change
-    string change "mutate "
-    concat change ptr
-    exec change
-end
+int zero 0
 
-factorial 5 into queso
-
-basicallyPointers "queso"
-
-string alal "HEy jude "
-
-println % "CEESE " alal "KLKLKLK" %
+int k 0
+if x == 0
+    println "DOT"
+else
+    println "JOEBAM1" #COMMENT
+    println "JOEBAMA" #######

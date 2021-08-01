@@ -498,6 +498,10 @@ void slugGetchar(std::string * args, Interpreter * interp){
     interp->strings[args[2]] = getStrValOf(args[0], interp)[(int)evalNum(args[1], interp)];
 }
 
+void slugNewline(std::string * args, Interpreter * interp){
+    std::cout << std::endl;
+}
+
 // The function that performs mathematical operations
 // does not do PEMDAS, but goes from left to right
 // This includes the variable that it is going to in the assignment
@@ -759,6 +763,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"strLength", 2, &strLength}); // Getting the length of the string passed in
     functions.push_back({"substr", 4, &slugSubstr}); // substr of a string passed in
     functions.push_back({"getch", 3, &slugGetchar});
+    functions.push_back({"newl", 0, &slugNewline});
     // Goto statements
     /*functions.push_back({"point", 1, &slugPoint});
     functions.push_back({"goto", 1, &slugGoto});*/
@@ -827,6 +832,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     bool seenParen = false;
     bool definingFunc = false;
     bool stringExpression = false;
+    bool stringString = false;
     for (unsigned int i = 0; i < passedInString.length(); i++){ // looping through string
         if (passedInString[i] != ' ' && !isString && !seenParen && !stringExpression){
             charSeen = true;
@@ -837,6 +843,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 if (token != ""){
                     tokens.push_back(token);
                 }
+                curlyBraceNum = tabLevel;
                 return tokens; // Stop Tokenization
             } else if (passedInString[i] == '('){ // Expression
                 seenParen = true;
@@ -862,9 +869,16 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             }
         } else if (stringExpression){
             if (passedInString[i] != '%'){
+                if (passedInString[i] == '"'){
+                    stringString = !stringString;
+                }
                 token += passedInString[i];
             } else {
-                stringExpression = false;
+                if (!stringString){
+                    stringExpression = false;
+                } else {
+                    token += '%';
+                }
             }
         } else if (seenParen){
             token += passedInString[i];

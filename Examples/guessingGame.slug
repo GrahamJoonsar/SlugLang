@@ -16,22 +16,18 @@ system "cls" # Clear the screen for player 2
 
 println "Player one put in a number, now you have to guess."
 
-point l1 # Main game loop
+while times_guessed < num_of_guesses
+    readInt guess
+    incr times_guessed
 
-readInt guess
-incr times_guessed
-
-if guess == number
-    println "Player two wins!"
-    quit
-elseif guess < number
-    println "You have to go higher."
-else
-    println "You have to go lower."
-
-
-if times_guessed < num_of_guesses
-    goto l1
+    if guess == number
+        println "Player two wins!"
+        quit
+    elseif guess < number
+        println "You have to go higher."
+    else
+        println "You have to go lower."
+endw
 
 println "Player 1 wins!"
 
