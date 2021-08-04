@@ -1,11 +1,8 @@
-int x 0
-int y 0
+bool x true
 
-int zero 0
-
-int k 0
-if x == 0
-    println "DOT"
-else
-    println "JOEBAM1" #COMMENT
-    println "JOEBAMA" #######
+if 1 > 0
+    while x
+        println i
+        println i
+        bool x false
+    endw

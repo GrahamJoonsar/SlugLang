@@ -142,12 +142,18 @@ extern void proccessLine(std::string line){
                 slugInterp.wstack.addl(line);
             } else {
                 slugInterp.definingLoop = false;
+                for (auto t : slugInterp.wstack.back().linesOfLoop){
+                    //std::cout << "T: " << t << std::endl;
+                }
                 while(getBooleanValOf(slugInterp.wstack.back().booleanExpression, &slugInterp, slugInterp.wstack.back().length) && !slugInterp.breakingLoop){
                     for (auto l : slugInterp.wstack.back().linesOfLoop){
                         proccessLine(l);
                         if (slugInterp.breakingLoop){
                             break;
                         }
+                    }
+                    if (slugInterp.wstack.back().isForLoop){
+                        proccessLine(slugInterp.wstack.back().action);
                     }
                 }
                 slugInterp.wstack.pop_back();

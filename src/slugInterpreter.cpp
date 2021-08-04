@@ -702,11 +702,56 @@ void slugWhile(std::string * args, Interpreter * interp){
         std::string temp = args[i];
         pargs[i] = temp;
     }
-    interp->wstack.push({pargs, interp->argsPassedIn});
-    interp->definingLoop = true;
-    for (unsigned int i = 0; i < interp->argsPassedIn; i++){
-        interp->wstack.back().tabs += "    ";
+    std::string tabs = "";
+    for (int i = 0; i < interp->curlyBraceNum; i++){
+        tabs += "    ";
     }
+    interp->wstack.push({pargs, interp->argsPassedIn, false, " ", tabs});
+    interp->definingLoop = true;
+}
+
+void slugFor(std::string * args, Interpreter * interp){
+    std::string set; // the int i part
+    std::string booleanExpression; // i < num
+    std::string action; // i++
+    int boolPartNum = 0;
+    bool seenBool = false;
+    int boolStartIndex;
+    int sepNum = 0; // Number of seperators
+    for (int i = 0; i < interp->argsPassedIn; i++){
+        if (args[i] == "|"){ // Seperator
+            sepNum++;
+        } else {
+            switch(sepNum){
+                case 0:
+                    set += args[i] + ' ';
+                    break;
+                case 1:
+                    if (!seenBool){
+                        seenBool = true;
+                        boolStartIndex = i;
+                    }
+                    booleanExpression += args[i] + ' ';
+                    boolPartNum++;
+                    break;
+                case 2:
+                    action += args[i] + ' ';
+                    break;
+            }
+        }
+    }
+    auto pfargs = new std::string[boolPartNum]; // for the pointer
+    for (int i = boolStartIndex; i < boolStartIndex + boolPartNum; i++){
+        std::string temp = args[i];
+        pfargs[i - boolStartIndex] = temp;
+    }
+    std::string tabs = "";
+    for (int i = 0; i < interp->curlyBraceNum; i++){
+        tabs += "    ";
+    }
+    proccessLine(set);
+    interp->definingLoop = true;
+    interp->wstack.push({pfargs, boolPartNum, true, action, tabs});
 }
 
 void slugBreak(std::string * args, Interpreter * interp){
@@ -778,6 +823,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // End is not technically a function, but a marker
     // Loops
     functions.push_back({"while", -1, &slugWhile});
+    functions.push_back({"for", -1, &slugFor});
     functions.push_back({"break", 0, &slugBreak});
     //functions.push_back({"endw", 0, &slugEndWhile});
     // File functions

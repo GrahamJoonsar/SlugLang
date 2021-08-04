@@ -70,9 +70,14 @@ class WhileLoop{
         std::string* booleanExpression;
         int length;
         std::string tabs = "";
-        WhileLoop(std::string* _bExpression, int _length){
+        bool isForLoop;
+        std::string action;
+        WhileLoop(std::string* _bExpression, int _length, bool _isForLoop, std::string _action, std::string _tabs){
             booleanExpression = _bExpression;
             length = _length;
+            isForLoop = _isForLoop;
+            action = _action;
+            tabs = _tabs;
         }
 };
 
