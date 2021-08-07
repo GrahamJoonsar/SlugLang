@@ -71,23 +71,23 @@ extern void proccessLine(std::string line){
                 }
                 // Passing in parameters
                 int trueFuncNum = slugInterp.funcNum;
-                for (std::vector<std::string>::size_type i = 0; i < slugInterp.UFunctions[slugInterp.funcNum].params.size(); i++){
-                    switch (slugInterp.UFunctions[slugInterp.funcNum].params[i][0]){
+                for (std::vector<std::string>::size_type i = 0; i < slugInterp.UFunctions[trueFuncNum].params.size(); i++){
+                    switch (slugInterp.UFunctions[trueFuncNum].params[i][0]){
                         case 'i': // int
                             i++;
-                            slugInterp.integers[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
+                            slugInterp.integers[slugInterp.UFunctions[trueFuncNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
                             break;
                         case 'f': // float
                             i++;
-                            slugInterp.floats[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
+                            slugInterp.floats[slugInterp.UFunctions[trueFuncNum].params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
                             break;
                         case 's': // string
                             i++;
-                            slugInterp.strings[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = getStrValOf(currentLineTokens[1+(i/2)], &slugInterp);
+                            slugInterp.strings[slugInterp.UFunctions[trueFuncNum].params[i]] = getStrValOf(currentLineTokens[1+(i/2)], &slugInterp);
                             break;
                         case 'b': // bool (Must be stored in a var)
                             i++;
-                            slugInterp.booleans[slugInterp.UFunctions[slugInterp.funcNum].params[i]] = slugInterp.booleans[currentLineTokens[1+(i/2)]];
+                            slugInterp.booleans[slugInterp.UFunctions[trueFuncNum].params[i]] = slugInterp.booleans[currentLineTokens[1+(i/2)]];
                             break;
                     }
                 }
@@ -104,16 +104,16 @@ extern void proccessLine(std::string line){
                 if (goingInto){
                     goingInto = false;
                     switch(slugInterp.rt){
-                        case INT:
+                        case RETURN_ENUM::INT:
                             slugInterp.integers[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.i;
                             break;
-                        case FLOAT:
+                        case RETURN_ENUM::FLOAT:
                             slugInterp.floats[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.f;
                             break;
-                        case STRING:
+                        case RETURN_ENUM::STRING:
                             slugInterp.strings[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.s;
                             break;
-                        case BOOL:
+                        case RETURN_ENUM::BOOL:
                             slugInterp.booleans[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.b;
                             break;
                     }

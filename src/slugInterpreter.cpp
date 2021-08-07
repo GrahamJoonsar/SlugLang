@@ -103,6 +103,8 @@ class NumberStack{
 std::vector<std::string> tinyTokenizer(std::string s){
     bool alphanum = true;
     bool parens = false;
+    bool brace = false;
+    int braceNum = 0;
     int parensNum = 0;
     std::vector<std::string> tokens;
     std::string current_token = "";
@@ -110,21 +112,21 @@ std::vector<std::string> tinyTokenizer(std::string s){
     std::string truStr = "";
     for (unsigned int i = 0; i < s.size(); i++){if(s[i] != ' '){truStr+=s[i];}} // Removing spaces
     for (unsigned int i = 0; i < truStr.size(); i++){
-        if ((isalnum(truStr[i]) || truStr[i] == '.' || truStr[i] == '_') && !parens){// var or number literal
+        if ((isalnum(truStr[i]) || truStr[i] == '.' || truStr[i] == '_') && !parens && !brace){// var or number literal
             if (!alphanum){ // Token changed
                 alphanum = true;
                 tokens.push_back(current_token);
                 current_token = "";
             }
             current_token += truStr[i];
-        } else if (isOp(truStr[i]) && !parens){ // operator or parentheses
+        } else if (isOp(truStr[i]) && !parens && !brace){ // operator or parentheses
             if (alphanum){
                 alphanum = false;
                 tokens.push_back(current_token);
                 current_token = "";
             }
             current_token += truStr[i];
-        } else if (truStr[i] == '('){ // Start parentheses
+        } else if (truStr[i] == '(' && !brace){ // Start parentheses
             if (parensNum == 0){
                 tokens.push_back(current_token);
                 current_token = "";
@@ -132,7 +134,7 @@ std::vector<std::string> tinyTokenizer(std::string s){
             parensNum++;
             parens = true;
             current_token += '(';
-        } else if (truStr[i] == ')'){ // End parentheses
+        } else if (truStr[i] == ')' && !brace){ // End parentheses
             parensNum--;
             current_token += ')';
             if (parensNum == 0){
@@ -140,7 +142,24 @@ std::vector<std::string> tinyTokenizer(std::string s){
                 if (current_token != ""){tokens.push_back(current_token);}
                 current_token = "";
             }
-        } else if (parens){
+        } else if (truStr[i] == '[' && !parens){ // Start parentheses
+            if (braceNum == 0){
+                tokens.push_back(current_token);
+                current_token = "";
+            }
+            braceNum++;
+            brace = true;
+            current_token += '[';
+        } else if (truStr[i] == ']' && !parens){ // End parentheses
+            braceNum--;
+            current_token += ']';
+            if (braceNum == 0){
+                brace = false;
+                current_token.pop_back();
+                if (current_token != ""){tokens.push_back(current_token);}
+                current_token = "";
+            }
+        } else if (parens || brace){
             current_token += truStr[i];
         }
     }
@@ -152,7 +171,7 @@ std::vector<std::string> tinyTokenizer(std::string s){
 
 // Getting the numerical value of whatever's been passed in
 extern float evalNum(std::string num, Interpreter * interp){
-    if (!isdigit(num[0]) && num[0] != '-' && num[0] != '('){ // not a number literal and not a negative number literal
+    if (!isdigit(num[0]) && num[0] != '-' && num[0] != '(' && num[0] != '['){ // not a number literal and not a negative number literal
         if (interp->inInts(num)){
             return interp->integers[num];
         } else if (interp->inFloats(num)){
@@ -187,9 +206,32 @@ extern float evalNum(std::string num, Interpreter * interp){
             }
         }
         return s.pop();
+    } else if (num[0] == '['){// Function
+        auto temp = interp->argcountForFunc;
+        auto temp1 = interp->funcNum;
+        auto temp2 = interp->argsPassedIn;
+        auto temp3 = interp->curlyBraceNum;
+        proccessLine(takeOffFrontChar(num)); // Run the function
+        interp->argcountForFunc = temp;
+        interp->funcNum = temp1;
+        interp->argsPassedIn = temp2;
+        interp->curlyBraceNum = temp3;
+        switch (interp->rt){
+            case RETURN_ENUM::RETURN_TYPE::INT:
+                return interp->returnedVal.i;
+                break;
+            case RETURN_ENUM::RETURN_TYPE::FLOAT:
+                return interp->returnedVal.i;
+                break;
+            case RETURN_ENUM::RETURN_TYPE::STRING:
+            case RETURN_ENUM::RETURN_TYPE::BOOL:
+                interp->callError("Cannot convert to number");
+                break;
+        }
     } else { // Is a number literal
         return std::stof(num, nullptr);
     }
+    //std::cout << "EVAL " << num << std::endl;
     return 0; // In case all else fails
 }
 
@@ -248,6 +290,32 @@ extern std::string getStrValOf(std::string val, Interpreter * interp){
         return std::to_string(evalNum(val, interp));
     } else if (val[0] == '"'){ // string literal
         return takeOffFrontChar(val);
+    } else if (val[0] == '['){ // string returned from a function
+        auto temp = interp->argcountForFunc;
+        auto temp1 = interp->funcNum;
+        auto temp2 = interp->argsPassedIn;
+        auto temp3 = interp->curlyBraceNum;
+        proccessLine(takeOffFrontChar(val)); // Run the function
+        interp->argcountForFunc = temp;
+        interp->funcNum = temp1;
+        interp->argsPassedIn = temp2;
+        interp->curlyBraceNum = temp3;
+        std::string valReturned;
+        switch (interp->rt){ // Get whatever was returned
+            case RETURN_ENUM::INT:
+                valReturned = std::to_string(interp->returnedVal.i);
+                break;
+            case RETURN_ENUM::FLOAT:
+                valReturned = std::to_string(interp->returnedVal.f);
+                break;
+            case RETURN_ENUM::STRING:
+                valReturned = interp->returnedVal.s;
+                break;
+            case RETURN_ENUM::BOOL: // Why
+                valReturned = interp->returnedVal.b;
+                break;
+        }
+        return valReturned;
     } else if (val[0] == '%'){ // string literal
         StringTokenization s;
         return s.EvalStringExpression(val, interp);
@@ -299,6 +367,64 @@ bool evalBool(std::string * args, Interpreter * interp){
         } else if (args[1] == "!="){
             return a != b;
         }
+    } else { // Probably function
+        if (args[0][0] == '[' || args[2][0] == '['){
+            RETURN_ENUM::RETURN_TYPE type;
+            if (args[0][0] == '['){ // Getting the type to be compared
+                auto temp = interp->argcountForFunc;
+                auto temp1 = interp->funcNum;
+                auto temp2 = interp->argsPassedIn;
+                auto temp3 = interp->curlyBraceNum;
+                proccessLine(takeOffFrontChar(args[0])); // Run the function
+                interp->argcountForFunc = temp;
+                interp->funcNum = temp1;
+                interp->argsPassedIn = temp2;
+                interp->curlyBraceNum = temp3;
+                type = interp->rt;
+            } else {
+                auto temp = interp->argcountForFunc;
+                auto temp1 = interp->funcNum;
+                auto temp2 = interp->argsPassedIn;
+                auto temp3 = interp->curlyBraceNum;
+                proccessLine(takeOffFrontChar(args[2])); // Run the function
+                interp->argcountForFunc = temp;
+                interp->funcNum = temp1;
+                interp->argsPassedIn = temp2;
+                interp->curlyBraceNum = temp3;
+                type = interp->rt;
+            }
+            if (type == RETURN_ENUM::RETURN_TYPE::STRING){
+                std::string a = getStrValOf(args[0], interp);
+                std::string b = getStrValOf(args[2], interp);
+                if (args[1] == "=="){
+                    return a == b;
+                } else if (args[1] == "<"){
+                    return a < b;
+                } else if (args[1] == ">"){
+                    return a > b;
+                } else if (args[1] == "!="){
+                    return a != b;
+                }
+            } else if (type == RETURN_ENUM::RETURN_TYPE::INT || type == RETURN_ENUM::RETURN_TYPE::FLOAT){
+                float a = evalNum(args[0], interp);
+                float b = evalNum(args[2], interp);
+                if (args[1] == "=="){
+                    return a == b;
+                } else if (args[1] == "<"){
+                    return a < b;
+                } else if (args[1] == ">"){
+                    return a > b;
+                } else if (args[1] == "<="){
+                    return a <= b;
+                } else if (args[1] == ">="){
+                    return a >= b;
+                } else if (args[1] == "!="){
+                    return a != b;
+                }
+            } else { // bool
+                return interp->returnedVal.b;
+            }
+        }
     }
     return false;
 }
@@ -314,6 +440,17 @@ extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
             andOr += "o";
         } else if (interp->inBools(args[i])){
             parts.push_back(interp->booleans[args[i]]);
+        } else if (args[i][0] == 'p'){ // Function that returns bool
+            auto temp = interp->argcountForFunc;
+            auto temp1 = interp->funcNum;
+            auto temp2 = interp->argsPassedIn;
+            auto temp3 = interp->curlyBraceNum;
+            proccessLine(takeOffFrontChar(args[i])); // Run the function
+            interp->argcountForFunc = temp;
+            interp->funcNum = temp1;
+            interp->argsPassedIn = temp2;
+            interp->curlyBraceNum = temp3;
+            parts.push_back(interp->returnedVal.b);
         } else { // Evaluating the boolean expression
             std::string sTemp[3] = {args[i]};
             i++;
@@ -618,15 +755,15 @@ void slugReturn(std::string * args, Interpreter * interp){
     switch(args[0][0]){
         case 'i': // int
             interp->returnedVal.i = evalNum(args[1], interp);
-            interp->rt = INT;
+            interp->rt = RETURN_ENUM::INT;
             break;
         case 'f': // float
             interp->returnedVal.f = evalNum(args[1], interp);
-            interp->rt = FLOAT;
+            interp->rt = RETURN_ENUM::FLOAT;
             break;
         case 's': // String
             interp->returnedVal.s = getStrValOf(args[1], interp);
-            interp->rt = STRING;
+            interp->rt = RETURN_ENUM::STRING;
             break;
         case 'b': // Bool
             std::string temp[32];
@@ -634,7 +771,7 @@ void slugReturn(std::string * args, Interpreter * interp){
                 temp[i-1] = args[i];
             }
             interp->returnedVal.b = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
-            interp->rt = BOOL;
+            interp->rt = RETURN_ENUM::BOOL;
             break;
     }
     interp->isReturning = true;
@@ -643,16 +780,16 @@ void slugReturn(std::string * args, Interpreter * interp){
 
 void slugInto(std::string * args, Interpreter * interp){
     switch(interp->rt){
-        case INT:
+        case RETURN_ENUM::INT:
             interp->integers[args[0]] = interp->returnedVal.i;
             break;
-        case FLOAT:
+        case RETURN_ENUM::FLOAT:
             interp->floats[args[0]] = interp->returnedVal.f;
             break;
-        case STRING:
+        case RETURN_ENUM::STRING:
             interp->strings[args[0]] = interp->returnedVal.s;
             break;
-        case BOOL:
+        case RETURN_ENUM::BOOL:
             interp->booleans[args[0]] = interp->returnedVal.b;
             break;
     }
@@ -875,14 +1012,20 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     int tabLevel = 0;
     int spaceNum = 0;
     int pareNum = 0;
+    int braceNum = 0;
     bool seenParen = false;
+    bool seenBrace = false;
     bool definingFunc = false;
     bool stringExpression = false;
     bool stringString = false;
     for (unsigned int i = 0; i < passedInString.length(); i++){ // looping through string
-        if (passedInString[i] != ' ' && !isString && !seenParen && !stringExpression){
+        if (passedInString[i] != ' ' && !isString && !seenParen && !stringExpression && !seenBrace){
             charSeen = true;
             if (passedInString[i] == '"'){ // string started
+                if (token != ""){
+                    tokens.push_back(token);
+                    token = "";
+                }
                 token += '"';
                 isString = true;
             } else if (passedInString[i] == '#'){ // Comments and ignored characters
@@ -895,6 +1038,14 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 seenParen = true;
                 token += '(';
                 pareNum++;
+            } else if (passedInString[i] == '['){ // Getting val returned from a function
+                seenBrace = true;
+                if (token != ""){
+                    tokens.push_back(token);
+                    token = "";
+                }
+                token += '[';
+                braceNum++;
             } else if (passedInString[i] == '{'){ // Parameters for a function
                 definingFunc = true;
                 if (token != ""){
@@ -912,6 +1063,23 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 token += passedInString[i];
             } else {
                 isString = false;
+                if (token != ""){
+                    tokens.push_back(token);
+                    token = "";
+                }
+            }
+        } else if (seenBrace){
+            token += passedInString[i];
+            if (passedInString[i] == '['){
+                braceNum++;
+            } else if (passedInString[i] == ']'){
+                braceNum--;
+                if (braceNum == 0){
+                    seenBrace = false;
+                    token.pop_back(); // Taking off the ]
+                    tokens.push_back(token);
+                    token = "";
+                }
             }
         } else if (stringExpression){
             if (passedInString[i] != '%'){
@@ -942,7 +1110,6 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             if (passedInString[i] != '}'){
                 token += passedInString[i];
             } else {
-                std::cout << "TOKEN: " << token << std::endl;
                 tokens.push_back(takeOffFrontChar(token));
                 token = "";
                 definingFunc = false;
@@ -963,6 +1130,9 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     if (token != ""){
         tokens.push_back(token); // adding last token
     }
+    /*for (auto t : tokens){
+        std::cout << "TOKEN " << t << std::endl;
+    }*/
     curlyBraceNum = tabLevel;
     return tokens;
 }

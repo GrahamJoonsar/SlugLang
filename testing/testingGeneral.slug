@@ -1,8 +1,11 @@
-bool x true
+func thing {int queso}
+    println queso
+end
 
-if 1 > 0
-    while x
-        println i
-        println i
-        bool x false
-    endw
+func otter {}
+    return int 88
+end
+
+
+
+thing [otter]

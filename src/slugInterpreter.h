@@ -57,12 +57,14 @@ union VAL_RETURNED{
     ~VAL_RETURNED(){}
 };
 
-enum RETURN_TYPE{
-    INT,
-    FLOAT,
-    STRING,
-    BOOL
-};
+namespace RETURN_ENUM{
+    enum RETURN_TYPE{
+        INT,
+        FLOAT,
+        STRING,
+        BOOL
+    };
+}
 
 class WhileLoop{
     public:
@@ -112,7 +114,7 @@ class Interpreter{
         std::vector<std::string> includedFiles; // For checking if a file has been included
 
         VAL_RETURNED returnedVal;
-        RETURN_TYPE rt;
+        RETURN_ENUM::RETURN_TYPE rt;
         bool isReturning = false;
 
         VariableStack vstack;
