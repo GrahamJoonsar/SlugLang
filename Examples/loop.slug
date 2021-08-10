@@ -1,14 +1,8 @@
-int i 1
-
 println "Enter a top bound:"
 readInt topBound
 
-point l1
-
-printf "I is: " (topBound / i)
-eval i (i + 1)
-
-if i <= topBound
-    goto l1
+for int i 0 | i < topBound | incr i
+    printf "I is " i
+endw
 
 println "Loop is done"
