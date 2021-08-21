@@ -1,11 +1,13 @@
-func thing {int queso}
-    println queso
+func f {}
+    println "Called1"
+    if false
 end
 
-func otter {}
-    return int 88
-end
-
-
-
-thing [otter]
+if true
+    println "Called2"
+    f
+    println "Called3"
+    if true
+        println "called4"
+    else
+        println "called5"

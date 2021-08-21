@@ -28,7 +28,7 @@ func move {}
         mutate running
 
     # Getting the position where the player wants to move
-    exec % "getch m" py " " px " testCh" %
+    exec $ "getch m" py " " px " testCh" $
 
     if testCh == " " # Since the variables only change globally if mutated
         mutate px
@@ -44,7 +44,7 @@ while running
         string line "" # The current line
         for int j 0 | j < 20 | incr j # looping through columns
             # Getting the current character of the board
-            exec % "getch m" i " " j " CurrentChar" %
+            exec $ "getch m" i " " j " CurrentChar" $
             if py == i and px == j # If player at position
                 concat line "O" # Put the xharacter on the line
             else

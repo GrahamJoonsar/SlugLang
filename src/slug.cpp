@@ -124,12 +124,21 @@ extern void proccessLine(std::string line){
                 slugInterp.floats = slugInterp.float_temp;
                 slugInterp.strings = slugInterp.string_temp;
                 slugInterp.booleans = slugInterp.bool_temp;
+
+                for (int i = 1; i < 10; i++){
+                    slugInterp.curlyBraceLevel[i][0] = true;
+                    slugInterp.curlyBraceLevel[i][1] = true;
+                }
+
+                slugInterp.vstack.pop_back();
             }
         }
     } else if (slugInterp.isDefiningFunction){
-        if (line == "end"){ // End function
-            slugInterp.isDefiningFunction = false;
-            return;
+        if (line.length() >= 3){
+            if (line.substr(0, 3) == "end"){ // End function
+                slugInterp.isDefiningFunction = false;
+                return;
+            }
         }
         // Adding to the function and taking off the first 4 spaces
         if (line.length() > 4){
@@ -142,9 +151,6 @@ extern void proccessLine(std::string line){
                 slugInterp.wstack.addl(line);
             } else {
                 slugInterp.definingLoop = false;
-                for (auto t : slugInterp.wstack.back().linesOfLoop){
-                    //std::cout << "T: " << t << std::endl;
-                }
                 while(getBooleanValOf(slugInterp.wstack.back().booleanExpression, &slugInterp, slugInterp.wstack.back().length) && !slugInterp.breakingLoop){
                     for (auto l : slugInterp.wstack.back().linesOfLoop){
                         proccessLine(l);

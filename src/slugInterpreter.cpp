@@ -316,7 +316,7 @@ extern std::string getStrValOf(std::string val, Interpreter * interp){
                 break;
         }
         return valReturned;
-    } else if (val[0] == '%'){ // string literal
+    } else if (val[0] == '$'){ // string literal
         StringTokenization s;
         return s.EvalStringExpression(val, interp);
     } else {
@@ -339,7 +339,7 @@ bool evalBool(std::string * args, Interpreter * interp){
     if (interp->inBools(args[0])){
         return interp->booleans[args[0]];
     }
-    if (args[0][0] == '"' || interp->inStrings(args[0])){ // Comparison of string literal or string var
+    if (args[0][0] == '"' || interp->inStrings(args[0]) || args[0][0] == '$'){ // Comparison of string literal or string var
         std::string a = getStrValOf(args[0], interp);
         std::string b = getStrValOf(args[2], interp);
         if (args[1] == "=="){
@@ -440,7 +440,7 @@ extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
             andOr += "o";
         } else if (interp->inBools(args[i])){
             parts.push_back(interp->booleans[args[i]]);
-        } else if (args[i][0] == 'p'){ // Function that returns bool
+        } else if (args[i][0] == '['){ // Function that returns bool
             auto temp = interp->argcountForFunc;
             auto temp1 = interp->funcNum;
             auto temp2 = interp->argsPassedIn;
@@ -1052,9 +1052,9 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                     tokens.push_back(token);
                 }
                 token = "";
-            } else if (passedInString[i] == '%'){ // string expression
+            } else if (passedInString[i] == '$'){ // string expression
                 stringExpression = true;
-                token += '%';
+                token += '$';
             } else {
                 token += passedInString[i];
             }
@@ -1082,7 +1082,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 }
             }
         } else if (stringExpression){
-            if (passedInString[i] != '%'){
+            if (passedInString[i] != '$'){
                 if (passedInString[i] == '"'){
                     stringString = !stringString;
                 }
@@ -1091,7 +1091,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 if (!stringString){
                     stringExpression = false;
                 } else {
-                    token += '%';
+                    token += '$';
                 }
             }
         } else if (seenParen){
