@@ -1,9 +1,7 @@
 
 
-int number 77
+func yourMother {}
+    println
+end
 
-println number
-
-set number 45
-
-println number
+yourMother

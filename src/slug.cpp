@@ -14,6 +14,7 @@ extern std::string getStrValOf(std::string val, Interpreter * interp);
 extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc);
 
 extern void proccessLine(std::string line){
+    slugInterp.currentLineBeingProcessed = line;
     int amountOfTokens = 0;
     std::string args[32]; // Hopefully not more that 10 arguments
     std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);

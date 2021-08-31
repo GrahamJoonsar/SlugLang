@@ -312,7 +312,7 @@ extern std::string getStrValOf(std::string val, Interpreter * interp){
                 valReturned = interp->returnedVal.s;
                 break;
             case RETURN_ENUM::BOOL: // Why
-                valReturned = interp->returnedVal.b;
+                valReturned = std::to_string(interp->returnedVal.b);
                 break;
         }
         return valReturned;
@@ -548,6 +548,8 @@ void setSlug(std::string * args, Interpreter * interp){
             temp[i-1] = args[i];
         }
         interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
+    } else {
+        interp->callError(args[0] + " is not a variable in existence.");
     }
 }
 
@@ -1015,8 +1017,8 @@ bool Interpreter::inUFunctions(std::string potentialUFunc){
 }
 
 void Interpreter::callError(std::string errorMsg){
-    std::cout << "Error on line: " << lineNum + 1 << std::endl;
-    std::cout << fullFile[lineNum] << std::endl;
+    std::cout << "Error (around) line: " << lineNum + 1 << std::endl;
+    std::cout << currentLineBeingProcessed << std::endl;
     std::cout << errorMsg << std::endl;
     exit(EXIT_FAILURE); // Stopping the program
 }
