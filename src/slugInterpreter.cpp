@@ -535,6 +535,22 @@ void declareBool(std::string * args, Interpreter * interp){
     }
 }
 
+void setSlug(std::string * args, Interpreter * interp){
+    if (interp->inInts(args[0])){ // Setting an integer variable
+        interp->integers[args[0]] = evalNum(args[1], interp);
+    } else if (interp->inFloats(args[0])){
+        interp->floats[args[0]] = evalNum(args[1], interp);
+    } else if (interp->inStrings(args[0])){
+        interp->strings[args[0]] = getStrValOf(args[1], interp);
+    } else if (interp->inBools(args[0])){
+        std::string temp[32];
+        for (int i = 1; i < interp->argsPassedIn; i++){ // Collecting everything but the variable name
+            temp[i-1] = args[i];
+        }
+        interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
+    }
+}
+
 /* Getting user input */
 // Getting an int from the user
 void readInt(std::string * args, Interpreter * interp){
@@ -926,6 +942,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"float", 2, &declareFloat}); // the float declaration
     functions.push_back({"string", 2, &declareStr}); // the float declaration
     functions.push_back({"bool", -2, &declareBool}); // the boolean declaration
+    functions.push_back({"set", -2, &setSlug}); // the boolean declaration
     // Input functions
     functions.push_back({"readInt", 1, &readInt}); // reading an integer from the user
     functions.push_back({"readFloat", 1, &readFloat}); // reading a float from the user

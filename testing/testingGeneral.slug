@@ -1,13 +1,9 @@
-func f {}
-    println "Called1"
-    if false
-end
 
-if true
-    println "Called2"
-    f
-    println "Called3"
-    if true
-        println "called4"
-    else
-        println "called5"
+
+int number 77
+
+println number
+
+set number 45
+
+println number
