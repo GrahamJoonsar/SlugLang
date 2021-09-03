@@ -816,14 +816,15 @@ void slugInto(std::string * args, Interpreter * interp){
 // Changing a global variable inside a function
 void slugMutate(std::string * args, Interpreter * interp){
     for (int i = 0; i < interp->argsPassedIn; i++){
+        interp->mutatedVars.push_back(args[i]);
         if (interp->inInts(args[i])){
-            interp->int_temp[args[i]] = interp->integers[args[0]];
+            interp->int_temp[args[i]] = interp->integers[args[i]];
         } else if (interp->inFloats(args[i])){
-            interp->float_temp[args[i]] = interp->floats[args[0]];
+            interp->float_temp[args[i]] = interp->floats[args[i]];
         } else if (interp->inStrings(args[i])){
-            interp->string_temp[args[i]] = interp->strings[args[0]];
+            interp->string_temp[args[i]] = interp->strings[args[i]];
         } else if (interp->inBools(args[i])){
-            interp->bool_temp[args[i]] = interp->booleans[args[0]];
+            interp->bool_temp[args[i]] = interp->booleans[args[i]];
         }
     }
 }

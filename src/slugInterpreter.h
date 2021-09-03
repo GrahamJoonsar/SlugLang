@@ -112,6 +112,7 @@ class Interpreter{
         std::vector<UserDefinedFunction> UFunctions;
 
         std::vector<std::string> includedFiles; // For checking if a file has been included
+        std::vector<std::string> mutatedVars;
 
         VAL_RETURNED returnedVal;
         RETURN_ENUM::RETURN_TYPE rt;

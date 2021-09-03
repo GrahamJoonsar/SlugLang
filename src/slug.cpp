@@ -58,11 +58,6 @@ extern void proccessLine(std::string line){
                     slugInterp.string_temp = slugInterp.strings;
                     slugInterp.bool_temp = slugInterp.booleans;
                 }
-                // Including the global variables
-                slugInterp.integers = slugInterp.int_temp;
-                slugInterp.floats = slugInterp.float_temp;
-                slugInterp.strings = slugInterp.string_temp;
-                slugInterp.booleans = slugInterp.bool_temp;
 
                 // Checking if the correct amount of args is passed in
                 if (amountOfTokens - 1 > slugInterp.UFunctions[slugInterp.funcNum].argc){
@@ -121,17 +116,35 @@ extern void proccessLine(std::string line){
                 }
 
                 // So the mutate keyword works
-                slugInterp.integers = slugInterp.int_temp;
-                slugInterp.floats = slugInterp.float_temp;
-                slugInterp.strings = slugInterp.string_temp;
-                slugInterp.booleans = slugInterp.bool_temp;
+                if (slugInterp.vstack.length() == 1){ // Heading into global scope
+                    slugInterp.integers = slugInterp.int_temp;
+                    slugInterp.floats = slugInterp.float_temp;
+                    slugInterp.strings = slugInterp.string_temp;
+                    slugInterp.booleans = slugInterp.bool_temp;
+                    slugInterp.vstack.pop_back();
+                } else {
+                    slugInterp.vstack.pop_back();
+                    auto itemp = slugInterp.int_temp;
+                    auto ftemp = slugInterp.float_temp;
+                    auto stemp = slugInterp.string_temp;
+                    auto btemp = slugInterp.bool_temp;
+                    itemp.insert(slugInterp.integers.begin(), slugInterp.integers.end());
+                    slugInterp.integers = itemp;
+                    ftemp.insert(slugInterp.floats.begin(), slugInterp.floats.end());
+                    slugInterp.floats = ftemp;
+                    stemp.insert(slugInterp.strings.begin(), slugInterp.strings.end());
+                    slugInterp.strings = stemp;
+                    btemp.insert(slugInterp.booleans.begin(), slugInterp.booleans.end());
+                    slugInterp.booleans = btemp;
+                }
+
+
+                
 
                 for (int i = 1; i < 10; i++){
                     slugInterp.curlyBraceLevel[i][0] = true;
                     slugInterp.curlyBraceLevel[i][1] = true;
                 }
-
-                slugInterp.vstack.pop_back();
             }
         }
     } else if (slugInterp.isDefiningFunction){

@@ -1,7 +1,17 @@
+int j 121
 
-
-func yourMother {}
-    println
+func test2 {}
+    set j 999
+    mutate j
 end
 
-yourMother
+func test {}
+    int i 99
+    printf "I1: " i
+    test2
+    printf "J1: " j
+end
+
+println $ "J: " j $
+test
+println $ "J2: " j $
