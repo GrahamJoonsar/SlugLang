@@ -7,26 +7,34 @@
 extern void proccessLine(std::string line);
 
 /***** Standard functions *****/
+// Checks if the variable name passed in is an integer variable
 bool Interpreter::inInts(std::string potentialInt){
     return integers.find(potentialInt) != integers.end();
 }
 
+// Checks if the variable name passed in is a float variable
 bool Interpreter::inFloats(std::string potentialFloat){
     return floats.find(potentialFloat) != floats.end();
 }
 
+// Checks if the variable name passed in is a string variable
 bool Interpreter::inStrings(std::string potentialStr){
     return strings.find(potentialStr) != strings.end();
 }
 
+// Checks if the variable name passed in is a bool variable
 bool Interpreter::inBools(std::string potentialBool){
     return booleans.find(potentialBool) != booleans.end();
 }
 
+// Takes of the front character of a string
+// Used for taking off the characters that signify what type of token they are
+// like " ( and $
 std::string takeOffFrontChar(std::string str){
     return str.substr(1, str.length() - 1);
 }
 
+// Unused currently
 int getPrecedence(char op){
     if (op == '+' || op == '-'){
         return 1;
@@ -54,7 +62,7 @@ bool isValidVarName(std::string name){
     }
 }
 
-
+// Operates on a float that is passed in, used for math evaluations
 void operateOnAns(float * ans, char op, float num, Interpreter * interp){
     switch (op){
         case '+': // Addition
@@ -80,19 +88,21 @@ void operateOnAns(float * ans, char op, float num, Interpreter * interp){
     }
 }
 
+// Checks if the character passed in is an operator
 bool isOp(char op){
     return op == '+' || op == '-' || op == '*' || op == '/' || op == '%' || op == '^';
 }
 
+// The stack used for the shunting yard algorithm
 class NumberStack{
     private:
-        std::vector<float> stack;
+        std::vector<float> stack; // The actual stack
     public:
-        void push(std::string val, Interpreter * interp);
-        void push(float val){
+        void push(std::string val, Interpreter * interp); // Pushing onto the stack
+        void push(float val){ // Pushing onto the stack
             stack.push_back(val);
         }
-        float pop(){
+        float pop(){ // Popping off of the stack
             float temp = stack.back();
             stack.pop_back();
             return temp;
@@ -101,13 +111,13 @@ class NumberStack{
 
 // For tokenizing expressions
 std::vector<std::string> tinyTokenizer(std::string s){
-    bool alphanum = true;
-    bool parens = false;
+    bool alphanum = true; // Currently aplhanumeric
+    bool parens = false; // Inside of parentheses
     bool brace = false;
     int braceNum = 0;
     int parensNum = 0;
-    std::vector<std::string> tokens;
-    std::string current_token = "";
+    std::vector<std::string> tokens; // Tokens of the expression
+    std::string current_token = ""; // The current token
     s = s.substr(1, s.size() - 2); // Removing outer parentheses
     std::string truStr = "";
     for (unsigned int i = 0; i < s.size(); i++){if(s[i] != ' '){truStr+=s[i];}} // Removing spaces
@@ -235,10 +245,12 @@ extern float evalNum(std::string num, Interpreter * interp){
     return 0; // In case all else fails
 }
 
+// Pushing onto the stack
 void NumberStack::push(std::string val, Interpreter * interp){
     stack.push_back(evalNum(val, interp));
 }
 
+// For the $ "String1" "String2" $ concatenation
 class StringTokenization{
     public:
         std::vector<std::string> stringTokenizer(std::string val){
@@ -335,6 +347,7 @@ std::string StringTokenization::EvalStringExpression(std::string val, Interprete
     return base;
 }
 
+// Evaluating a boolean expression
 bool evalBool(std::string * args, Interpreter * interp){
     if (interp->inBools(args[0])){
         return interp->booleans[args[0]];
@@ -429,6 +442,7 @@ bool evalBool(std::string * args, Interpreter * interp){
     return false;
 }
 
+// Evaluating a complex string expression (and, or)
 extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
     bool temp = false;
     std::vector<bool> parts;
@@ -535,6 +549,8 @@ void declareBool(std::string * args, Interpreter * interp){
     }
 }
 
+// Setting the value of a variable so you doin't have to specify the type
+// (It must exist before though)
 void setSlug(std::string * args, Interpreter * interp){
     if (interp->inInts(args[0])){ // Setting an integer variable
         interp->integers[args[0]] = evalNum(args[1], interp);
@@ -574,7 +590,7 @@ void readStr(std::string * args, Interpreter * interp){ // The only way I could 
 }
 
 /* conditionals */
-// Takes one argument, a boolean variable
+// Takes one argument, a boolean expression
 void ifSlug(std::string * args, Interpreter * interp){
     interp->curlyBraceLevel[interp->curlyBraceNum + 1][1] = false;
     if (getBooleanValOf(args, interp, interp->argsPassedIn)){
@@ -585,6 +601,7 @@ void ifSlug(std::string * args, Interpreter * interp){
     }
 }
 
+// else if 
 void elseifSlug(std::string * args, Interpreter * interp){
     if (!interp->curlyBraceLevel[interp->curlyBraceNum + 1][1]){ // past if statement failed
         if (getBooleanValOf(args, interp, interp->argsPassedIn)){
@@ -598,6 +615,7 @@ void elseifSlug(std::string * args, Interpreter * interp){
     }
 }
 
+// Else
 void elseSlug(std::string * args, Interpreter * interp){
     if (!interp->curlyBraceLevel[interp->curlyBraceNum + 1][1]){ // past if statement failed
         interp->curlyBraceLevel[interp->curlyBraceNum + 1][0] = true;
@@ -606,16 +624,20 @@ void elseSlug(std::string * args, Interpreter * interp){
     }
 }
 
+// Deprecated
 void test(std::string * args, Interpreter * interp){
     std::cout << "Test" << std::endl;
 }
 
+// Just like the system command in c++
+// Takes in one string arg to execute in the console
 void slugSystem(std::string * args, Interpreter * interp){
     system(getStrValOf(args[0], interp).c_str());
 }
 
 /* String manipulation functions */
 // Standard sting concatenation
+// Concats the second string val (arg2) onto the string variable (arg1)
 void slugConcat(std::string * args, Interpreter * interp){
     std::string fullStr = interp->strings[args[0]];
     for (int i = 1; i < interp->argsPassedIn; i++){
@@ -625,6 +647,7 @@ void slugConcat(std::string * args, Interpreter * interp){
 }
 
 // Reversing the string passed in
+// Must be a string variable
 void reverseStr(std::string * args, Interpreter * interp){
     std::string reversedStr;
     std::string trueStr = getStrValOf(args[0], interp);
@@ -641,6 +664,7 @@ void strLength(std::string * args, Interpreter * interp){
     interp->integers[args[1]] = getStrValOf(args[0], interp).length();
 }
 
+// Gets a substr of a string first num is starting index, second num is ending index
 void slugSubstr(std::string * args, Interpreter * interp){
     std::string strVal = getStrValOf(args[0], interp);
     std::string result;
@@ -648,11 +672,12 @@ void slugSubstr(std::string * args, Interpreter * interp){
     interp->strings[args[1]] = result;
 }
 
-// Indexing a string
+// Indexing a string at the specific index
 void slugGetchar(std::string * args, Interpreter * interp){
     interp->strings[args[2]] = getStrValOf(args[0], interp)[(int)evalNum(args[1], interp)];
 }
 
+// Puts a newline in the console
 void slugNewline(std::string * args, Interpreter * interp){
     std::cout << std::endl;
 }
@@ -670,6 +695,7 @@ void evalSet(std::string * args, Interpreter * interp){
     }
 }
 
+// ++ operater
 void slugIncrement(std::string * args, Interpreter * interp){
     if (interp->inInts(args[0])){
         (interp->integers[args[0]]) = (interp->integers[args[0]]) + 1;
@@ -678,6 +704,7 @@ void slugIncrement(std::string * args, Interpreter * interp){
     }
 }
 
+// -- operator
 void slugDecrement(std::string * args, Interpreter * interp){
     if (interp->inInts(args[0])){
         (interp->integers[args[0]]) = (interp->integers[args[0]]) - 1;
@@ -735,6 +762,7 @@ void slugQuit(std::string * args, Interpreter * interp){
     exit(EXIT_SUCCESS);
 }
 
+// Gets parameter's types and names
 std::vector<std::string> funcTokenizer(std::string str){
     std::vector<std::string> tokens;
     std::string token;
@@ -762,13 +790,15 @@ void defineFunc(std::string * args, Interpreter * interp){
     if (args[1] == "}"){
         argc = 0;
     } else {
-        argc = params.size()/2;
+        argc = params.size()/2; // types and names / 2
     }
     auto func = UserDefinedFunction(argc, name, params);
     interp->UFunctions.push_back(func);
-    interp->isDefiningFunction = true;
+    interp->isDefiningFunction = true; // so proccessLine doesn't execute stuff in a function
 }
 
+// Returning a value from a 
+// Type must be specified in the return statement, not the function signature
 void slugReturn(std::string * args, Interpreter * interp){
     switch(args[0][0]){
         case 'i': // int
@@ -796,6 +826,9 @@ void slugReturn(std::string * args, Interpreter * interp){
     interp->breakingLoop = true;
 }
 
+// Getting a value returned from a function
+// Can be on the same line as the function called
+// abs -90 into var
 void slugInto(std::string * args, Interpreter * interp){
     switch(interp->rt){
         case RETURN_ENUM::INT:
@@ -830,6 +863,7 @@ void slugMutate(std::string * args, Interpreter * interp){
 }
 
 // File inclusion
+// Will not include the same file twice
 void slugInclude(std::string * args, Interpreter * interp){
     auto path = getStrValOf(args[0], interp);
     for (auto t : interp->includedFiles){ // So files aren't proccessed twice
@@ -852,6 +886,7 @@ void slugInclude(std::string * args, Interpreter * interp){
 }
 
 // Loops
+// Typical while loop, takes in boolean expression
 void slugWhile(std::string * args, Interpreter * interp){
     auto pargs = new std::string[interp->argsPassedIn]; // for the pointer
     for (int i = 0; i < interp->argsPassedIn; i++){
@@ -866,6 +901,11 @@ void slugWhile(std::string * args, Interpreter * interp){
     interp->definingLoop = true;
 }
 
+// Typical for loop
+// Variable name, boolean expression, action seperated by |
+// for int i 0 | i < 100 | incr i
+//     println i
+// endw
 void slugFor(std::string * args, Interpreter * interp){
     std::string set; // the int i part
     std::string booleanExpression; // i < num
@@ -910,6 +950,7 @@ void slugFor(std::string * args, Interpreter * interp){
     interp->wstack.push({pfargs, boolPartNum, true, action, tabs});
 }
 
+// Breaking out of a loop
 void slugBreak(std::string * args, Interpreter * interp){
     interp->breakingLoop = true;
 }
@@ -930,9 +971,11 @@ void slugExecute(std::string * args, Interpreter * interp){
 }
 
 /* Interpreter Functions */
+// Adding the functions to the interpreter
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // For negative argcounts, The number is the minimum amount of args that could be passed in
     curlyBraceLevel[0][0] = true; // When there are no curly braces
+    // Boolean constants
     booleans["true"] = true;
     booleans["false"] = false;
     /* standard functions */
@@ -940,7 +983,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"print", 1, &print}); // adding the print function
     functions.push_back({"println", 1, &println}); // adding the print function
     functions.push_back({"printf", -1, &slugPrintf}); // adding the printf function
-    // Declaration functions
+    // Variable functions
     functions.push_back({"int", 2, &declareInt}); // the int declaration.
     functions.push_back({"float", 2, &declareFloat}); // the float declaration
     functions.push_back({"string", 2, &declareStr}); // the float declaration
@@ -991,6 +1034,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"delete", -1, &slugDelete});
 }
 
+// Checking if in standard c++ slugLang audience
 bool Interpreter::inFunctions(std::string potentialFunc){
     int i = 0;
     for (Function fun : functions){
@@ -1004,6 +1048,7 @@ bool Interpreter::inFunctions(std::string potentialFunc){
     return false;
 }
 
+// For user defined functions
 bool Interpreter::inUFunctions(std::string potentialUFunc){
     int i = 0;
     for (UserDefinedFunction fun : UFunctions){
@@ -1017,6 +1062,7 @@ bool Interpreter::inUFunctions(std::string potentialUFunc){
     return false;
 }
 
+// For calling an error
 void Interpreter::callError(std::string errorMsg){
     std::cout << "Error (around) line: " << lineNum + 1 << std::endl;
     std::cout << currentLineBeingProcessed << std::endl;
@@ -1024,6 +1070,7 @@ void Interpreter::callError(std::string errorMsg){
     exit(EXIT_FAILURE); // Stopping the program
 }
 
+// Very complicated tokenization
 std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     std::vector<std::string> tokens;
     std::string token;
