@@ -24,8 +24,7 @@ func move {}
     elseif input == "d"
         incr px
     elseif input == "q"
-        set running false
-        mutate running
+        setm running false
 
     # Getting the position where the player wants to move
     exec $ "getch m" py " " px " testCh" $

@@ -23,16 +23,44 @@ extern void proccessLine(std::string line){
         for (int i = 0; i < amountOfTokens; i++){ // looping through tokens
             if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
                 if (slugInterp.argcountForFunc >= 0){ // not a variable argument amount
-                    if (slugInterp.argcountForFunc != amountOfTokens - 1 && currentLineTokens[i] != "into"){ // Wrong amount of arguments
-                        slugInterp.callError("Error: " + std::to_string(slugInterp.argcountForFunc) + 
-                        " arguments were expected, but " + std::to_string(amountOfTokens - 1) + 
-                        " were recieved.");
+                    bool goingInto = false;
+                    if (slugInterp.argcountForFunc != amountOfTokens - 1){ // Wrong amount of arguments
+                        if (amountOfTokens == slugInterp.argcountForFunc+3){
+                            if (currentLineTokens[slugInterp.argcountForFunc + 1] == "into"){
+                                goingInto = true;
+                            } else {
+                                slugInterp.callError("Error: " + std::to_string(slugInterp.argcountForFunc) + 
+                                " arguments were expected, but " + std::to_string(amountOfTokens - 1) + 
+                                " were recieved.");
+                            }
+                        } else {
+                            slugInterp.callError("Error: " + std::to_string(slugInterp.argcountForFunc) + 
+                            " arguments were expected, but " + std::to_string(amountOfTokens - 1) + 
+                            " were recieved.");
+                        }
                     }
                     for (int j = 0; j < slugInterp.argcountForFunc; j++){
                         i++;
                         args[j] = currentLineTokens[i];
                     }
                     slugInterp.functions[slugInterp.funcNum].actualFunc(args, &slugInterp); // calling the function the user wants
+                    if (goingInto){
+                        goingInto = false;
+                        switch(slugInterp.rt){
+                            case RETURN_ENUM::INT:
+                                slugInterp.integers[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.i;
+                                break;
+                            case RETURN_ENUM::FLOAT:
+                                slugInterp.floats[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.f;
+                                break;
+                            case RETURN_ENUM::STRING:
+                                slugInterp.strings[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.s;
+                                break;
+                            case RETURN_ENUM::BOOL:
+                                slugInterp.booleans[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.b;
+                                break;
+                        }
+                    }
                 } else { // variable arg amount
                     slugInterp.argsPassedIn = amountOfTokens - 1;
                     if (slugInterp.argsPassedIn < -slugInterp.argcountForFunc){ // Not enough arguments

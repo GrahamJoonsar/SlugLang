@@ -116,6 +116,50 @@ void setSlug(std::string * args, Interpreter * interp){
     }
 }
 
+// Changing a global variable inside a function
+void slugMutate(std::string * args, Interpreter * interp){
+    for (int i = 0; i < interp->argsPassedIn; i++){
+        if (interp->inInts(args[i])){
+            interp->int_temp[args[i]] = interp->integers[args[i]];
+        } else if (interp->inFloats(args[i])){
+            interp->float_temp[args[i]] = interp->floats[args[i]];
+        } else if (interp->inStrings(args[i])){
+            interp->string_temp[args[i]] = interp->strings[args[i]];
+        } else if (interp->inBools(args[i])){
+            interp->bool_temp[args[i]] = interp->booleans[args[i]];
+        }
+    }
+}
+
+void setAndMutateSlug(std::string * args, Interpreter * interp){
+    if (interp->inInts(args[0])){ // Setting an integer variable
+        interp->integers[args[0]] = evalNum(args[1], interp);
+    } else if (interp->inFloats(args[0])){
+        interp->floats[args[0]] = evalNum(args[1], interp);
+    } else if (interp->inStrings(args[0])){
+        interp->strings[args[0]] = getStrValOf(args[1], interp);
+    } else if (interp->inBools(args[0])){
+        std::string temp[32];
+        for (int i = 1; i < interp->argsPassedIn; i++){ // Collecting everything but the variable name
+            temp[i-1] = args[i];
+        }
+        interp->booleans[args[0]] = getBooleanValOf(temp, interp, interp->argsPassedIn - 1);
+    } else {
+        interp->callError(args[0] + " is not a variable in existence.");
+    }
+    // Mutating
+    int i = 0;
+    if (interp->inInts(args[i])){
+            interp->int_temp[args[i]] = interp->integers[args[i]];
+        } else if (interp->inFloats(args[i])){
+            interp->float_temp[args[i]] = interp->floats[args[i]];
+        } else if (interp->inStrings(args[i])){
+            interp->string_temp[args[i]] = interp->strings[args[i]];
+        } else if (interp->inBools(args[i])){
+            interp->bool_temp[args[i]] = interp->booleans[args[i]];
+        }
+}
+
 /* Getting user input */
 // Getting an int from the user
 void readInt(std::string * args, Interpreter * interp){
@@ -393,22 +437,6 @@ void slugInto(std::string * args, Interpreter * interp){
     }
 }
 
-// Changing a global variable inside a function
-void slugMutate(std::string * args, Interpreter * interp){
-    for (int i = 0; i < interp->argsPassedIn; i++){
-        interp->mutatedVars.push_back(args[i]);
-        if (interp->inInts(args[i])){
-            interp->int_temp[args[i]] = interp->integers[args[i]];
-        } else if (interp->inFloats(args[i])){
-            interp->float_temp[args[i]] = interp->floats[args[i]];
-        } else if (interp->inStrings(args[i])){
-            interp->string_temp[args[i]] = interp->strings[args[i]];
-        } else if (interp->inBools(args[i])){
-            interp->bool_temp[args[i]] = interp->booleans[args[i]];
-        }
-    }
-}
-
 // File inclusion
 // Will not include the same file twice
 void slugInclude(std::string * args, Interpreter * interp){
@@ -517,6 +545,19 @@ void slugExecute(std::string * args, Interpreter * interp){
     proccessLine(getStrValOf(args[0], interp));
 }
 
+void slugCheckType(std::string * args, Interpreter * interp){
+    interp->rt = RETURN_ENUM::RETURN_TYPE::STRING;
+    if (interp->inInts(getStrValOf(args[0], interp))){
+        interp->returnedVal.s = "i";
+    } else if (interp->inFloats(getStrValOf(args[0], interp))){
+        interp->returnedVal.s = "f";
+    } else if (interp->inStrings(getStrValOf(args[0], interp))){
+        interp->returnedVal.s = "s";
+    } else if (interp->inBools(getStrValOf(args[0], interp))){
+        interp->returnedVal.s = "b";
+    }
+}
+
 /* Interpreter Functions */
 // Adding the functions to the interpreter
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
@@ -535,7 +576,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.push_back({"float", 2, &declareFloat}); // the float declaration
     functions.push_back({"string", 2, &declareStr}); // the float declaration
     functions.push_back({"bool", -2, &declareBool}); // the boolean declaration
-    functions.push_back({"set", -2, &setSlug}); // the boolean declaration
+    functions.push_back({"set", -2, &setSlug}); // setting a variable to a value (must exist beforehand)
+    functions.push_back({"setm", 2, &setAndMutateSlug}); // setting a variable to a value (must exist beforehand)
     // Input functions
     functions.push_back({"readInt", 1, &readInt}); // reading an integer from the user
     functions.push_back({"readFloat", 1, &readFloat}); // reading a float from the user
@@ -578,5 +620,6 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Other stuff
     functions.push_back({"slug", 0, &dispSlug});
     functions.push_back({"exec", 1, &slugExecute});
+    functions.push_back({"getType", 1, &slugCheckType});
     functions.push_back({"delete", -1, &slugDelete});
 }
