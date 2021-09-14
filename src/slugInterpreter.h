@@ -16,6 +16,7 @@ struct Function{
         argc = _argc;
         actualFunc = func;
     }
+    Function(){}
 };
 
 struct UserDefinedFunction{
@@ -28,6 +29,7 @@ struct UserDefinedFunction{
         name = _name;
         params = _params;
     }
+    UserDefinedFunction(){}
 };
 
 struct ScopedVariables{
@@ -96,24 +98,22 @@ class WhileLoopStack{
 
 class Interpreter{
     public:
-        int argcountForFunc = 1;
         unsigned short int argsPassedIn = 1;
         unsigned int lineNum = 1;
         std::vector<std::string> fullFile;
 
-        unsigned int funcNum;
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
         std::string currentLineBeingProcessed;
         int curlyBraceNum = 0;
-        bool isValid = true;
-        std::vector<Function> functions; // standard functions for the interpreter
+        std::unordered_map<std::string, Function> functions; // standard functions for the interpreter
 
         bool isDefiningFunction = false;
-        std::vector<UserDefinedFunction> UFunctions;
+        std::unordered_map<std::string, UserDefinedFunction> UFunctions;
+        std::string currentFunctionName;
 
         std::vector<std::string> includedFiles; // For checking if a file has been included
-        std::vector<std::string> mutatedVars;
 
+        // How returning variables works
         VAL_RETURNED returnedVal;
         RETURN_ENUM::RETURN_TYPE rt;
         bool isReturning = false;
@@ -133,8 +133,6 @@ class Interpreter{
         std::unordered_map<std::string, float> float_temp;
         std::unordered_map<std::string, std::string> string_temp;
         std::unordered_map<std::string, bool> bool_temp;
-
-        std::unordered_map<std::string, unsigned int> pointNums;
 
         Interpreter();
 

@@ -376,6 +376,7 @@ std::vector<std::string> funcTokenizer(std::string str){
 /* Functions */
 void defineFunc(std::string * args, Interpreter * interp){
     auto name = args[0]; // function name
+    interp->currentFunctionName = name;
     auto params = funcTokenizer(args[1]);
     int argc;
     if (args[1] == "}"){
@@ -384,7 +385,7 @@ void defineFunc(std::string * args, Interpreter * interp){
         argc = params.size()/2; // types and names / 2
     }
     auto func = UserDefinedFunction(argc, name, params);
-    interp->UFunctions.push_back(func);
+    interp->UFunctions.insert({name, func});
     interp->isDefiningFunction = true; // so proccessLine doesn't execute stuff in a function
 }
 
@@ -477,8 +478,8 @@ void slugWhile(std::string * args, Interpreter * interp){
 }
 
 // Typical for loop
-// Variable name, boolean expression, action seperated by |
-// for int i 0 | i < 100 | incr i
+// Variable name, boolean expression, action seperated by ;
+// for int i 0 ; i < 100 ; incr i
 //     println i
 // endw
 void slugFor(std::string * args, Interpreter * interp){
@@ -490,7 +491,7 @@ void slugFor(std::string * args, Interpreter * interp){
     int boolStartIndex;
     int sepNum = 0; // Number of seperators
     for (int i = 0; i < interp->argsPassedIn; i++){
-        if (args[i] == "|"){ // Seperator
+        if (args[i] == ";"){ // Seperator
             sepNum++;
         } else {
             switch(sepNum){
@@ -566,60 +567,64 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Boolean constants
     booleans["true"] = true;
     booleans["false"] = false;
+
+    strings["newline"] = "\n";
+    strings["tab"] = "\t";
+
     /* standard functions */
     // print functions
-    functions.push_back({"print", 1, &print}); // adding the print function
-    functions.push_back({"println", 1, &println}); // adding the print function
-    functions.push_back({"printf", -1, &slugPrintf}); // adding the printf function
+    functions.insert({"print", Function{"print", 1, &print}}); // adding the print function
+    functions.insert({"println", Function{"println", 1, &println}}); // adding the print function
+    functions.insert({"printf", Function{"printf", -1, &slugPrintf}}); // adding the printf function
     // Variable functions
-    functions.push_back({"int", 2, &declareInt}); // the int declaration.
-    functions.push_back({"float", 2, &declareFloat}); // the float declaration
-    functions.push_back({"string", 2, &declareStr}); // the float declaration
-    functions.push_back({"bool", -2, &declareBool}); // the boolean declaration
-    functions.push_back({"set", -2, &setSlug}); // setting a variable to a value (must exist beforehand)
-    functions.push_back({"setm", 2, &setAndMutateSlug}); // setting a variable to a value (must exist beforehand)
+    functions.insert({"int", Function{"int", 2, &declareInt}}); // the int declaration.
+    functions.insert({"float", Function{"float", 2, &declareFloat}}); // the float declaration
+    functions.insert({"string", Function{"string", 2, &declareStr}}); // the float declaration
+    functions.insert({"bool", Function{"bool", -2, &declareBool}}); // the boolean declaration
+    functions.insert({"set", Function{"set", -2, &setSlug}}); // setting a variable to a value (must exist beforehand)
+    functions.insert({"setm", Function{"setm", 2, &setAndMutateSlug}}); // setting a variable to a value (must exist beforehand)
     // Input functions
-    functions.push_back({"readInt", 1, &readInt}); // reading an integer from the user
-    functions.push_back({"readFloat", 1, &readFloat}); // reading a float from the user
-    functions.push_back({"readStr", 1, &readStr}); // reading a string from the user
+    functions.insert({"readInt", Function{"readInt", 1, &readInt}}); // reading an integer from the user
+    functions.insert({"readFloat", Function{"readFloat", 1, &readFloat}}); // reading a float from the user
+    functions.insert({"readStr", Function{"readStr", 1, &readStr}}); // reading a string from the user
     /* Conditional functions */
-    functions.push_back({"if", -1, &ifSlug}); // the if statement 
-    functions.push_back({"elseif", -1, &elseifSlug}); // the else if statement
-    functions.push_back({"else", 0, &elseSlug}); // the else statement
+    functions.insert({"if", Function{"if", -1, &ifSlug}}); // the if statement 
+    functions.insert({"elseif", Function{"elseif", -1, &elseifSlug}}); // the else if statement
+    functions.insert({"else", Function{"else", 0, &elseSlug}}); // the else statement
     // Mathematical functions
-    functions.push_back({"eval", 2, &evalSet}); // Assigning the var to the expression
-    functions.push_back({"sqrt", 1, &slugSQRT}); // sqrts the variable passed in.
-    functions.push_back({"incr", 1, &slugIncrement}); // sqrts the variable passed in.
-    functions.push_back({"decr", 1, &slugDecrement}); // sqrts the variable passed in.
+    functions.insert({"eval", Function{"eval", 2, &evalSet}}); // Assigning the var to the expression
+    functions.insert({"sqrt", Function{"sqrt", 1, &slugSQRT}}); // sqrts the variable passed in.
+    functions.insert({"incr", Function{"incr", 1, &slugIncrement}}); // sqrts the variable passed in.
+    functions.insert({"decr", Function{"decr", 1, &slugDecrement}}); // sqrts the variable passed in.
     // String operations
-    functions.push_back({"concat", -2, &slugConcat}); // String concatenation
-    functions.push_back({"reverseStr", 1, &reverseStr}); // Reversing the string passed in
-    functions.push_back({"strLength", 2, &strLength}); // Getting the length of the string passed in
-    functions.push_back({"substr", 4, &slugSubstr}); // substr of a string passed in
-    functions.push_back({"getch", 3, &slugGetchar});
-    functions.push_back({"newl", 0, &slugNewline});
+    functions.insert({"concat", Function{"concat", -2, &slugConcat}}); // String concatenation
+    functions.insert({"reverseStr", Function{"reverseStr", 1, &reverseStr}}); // Reversing the string passed in
+    functions.insert({"strLength", Function{"strLength", 2, &strLength}}); // Getting the length of the string passed in
+    functions.insert({"substr", Function{"substr", 4, &slugSubstr}}); // substr of a string passed in
+    functions.insert({"getch", Function{"getch", 3, &slugGetchar}});
+    functions.insert({"newl", Function{"newl", 0, &slugNewline}});
     // Goto statements
     /*functions.push_back({"point", 1, &slugPoint});
     functions.push_back({"goto", 1, &slugGoto});*/
     // System commands
-    functions.push_back({"system", 1, &slugSystem});
-    functions.push_back({"quit", 0, &slugQuit});
+    functions.insert({"system", Function{"system", 1, &slugSystem}});
+    functions.insert({"quit", Function{"quit", 0, &slugQuit}});
     // Function functions
-    functions.push_back({"func", 2, &defineFunc});
-    functions.push_back({"return", -1, &slugReturn});
-    functions.push_back({"into", 1, &slugInto}); // Collects a returned val and puts it in a var
-    functions.push_back({"mutate", -1, &slugMutate}); // Changes a variable globally
-    // End is not technically a function, but a marker
+    functions.insert({"func", Function{"func", 2, &defineFunc}});
+    functions.insert({"return", Function{"return", -1, &slugReturn}});
+    functions.insert({"into", Function{"into", 1, &slugInto}}); // Collects a returned val and puts it in a var
+    functions.insert({"mutate", Function{"mutate", -1, &slugMutate}}); // Changes a variable globally
+    // End is inserti"hey", cally a function, but a marker
     // Loops
-    functions.push_back({"while", -1, &slugWhile});
-    functions.push_back({"for", -1, &slugFor});
-    functions.push_back({"break", 0, &slugBreak});
+    functions.insert({"while", Function{"while", -1, &slugWhile}});
+    functions.insert({"for", Function{"for", -1, &slugFor}});
+    functions.insert({"break", Function{"break", 0, &slugBreak}});
     //functions.push_back({"endw", 0, &slugEndWhile});
     // File functions
-    functions.push_back({"include", 1, &slugInclude});
+    functions.insert({"include", Function{"include", 1, &slugInclude}});
     // Other stuff
-    functions.push_back({"slug", 0, &dispSlug});
-    functions.push_back({"exec", 1, &slugExecute});
-    functions.push_back({"getType", 1, &slugCheckType});
-    functions.push_back({"delete", -1, &slugDelete});
+    functions.insert({"slug", Function{"slug", 0, &dispSlug}});
+    functions.insert({"exec", Function{"exec", 1, &slugExecute}});
+    functions.insert({"getType", Function{"getType", 1, &slugCheckType}});
+    functions.insert({"delete", Function{"delete", -1, &slugDelete}});
 }

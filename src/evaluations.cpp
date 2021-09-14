@@ -147,15 +147,7 @@ extern float evalNum(std::string num, Interpreter * interp){
         }
         return s.pop();
     } else if (num[0] == '['){// Function
-        auto temp = interp->argcountForFunc;
-        auto temp1 = interp->funcNum;
-        auto temp2 = interp->argsPassedIn;
-        auto temp3 = interp->curlyBraceNum;
         proccessLine(takeOffFrontChar(num)); // Run the function
-        interp->argcountForFunc = temp;
-        interp->funcNum = temp1;
-        interp->argsPassedIn = temp2;
-        interp->curlyBraceNum = temp3;
         switch (interp->rt){
             case RETURN_ENUM::RETURN_TYPE::INT:
                 return interp->returnedVal.i;
@@ -196,15 +188,7 @@ extern std::string getStrValOf(std::string val, Interpreter * interp){
     } else if (val[0] == '"'){ // string literal
         return takeOffFrontChar(val);
     } else if (val[0] == '['){ // string returned from a function
-        auto temp = interp->argcountForFunc;
-        auto temp1 = interp->funcNum;
-        auto temp2 = interp->argsPassedIn;
-        auto temp3 = interp->curlyBraceNum;
         proccessLine(takeOffFrontChar(val)); // Run the function
-        interp->argcountForFunc = temp;
-        interp->funcNum = temp1;
-        interp->argsPassedIn = temp2;
-        interp->curlyBraceNum = temp3;
         std::string valReturned;
         switch (interp->rt){ // Get whatever was returned
             case RETURN_ENUM::INT:
@@ -277,26 +261,10 @@ bool evalBool(std::string * args, Interpreter * interp){
         if (args[0][0] == '[' || args[2][0] == '['){
             RETURN_ENUM::RETURN_TYPE type;
             if (args[0][0] == '['){ // Getting the type to be compared
-                auto temp = interp->argcountForFunc;
-                auto temp1 = interp->funcNum;
-                auto temp2 = interp->argsPassedIn;
-                auto temp3 = interp->curlyBraceNum;
                 proccessLine(takeOffFrontChar(args[0])); // Run the function
-                interp->argcountForFunc = temp;
-                interp->funcNum = temp1;
-                interp->argsPassedIn = temp2;
-                interp->curlyBraceNum = temp3;
                 type = interp->rt;
             } else {
-                auto temp = interp->argcountForFunc;
-                auto temp1 = interp->funcNum;
-                auto temp2 = interp->argsPassedIn;
-                auto temp3 = interp->curlyBraceNum;
                 proccessLine(takeOffFrontChar(args[2])); // Run the function
-                interp->argcountForFunc = temp;
-                interp->funcNum = temp1;
-                interp->argsPassedIn = temp2;
-                interp->curlyBraceNum = temp3;
                 type = interp->rt;
             }
             if (type == RETURN_ENUM::RETURN_TYPE::STRING){
@@ -348,15 +316,7 @@ extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
         } else if (interp->inBools(args[i])){
             parts.push_back(interp->booleans[args[i]]);
         } else if (args[i][0] == '['){ // Function that returns bool
-            auto temp = interp->argcountForFunc;
-            auto temp1 = interp->funcNum;
-            auto temp2 = interp->argsPassedIn;
-            auto temp3 = interp->curlyBraceNum;
             proccessLine(takeOffFrontChar(args[i])); // Run the function
-            interp->argcountForFunc = temp;
-            interp->funcNum = temp1;
-            interp->argsPassedIn = temp2;
-            interp->curlyBraceNum = temp3;
             parts.push_back(interp->returnedVal.b);
         } else { // Evaluating the boolean expression
             std::string sTemp[3] = {args[i]};

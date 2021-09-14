@@ -1,0 +1,58 @@
+# A list implementaion
+# Reccomended that you make your own
+
+func list {string type string name int size}
+    # Initialzing the list
+    for int i 0 | i < size | incr i
+        exec $ "int " name "LIST_ELEMENT" i " 0" $
+        exec $ "mutate " name "LIST_ELEMENT" i $
+    endw
+end
+
+# Getting an element from a list
+func lget {string name int index}
+    # Get type of list
+    getType $ name "LIST_ELEMENT" 0 $ into type
+    if type == "i" # Int list
+        exec $ "return int " name "LIST_ELEMENT" index $
+    elseif type == "f" # Float list
+        exec $ "return float " name "LIST_ELEMENT" index $
+    elseif type == "s" # String list
+        exec $ "return string " name "LIST_ELEMENT" index $
+    elseif type == "b" # bool list
+        exec $ "return bool " name "LIST_ELEMENT" index $
+end
+
+func ilset {string name int index int val}
+    exec $ "setm " name "LIST_ELEMENT" index " " val $
+end
+
+func flset {string name int index float val}
+    # Get type of list
+    exec $ "setm " name "LIST_ELEMENT" index " " val $
+end
+
+func slset {string name int index string val}
+    # Get type of list
+    exec $ "setm " name "LIST_ELEMENT" index " " val $
+end
+
+func blset {string name int index bool val}
+    # Get type of list
+    exec $ "setm " name "LIST_ELEMENT" index " " val $
+end
+
+func test {}
+    exec $ "return" " int 99" $
+end
+
+list "int" "list" 10
+
+ilset "list" 0 419 
+ilset "list" 9 360
+
+lget "list" 0 into num
+
+
+println num
+println listLIST_ELEMENT9

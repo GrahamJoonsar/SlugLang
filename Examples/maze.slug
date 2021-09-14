@@ -24,8 +24,7 @@ func move {}
     elseif input == "d"
         incr px
     elseif input == "q"
-        bool running false
-        mutate running
+        setm running false # Setting and mutating running to false
 
     # Getting the position where the player wants to move
     exec $ "getch m" py " " px " testCh" $
@@ -40,9 +39,9 @@ func move {}
 end
 
 while running
-    for int i 0 | i < 8 | incr i
+    for int i 0 ; i < 8 ; incr i
         string line "" # The current line
-        for int j 0 | j < 20 | incr j # looping through columns
+        for int j 0 ; j < 20 ; incr j # looping through columns
             # Getting the current character of the board
             exec $ "getch m" i " " j " CurrentChar" $
             if py == i and px == j # If player at position
@@ -51,7 +50,7 @@ while running
                 #Adding it to the current line
                 concat line CurrentChar
         endw
-        println line
+        println line 
     endw
     move
     system "cls"

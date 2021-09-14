@@ -25,30 +25,12 @@ bool Interpreter::inBools(std::string potentialBool){
 
 // Checking if in standard c++ slugLang audience
 bool Interpreter::inFunctions(std::string potentialFunc){
-    int i = 0;
-    for (Function fun : functions){
-        if (potentialFunc == fun.name){
-            argcountForFunc = fun.argc;
-            funcNum = i;
-            return true;
-        }
-        i++;
-    }
-    return false;
+    return functions.find(potentialFunc) != functions.end();
 }
 
 // For user defined functions
 bool Interpreter::inUFunctions(std::string potentialUFunc){
-    int i = 0;
-    for (UserDefinedFunction fun : UFunctions){
-        if (potentialUFunc == fun.name){
-            argcountForFunc = fun.argc;
-            funcNum = i;
-            return true;
-        }
-        i++;
-    }
-    return false;
+    return UFunctions.find(potentialUFunc) != UFunctions.end();
 }
 
 // For calling an error
