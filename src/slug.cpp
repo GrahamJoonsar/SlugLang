@@ -10,6 +10,16 @@ extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
 extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc);
 
+bool notEndOfLoopLine(int lengthOfTabs, std::string line){
+    int firstCharSeen = -1;
+    for (int i = 0; i < line.length(); i++){
+        if (line[i] == ' ') continue;
+        firstCharSeen = i;
+        break;
+    }
+    return firstCharSeen >= lengthOfTabs || firstCharSeen == -1;
+}
+
 extern void proccessLine(std::string line){
     slugInterp.currentLineBeingProcessed = line;
     auto argsPITemp = slugInterp.argsPassedIn;
@@ -236,6 +246,8 @@ int main(int argc, char * argv[]){
     while (getline(inputFile, currentLine)){ // Looping through the file
         slugInterp.fullFile.push_back(currentLine);
     }
+
+    slugInterp.fullFile.push_back("###EOFSLUG###");
 
     // Closing the file
     inputFile.close();

@@ -13,7 +13,7 @@ int py 1
 
 bool running true
 
-func move {}
+func move ()
     readStr input
     if input == "w"
         decr py

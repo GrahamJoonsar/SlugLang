@@ -358,7 +358,7 @@ std::vector<std::string> funcTokenizer(std::string str){
     std::vector<std::string> tokens;
     std::string token;
     for (unsigned int i = 0; i < str.length(); i++){
-        if (str[i] != ' ' && str[i] != '}'){
+        if (str[i] != ' ' && str[i] != ')'){
             token += str[i];
         } else {
             if (token != ""){
@@ -379,7 +379,7 @@ void defineFunc(std::string * args, Interpreter * interp){
     interp->currentFunctionName = name;
     auto params = funcTokenizer(args[1]);
     int argc;
-    if (args[1] == "}"){
+    if (args[1] == ")"){
         argc = 0;
     } else {
         argc = params.size()/2; // types and names / 2
@@ -524,6 +524,14 @@ void slugFor(std::string * args, Interpreter * interp){
     proccessLine(set);
     interp->definingLoop = true;
     interp->wstack.push({pfargs, boolPartNum, true, action, tabs});
+}
+
+void slugNamespace(std::string * args, Interpreter * interp){
+    interp->namespaceNames.push_back(args[0]);
+}
+
+void slugEndNamespace(std::string * args, Interpreter * interp){
+    interp->namespaceNames.pop_back();
 }
 
 // Breaking out of a loop

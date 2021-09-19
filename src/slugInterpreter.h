@@ -134,6 +134,8 @@ class Interpreter{
         std::unordered_map<std::string, std::string> string_temp;
         std::unordered_map<std::string, bool> bool_temp;
 
+        std::vector<std::string> namespaceNames;
+
         Interpreter();
 
         bool inFunctions(std::string potentialFunc);

@@ -73,9 +73,17 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 curlyBraceNum = tabLevel;
                 return tokens; // Stop Tokenization
             } else if (passedInString[i] == '('){ // Expression
-                seenParen = true;
-                token += '(';
-                pareNum++;
+                if (tokens[0] == "func"){
+                    if (token != ""){
+                        tokens.push_back(token);
+                    }
+                    token = "";
+                    definingFunc = true;
+                } else {
+                    seenParen = true;
+                    token += '(';
+                    pareNum++;
+                }
             } else if (passedInString[i] == '['){ // Getting val returned from a function
                 seenBrace = true;
                 if (token != ""){
@@ -84,7 +92,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 }
                 token += '[';
                 braceNum++;
-            } else if (passedInString[i] == '{'){ // Parameters for a function
+            } else if (passedInString[i] == '{' && tokens[0] == "func"){ // Parameters for a function
                 definingFunc = true;
                 if (token != ""){
                     tokens.push_back(token);
@@ -145,7 +153,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 }
             }
         } else if (definingFunc){
-            if (passedInString[i] != '}'){
+            if (passedInString[i] != ')'){
                 token += passedInString[i];
             } else {
                 tokens.push_back(token.substr(1, token.length() - 1));

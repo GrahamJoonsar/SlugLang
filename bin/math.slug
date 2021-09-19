@@ -5,12 +5,12 @@ float E 2.718281 # Euler's number
 
 ## Functions that do modifications on the number ##
 # Returns the inverse of a number
-func inverse {float num}
+func inverse (float num)
     return float (1/num)
 end
 
 # Returns the absolute value of the number passed in
-func abs {float num}
+func abs (float num)
     if num < 0
         return float (0-num)
     else
@@ -18,12 +18,12 @@ func abs {float num}
 end
 
 # Rounds the float passed in down
-func round {float num}
+func round (float num)
     return int num
 end
 
 ## Returns the minimum of two numbers ##
-func min {float num1 float num2}
+func min (float num1 float num2)
     if num1 < num2
         return float num1
     else
@@ -31,7 +31,7 @@ func min {float num1 float num2}
 end
 
 ## Returns the maximum of two numbers ##
-func max {float num1 float num2}
+func max (float num1 float num2)
     if num1 > num2
         return float num1
     else
@@ -40,7 +40,7 @@ end
 
 # Returns the factorial of a number
 # (Recursion adds a lot of overhead)
-func factorial {int num}
+func factorial (int num)
     int ans num
     while num > 1
         decr num
@@ -52,24 +52,24 @@ end
 ## Functions that return a bool ##
 
 # checks if the number passed in is an even number
-func iseven {int num}  
+func iseven (int num) 
     return bool (num%2) == 0
 end
 
 # checks if the number passed in is negative
-func isneg {float num}
+func isneg (float num)
     return bool num < 0
 end
 
 ## Conversion Functions ##
 
 # Changes the degree to radians
-func radtodeg {float num}
+func radtodeg (float num)
     return float (num/PI*180)
 end
 
 # Changes the radian to degrees
-func degtorad {float num}
+func degtorad (float num)
     return float (num/180*PI)
 end
 
