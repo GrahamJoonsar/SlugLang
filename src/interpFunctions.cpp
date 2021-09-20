@@ -56,8 +56,19 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     bool definingFunc = false;
     bool stringExpression = false;
     bool stringString = false;
+    bool literalizing = false;
+    std::string variable = "";
     for (unsigned int i = 0; i < passedInString.length(); i++){ // looping through string
-        if (passedInString[i] != ' ' && !isString && !seenParen && !stringExpression && !seenBrace){
+        if (passedInString[i] == '{' && !isString){ 
+            literalizing = true;
+        } else if (literalizing){
+            if (passedInString[i] == '}'){
+                literalizing = false;
+                token += std::to_string((int)evalNum(variable, this));
+            } else {
+                variable += passedInString[i];
+            }
+        } else if (passedInString[i] != ' ' && !isString && !seenParen && !stringExpression && !seenBrace){
             charSeen = true;
             if (passedInString[i] == '"'){ // string started
                 if (token != ""){
@@ -72,7 +83,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 }
                 curlyBraceNum = tabLevel;
                 return tokens; // Stop Tokenization
-            } else if (passedInString[i] == '('){ // Expression
+            } else if (passedInString[i] == '('){ // Expression or defining function parameters
                 if (tokens[0] == "func"){
                     if (token != ""){
                         tokens.push_back(token);
@@ -92,18 +103,12 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 }
                 token += '[';
                 braceNum++;
-            } else if (passedInString[i] == '{' && tokens[0] == "func"){ // Parameters for a function
-                definingFunc = true;
-                if (token != ""){
-                    tokens.push_back(token);
-                }
-                token = "";
             } else if (passedInString[i] == '$'){ // string expression
                 stringExpression = true;
                 token += '$';
             } else {
                 token += passedInString[i];
-            }
+            } 
         } else if (isString){
             if (passedInString[i] != '"'){
                 token += passedInString[i];
@@ -176,6 +181,11 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     if (token != ""){
         tokens.push_back(token); // adding last token
     }
+
+    for (auto t : tokens){
+
+    }
+
     curlyBraceNum = tabLevel;
     return tokens;
 }

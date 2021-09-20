@@ -581,58 +581,58 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
 
     /* standard functions */
     // print functions
-    functions.insert({"print", Function{"print", 1, &print}}); // adding the print function
-    functions.insert({"println", Function{"println", 1, &println}}); // adding the print function
-    functions.insert({"printf", Function{"printf", -1, &slugPrintf}}); // adding the printf function
+    functions.insert({"print", {"print", 1, &print}}); // adding the print function
+    functions.insert({"println", {"println", 1, &println}}); // adding the print function
+    functions.insert({"printf", {"printf", -1, &slugPrintf}}); // adding the printf function
     // Variable functions
-    functions.insert({"int", Function{"int", 2, &declareInt}}); // the int declaration.
-    functions.insert({"float", Function{"float", 2, &declareFloat}}); // the float declaration
-    functions.insert({"string", Function{"string", 2, &declareStr}}); // the float declaration
-    functions.insert({"bool", Function{"bool", -2, &declareBool}}); // the boolean declaration
-    functions.insert({"set", Function{"set", -2, &setSlug}}); // setting a variable to a value (must exist beforehand)
-    functions.insert({"setm", Function{"setm", 2, &setAndMutateSlug}}); // setting a variable to a value (must exist beforehand)
+    functions.insert({"int", {"int", 2, &declareInt}}); // the int declaration.
+    functions.insert({"float", {"float", 2, &declareFloat}}); // the float declaration
+    functions.insert({"string", {"string", 2, &declareStr}}); // the float declaration
+    functions.insert({"bool", {"bool", -2, &declareBool}}); // the boolean declaration
+    functions.insert({"set", {"set", -2, &setSlug}}); // setting a variable to a value (must exist beforehand)
+    functions.insert({"setm", {"setm", 2, &setAndMutateSlug}}); // setting a variable to a value (must exist beforehand)
     // Input functions
-    functions.insert({"readInt", Function{"readInt", 1, &readInt}}); // reading an integer from the user
-    functions.insert({"readFloat", Function{"readFloat", 1, &readFloat}}); // reading a float from the user
-    functions.insert({"readStr", Function{"readStr", 1, &readStr}}); // reading a string from the user
+    functions.insert({"readInt", {"readInt", 1, &readInt}}); // reading an integer from the user
+    functions.insert({"readFloat", {"readFloat", 1, &readFloat}}); // reading a float from the user
+    functions.insert({"readStr", {"readStr", 1, &readStr}}); // reading a string from the user
     /* Conditional functions */
-    functions.insert({"if", Function{"if", -1, &ifSlug}}); // the if statement 
-    functions.insert({"elseif", Function{"elseif", -1, &elseifSlug}}); // the else if statement
-    functions.insert({"else", Function{"else", 0, &elseSlug}}); // the else statement
+    functions.insert({"if", {"if", -1, &ifSlug}}); // the if statement 
+    functions.insert({"elseif", {"elseif", -1, &elseifSlug}}); // the else if statement
+    functions.insert({"else", {"else", 0, &elseSlug}}); // the else statement
     // Mathematical functions
-    functions.insert({"eval", Function{"eval", 2, &evalSet}}); // Assigning the var to the expression
-    functions.insert({"sqrt", Function{"sqrt", 1, &slugSQRT}}); // sqrts the variable passed in.
-    functions.insert({"incr", Function{"incr", 1, &slugIncrement}}); // sqrts the variable passed in.
-    functions.insert({"decr", Function{"decr", 1, &slugDecrement}}); // sqrts the variable passed in.
+    functions.insert({"eval", {"eval", 2, &evalSet}}); // Assigning the var to the expression
+    functions.insert({"sqrt", {"sqrt", 1, &slugSQRT}}); // sqrts the variable passed in.
+    functions.insert({"incr", {"incr", 1, &slugIncrement}}); // sqrts the variable passed in.
+    functions.insert({"decr", {"decr", 1, &slugDecrement}}); // sqrts the variable passed in.
     // String operations
-    functions.insert({"concat", Function{"concat", -2, &slugConcat}}); // String concatenation
-    functions.insert({"reverseStr", Function{"reverseStr", 1, &reverseStr}}); // Reversing the string passed in
-    functions.insert({"strLength", Function{"strLength", 2, &strLength}}); // Getting the length of the string passed in
-    functions.insert({"substr", Function{"substr", 4, &slugSubstr}}); // substr of a string passed in
-    functions.insert({"getch", Function{"getch", 3, &slugGetchar}});
-    functions.insert({"newl", Function{"newl", 0, &slugNewline}});
+    functions.insert({"concat", {"concat", -2, &slugConcat}}); // String concatenation
+    functions.insert({"reverseStr", {"reverseStr", 1, &reverseStr}}); // Reversing the string passed in
+    functions.insert({"strLength", {"strLength", 2, &strLength}}); // Getting the length of the string passed in
+    functions.insert({"substr", {"substr", 4, &slugSubstr}}); // substr of a string passed in
+    functions.insert({"getch", {"getch", 3, &slugGetchar}});
+    functions.insert({"newl", {"newl", 0, &slugNewline}});
     // Goto statements
     /*functions.push_back({"point", 1, &slugPoint});
     functions.push_back({"goto", 1, &slugGoto});*/
     // System commands
-    functions.insert({"system", Function{"system", 1, &slugSystem}});
-    functions.insert({"quit", Function{"quit", 0, &slugQuit}});
+    functions.insert({"system", {"system", 1, &slugSystem}});
+    functions.insert({"quit", {"quit", 0, &slugQuit}});
     // Function functions
-    functions.insert({"func", Function{"func", 2, &defineFunc}});
-    functions.insert({"return", Function{"return", -1, &slugReturn}});
-    functions.insert({"into", Function{"into", 1, &slugInto}}); // Collects a returned val and puts it in a var
-    functions.insert({"mutate", Function{"mutate", -1, &slugMutate}}); // Changes a variable globally
+    functions.insert({"func", {"func", 2, &defineFunc}});
+    functions.insert({"return", {"return", -1, &slugReturn}});
+    functions.insert({"into", {"into", 1, &slugInto}}); // Collects a returned val and puts it in a var
+    functions.insert({"mutate", {"mutate", -1, &slugMutate}}); // Changes a variable globally
     // End is inserti"hey", cally a function, but a marker
     // Loops
-    functions.insert({"while", Function{"while", -1, &slugWhile}});
-    functions.insert({"for", Function{"for", -1, &slugFor}});
-    functions.insert({"break", Function{"break", 0, &slugBreak}});
+    functions.insert({"while", {"while", -1, &slugWhile}});
+    functions.insert({"for", {"for", -1, &slugFor}});
+    functions.insert({"break", {"break", 0, &slugBreak}});
     //functions.push_back({"endw", 0, &slugEndWhile});
     // File functions
-    functions.insert({"include", Function{"include", 1, &slugInclude}});
+    functions.insert({"include", {"include", 1, &slugInclude}});
     // Other stuff
-    functions.insert({"slug", Function{"slug", 0, &dispSlug}});
-    functions.insert({"exec", Function{"exec", 1, &slugExecute}});
-    functions.insert({"getType", Function{"getType", 1, &slugCheckType}});
-    functions.insert({"delete", Function{"delete", -1, &slugDelete}});
+    functions.insert({"slug", {"slug", 0, &dispSlug}});
+    functions.insert({"exec", {"exec", 1, &slugExecute}});
+    functions.insert({"getType", {"getType", 1, &slugCheckType}});
+    functions.insert({"delete", {"delete", -1, &slugDelete}});
 }
