@@ -273,6 +273,10 @@ void slugNewline(std::string * args, Interpreter * interp){
     std::cout << std::endl;
 }
 
+void slugSetChar(std::string * args, Interpreter * interp){
+    interp->strings[args[0]][(int)evalNum(args[1], interp)] = getStrValOf(args[2], interp)[0];
+}
+
 // The function that performs mathematical operations
 // does not do PEMDAS, but goes from left to right
 // This includes the variable that it is going to in the assignment
@@ -610,6 +614,7 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.insert({"strLength", {"strLength", 2, &strLength}}); // Getting the length of the string passed in
     functions.insert({"substr", {"substr", 4, &slugSubstr}}); // substr of a string passed in
     functions.insert({"getch", {"getch", 3, &slugGetchar}});
+    functions.insert({"setch", {"setch", 3, &slugSetChar}});
     functions.insert({"newl", {"newl", 0, &slugNewline}});
     // Goto statements
     /*functions.push_back({"point", 1, &slugPoint});
