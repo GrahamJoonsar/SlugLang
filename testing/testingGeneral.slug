@@ -1,11 +1,7 @@
-include "Examples/lists.slug"
+string p[99] "HELLOWORLD"
 
-list "i" "list1" 100
+int l[0] 99
 
-for int i 0 ; i < 100 ; incr i
-    set list1{i} (i+1)
-endw
+int i[0] 0
 
-println list1{99}
-
-println "{list10}"
+println p[l[i[0]]]

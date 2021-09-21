@@ -41,6 +41,32 @@ void Interpreter::callError(std::string errorMsg){
     exit(EXIT_FAILURE); // Stopping the program
 }
 
+std::string getTrueIndex(std::string variable, Interpreter * interp){
+    auto trueStr = variable.substr(1, variable.length() - 2);
+    bool brace = false;
+    int bnum = 0;
+    std::string result = "";
+    std::string temp = "";
+    for (int i = 0; i < trueStr.length(); i++){
+        if (trueStr[i] != '[' && !brace){
+            result += trueStr[i];
+        } else if (trueStr[i] == '['){
+            temp += '[';
+            brace = true;
+            bnum++;
+        } else if (trueStr[i] == ']'){
+            temp += ']';
+            bnum--;
+            if (bnum == 0){
+                brace = false;
+                result += std::to_string((int)evalNum(getTrueIndex(temp, interp), interp));
+                temp = "";
+            }
+        }
+    }
+    return std::to_string((int)evalNum(result, interp));
+}
+
 // Very complicated tokenization
 std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     std::vector<std::string> tokens;
@@ -59,12 +85,25 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     bool literalizing = false;
     std::string variable = "";
     for (unsigned int i = 0; i < passedInString.length(); i++){ // looping through string
-        if (passedInString[i] == '{' && !isString){ 
+        if (passedInString[i] == '[' && !isString){ 
+            if (!literalizing){
+                variable = '[';
+            } else {
+                variable += '[';
+            }
             literalizing = true;
+            braceNum++;
         } else if (literalizing){
-            if (passedInString[i] == '}'){
-                literalizing = false;
-                token += std::to_string((int)evalNum(variable, this));
+            if (passedInString[i] == ']'){
+                braceNum--;
+                variable += ']';
+                if (braceNum == 0){
+                    literalizing = false;
+                    token += getTrueIndex(variable, this);
+                }
+            } else if (passedInString[i] == '['){
+                braceNum++;
+                variable += '[';
             } else {
                 variable += passedInString[i];
             }
@@ -95,14 +134,6 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                     token += '(';
                     pareNum++;
                 }
-            } else if (passedInString[i] == '['){ // Getting val returned from a function
-                seenBrace = true;
-                if (token != ""){
-                    tokens.push_back(token);
-                    token = "";
-                }
-                token += '[';
-                braceNum++;
             } else if (passedInString[i] == '$'){ // string expression
                 stringExpression = true;
                 token += '$';
