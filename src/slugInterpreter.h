@@ -96,6 +96,11 @@ class WhileLoopStack{
     void addl(std::string l);
 };
 
+struct LineInfo{
+    std::vector<std::string> tokens;
+    int tablevel;
+};
+
 class Interpreter{
     public:
         unsigned short int argsPassedIn = 1;
@@ -135,6 +140,9 @@ class Interpreter{
         std::unordered_map<std::string, bool> bool_temp;
 
         std::vector<std::string> namespaceNames;
+
+        bool remembering = false;
+        std::unordered_map<std::string, LineInfo> rememberedLines;
 
         Interpreter();
 

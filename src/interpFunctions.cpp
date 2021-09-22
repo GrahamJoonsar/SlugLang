@@ -69,6 +69,11 @@ std::string getTrueIndex(std::string variable, Interpreter * interp){
 
 // Very complicated tokenization
 std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
+    if (passedInString == ""){return {};}
+    if (remembering && rememberedLines.find(passedInString) != rememberedLines.end()){
+        curlyBraceNum = rememberedLines[passedInString].tablevel;
+        return rememberedLines[passedInString].tokens;
+    }
     std::vector<std::string> tokens;
     std::string token;
     bool isString = false;
@@ -119,6 +124,9 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
             } else if (passedInString[i] == '#'){ // Comments and ignored characters
                 if (token != ""){
                     tokens.push_back(token);
+                }
+                if (remembering && passedInString.find('[') == std::string::npos){
+                    rememberedLines[passedInString] = LineInfo{tokens, tabLevel};
                 }
                 curlyBraceNum = tabLevel;
                 return tokens; // Stop Tokenization
@@ -213,8 +221,8 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
         tokens.push_back(token); // adding last token
     }
 
-    for (auto t : tokens){
-
+    if (remembering && passedInString.find('[') == std::string::npos){
+        rememberedLines[passedInString] = LineInfo{tokens, tabLevel};
     }
 
     curlyBraceNum = tabLevel;

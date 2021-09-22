@@ -571,6 +571,16 @@ void slugCheckType(std::string * args, Interpreter * interp){
     }
 }
 
+// Makes the interpreter remember lines so it doesn't have to retokenize it
+void slugRemember(std::string * args, Interpreter * interp){
+    interp->remembering = true;
+}
+
+void slugForget(std::string * args, Interpreter * interp){
+    interp->remembering = false;
+    interp->rememberedLines.clear();
+}
+
 /* Interpreter Functions */
 // Adding the functions to the interpreter
 Interpreter::Interpreter(){ // whenever an interpreter is initiated
@@ -640,4 +650,6 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     functions.insert({"exec", {"exec", 1, &slugExecute}});
     functions.insert({"getType", {"getType", 1, &slugCheckType}});
     functions.insert({"delete", {"delete", -1, &slugDelete}});
+    functions.insert({"remember", {"remember", 0, &slugRemember}});
+    functions.insert({"forget", {"forget", 0, &slugForget}});
 }
