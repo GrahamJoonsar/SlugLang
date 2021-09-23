@@ -2,7 +2,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cstring>
 #include "slugInterpreter.h"
+#include "slugCompilation.h"
 
 Interpreter slugInterp;
 
@@ -224,9 +226,22 @@ extern void proccessLine(std::string line){
     slugInterp.curlyBraceNum = cbnTemp;
 }
 
+// Turning slug programs to c++
+std::string slugToCpp(std::vector<std::string> tokens){
+    if (tokens.size() == 0) return "";
+    if (compedLines.find(tokens[0]) != compedLines.end()){
+        return compedLines[tokens[0]](tokens, &slugInterp);
+    } else {
+        std::cout << "Unrecognized command for compilation." << std::endl;
+        std::cout << "'" << tokens[0] << "' is not recognized." << std::endl;
+        exit(EXIT_SUCCESS);
+        return "";
+    }
+}
+
 int main(int argc, char * argv[]){
     // Reading the command line arguments
-    if (argc != 2){
+    if (argc != 3){
         std::cout << "Invalid command line arguments" << std::endl;
         return 8; // error
     }
@@ -252,7 +267,41 @@ int main(int argc, char * argv[]){
     // Closing the file
     inputFile.close();
 
-    for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
-        proccessLine(slugInterp.fullFile[slugInterp.lineNum]);
+    if (argv[2][0] == 'i'){ // Interpreted
+        for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
+            proccessLine(slugInterp.fullFile[slugInterp.lineNum]);
+        }
+    } else if (argv[2][0] == 'c'){ // Compiled
+        initCompilation(); // Initializing all of the slug to cpp commands
+        argv[1][strlen(argv[1])-5] = '\0'; // taking off the .slug postfix
+        const char * outPutFileName = argv[1]; // name of file
+        std::ofstream cppSourceFile; // The output file
+        cppSourceFile.open(strcat(argv[1], ".cpp"), std::ios_base::trunc); // Opening the file and erasing everything in it
+        // Adding libraries
+        cppSourceFile << "#include <iostream>\n"; 
+        cppSourceFile << "#include <string>\n";
+        cppSourceFile << "#include <cmath>\n";
+        // Main function
+        cppSourceFile << "int main(void){\n";
+        for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
+            cppSourceFile << slugToCpp(slugInterp.tokenizer(slugInterp.fullFile[slugInterp.lineNum])) << '\n';
+        }
+        // End of main function
+        cppSourceFile << "}\n";
+        // Closing the file
+        cppSourceFile.close();
+        // Making the compiler command
+        char command[256] = "g++ ";
+        strcat(command, argv[1]);
+        // Taking off .cpp postfix
+        argv[1][strlen(argv[1])-4] = '\0';
+        strcat(command, " -o ");
+        strcat(command, argv[1]);
+        strcat(command, ".exe");
+        // Compiling
+        system(command);
+        // Removing cpp src file
+        strcat(argv[1], ".cpp");
+        remove(argv[1]);
     }
 }
