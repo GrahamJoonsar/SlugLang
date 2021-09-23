@@ -1,1 +1,3 @@
-println "Hello World"
+bool num false or true
+
+println num

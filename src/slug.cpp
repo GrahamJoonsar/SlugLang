@@ -302,6 +302,6 @@ int main(int argc, char * argv[]){
         system(command);
         // Removing cpp src file
         strcat(argv[1], ".cpp");
-        remove(argv[1]);
+        //remove(argv[1]);
     }
 }

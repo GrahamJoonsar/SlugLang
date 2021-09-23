@@ -52,7 +52,15 @@ std::string getCPPStrValOf(std::string s, Interpreter * interp){
         return s;
     }
 }
+std::string getCppNumValOf(std::string s){
+    if (s[0] == '('){
+        return s.substr(1, s.length() - 2);
+    } else {
+        return s;
+    }
+}
 
+// Outputting to the console
 std::string printComp(std::vector<std::string> tokens, Interpreter * interp){
     return "std::cout << " + getCPPStrValOf(tokens[1], interp) + ";";
 }
@@ -61,7 +69,40 @@ std::string printlnComp(std::vector<std::string> tokens, Interpreter * interp){
     return "std::cout << " + getCPPStrValOf(tokens[1], interp) + " << std::endl;";
 }
 
+// Declaring variables
+std::string intComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "int " + tokens[1] + " = " + tokens[2] + ";";
+}
+
+std::string floatComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "float " + tokens[1] + " = (float)" + getCppNumValOf(tokens[2]) + ";";
+}
+
+std::string stringComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "std::string " + tokens[1] + " = " + getCPPStrValOf(tokens[2], interp) + ";";
+}
+
+std::string boolComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = "bool " + tokens[1] + " = ";
+    for (int i = 2; i < tokens.size(); i++){
+        if (tokens[i] == "and"){
+            temp += "&&";
+        } else if (tokens[i] == "or"){
+            temp += "||";
+        } else {
+            temp += tokens[i];
+        }
+    }
+    return temp + ';';
+}
+
 extern void initCompilation(){
+    // Output
     compedLines.insert({"print", printComp});
     compedLines.insert({"println", printlnComp});
+    // Variable declaration
+    compedLines.insert({"int", intComp});
+    compedLines.insert({"float", floatComp});
+    compedLines.insert({"string", stringComp});
+    compedLines.insert({"bool", boolComp});
 }
