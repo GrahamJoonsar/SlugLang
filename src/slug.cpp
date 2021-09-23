@@ -284,7 +284,7 @@ int main(int argc, char * argv[]){
         // Main function
         cppSourceFile << "int main(void){\n";
         for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
-            cppSourceFile << slugToCpp(slugInterp.tokenizer(slugInterp.fullFile[slugInterp.lineNum])) << '\n';
+            cppSourceFile << "    " << slugToCpp(slugInterp.tokenizer(slugInterp.fullFile[slugInterp.lineNum])) << '\n';
         }
         // End of main function
         cppSourceFile << "}\n";

@@ -4,7 +4,7 @@
 #include "slugInterpreter.h"
 #include "slugCompilation.h"
 
-extern std::unordered_map<std::string, std::string (*)(std::vector<std::string>, Interpreter*)> compedLines = {};
+std::unordered_map<std::string, std::string (*)(std::vector<std::string>, Interpreter*)> compedLines = {};
 
 std::vector<std::string> stringTokenizer(std::string val, Interpreter * interp){
     std::vector<std::string> tokens;
@@ -38,35 +38,42 @@ std::vector<std::string> stringTokenizer(std::string val, Interpreter * interp){
     return tokens;
 }
 
-std::string getCPPStrValOf(std::string s, Interpreter * interp){
+std::string getCPPValOf(std::string s, Interpreter * interp){
     if (s[0] == '"'){ // Literal
         return s + '"';
     } else if (s[0] == '$'){ // Concatenation
         std::string base = "";
         auto tokens = stringTokenizer(s.substr(1, s.length() - 1), interp);
         for (auto t : tokens){
-            base += getCPPStrValOf(t, interp);
+            base += getCPPValOf(t, interp);
         }
         return base;
-    } else { // Variable name
-        return s;
-    }
-}
-std::string getCppNumValOf(std::string s){
-    if (s[0] == '('){
+    } else if (s[0] == '('){
         return s.substr(1, s.length() - 2);
-    } else {
+    } else if (s == "and"){
+        return "&&";
+    } else if (s == "or"){
+        return "||";
+    } else { // Variable name
         return s;
     }
 }
 
 // Outputting to the console
 std::string printComp(std::vector<std::string> tokens, Interpreter * interp){
-    return "std::cout << " + getCPPStrValOf(tokens[1], interp) + ";";
+    return "std::cout << " + getCPPValOf(tokens[1], interp) + ";";
 }
 
 std::string printlnComp(std::vector<std::string> tokens, Interpreter * interp){
-    return "std::cout << " + getCPPStrValOf(tokens[1], interp) + " << std::endl;";
+    return "std::cout << " + getCPPValOf(tokens[1], interp) + " << std::endl;";
+}
+
+std::string printfComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = "std::cout << ";
+    for (int i = 1; i < tokens.size(); i++){
+        temp += getCPPValOf(tokens[i], interp) + " << ";
+    }
+    return temp + "std::endl;";
 }
 
 // Declaring variables
@@ -75,11 +82,11 @@ std::string intComp(std::vector<std::string> tokens, Interpreter * interp){
 }
 
 std::string floatComp(std::vector<std::string> tokens, Interpreter * interp){
-    return "float " + tokens[1] + " = (float)" + getCppNumValOf(tokens[2]) + ";";
+    return "float " + tokens[1] + " = (float)" + getCPPValOf(tokens[2], interp) + ";";
 }
 
 std::string stringComp(std::vector<std::string> tokens, Interpreter * interp){
-    return "std::string " + tokens[1] + " = " + getCPPStrValOf(tokens[2], interp) + ";";
+    return "std::string " + tokens[1] + " = " + getCPPValOf(tokens[2], interp) + ";";
 }
 
 std::string boolComp(std::vector<std::string> tokens, Interpreter * interp){
@@ -90,19 +97,99 @@ std::string boolComp(std::vector<std::string> tokens, Interpreter * interp){
         } else if (tokens[i] == "or"){
             temp += "||";
         } else {
-            temp += tokens[i];
+            temp += getCPPValOf(tokens[i], interp);
         }
     }
     return temp + ';';
 }
 
+// Setting (assignment)
+std::string setAndSetmComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = tokens[1] + " = ";
+    for (int i = 2; i < tokens.size(); i++){
+        temp += getCPPValOf(tokens[i], interp);
+    }
+    return temp + ';';
+}
+
+std::string incrAndDecrComp(std::vector<std::string> tokens, Interpreter * interp){
+    if (tokens[0] == "incr"){
+        return tokens[1] + "++;";
+    } else { // decr
+        return tokens[1] + "--;";
+    }
+}
+
+std::string readComp(std::vector<std::string> tokens, Interpreter * interp){
+    if (tokens[0] == "readInt" || tokens[0] == "readFloat"){
+        return "std::cin >> " + tokens[1] + ';';
+    } else { // readStr
+        std::string temp = "while(std::getline(std::cin, " + tokens[1] + ")){\nif (";
+        return temp + tokens[1] + " != \"\"){break;}\n}";
+    }
+}
+
+std::string whileComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = "while(";
+    for (int i = 1; i < tokens.size(); i++){
+        temp += getCPPValOf(tokens[i], interp);
+    }
+    return temp + "){";
+}
+
+std::string forComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = "for(";
+    std::vector<std::string> set;
+    std::string check;
+    std::vector<std::string> action;
+    int part = 0;
+    for (int i = 1; i < tokens.size(); i++){
+        if (tokens[i] == ";"){
+            part++;
+            continue;
+        }
+        if (part == 0){
+            set.push_back(tokens[i]);
+        } else if (part == 1){
+            check += getCPPValOf(tokens[i], interp) + ' ';
+        } else {
+            action.push_back(tokens[i]);
+        }
+    }
+    auto sAction = slugToCpp(action);
+    sAction.erase(sAction.size() - 1);
+    return temp + slugToCpp(set) + check + ';' + sAction + "){";
+}
+
+std::string endAndEndwComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "}";
+}
+
+// For functions that can't be implemented in c++
+std::string emptyComp(std::vector<std::string> tokens, Interpreter * interp){}
+
 extern void initCompilation(){
     // Output
     compedLines.insert({"print", printComp});
     compedLines.insert({"println", printlnComp});
-    // Variable declaration
+    compedLines.insert({"printf", printfComp});
+    // Variable declaration and assignment
     compedLines.insert({"int", intComp});
     compedLines.insert({"float", floatComp});
     compedLines.insert({"string", stringComp});
     compedLines.insert({"bool", boolComp});
+    compedLines.insert({"set", setAndSetmComp});
+    compedLines.insert({"setm", setAndSetmComp});
+    // Getting input
+    compedLines.insert({"readInt", readComp});
+    compedLines.insert({"readFloat", readComp});
+    compedLines.insert({"readStr", readComp});
+    // Math
+    compedLines.insert({"incr", incrAndDecrComp});
+    compedLines.insert({"decr", incrAndDecrComp});
+    // Loops
+    compedLines.insert({"while", whileComp});
+    compedLines.insert({"for", forComp});
+    compedLines.insert({"end", endAndEndwComp});
+    compedLines.insert({"endw", endAndEndwComp});
 }
