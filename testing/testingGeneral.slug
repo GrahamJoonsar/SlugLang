@@ -1,5 +1,3 @@
-for int i 0 ; i < 100 ; incr i
-    for int j 0 ; j < 100 ; incr j
-        printf "I: " i " J: " j
-    endw
-endw
+string s "HELLO"
+concat s " WORLD"
+println s

@@ -124,8 +124,8 @@ std::string readComp(std::vector<std::string> tokens, Interpreter * interp){
     if (tokens[0] == "readInt" || tokens[0] == "readFloat"){
         return "std::cin >> " + tokens[1] + ';';
     } else { // readStr
-        std::string temp = "while(std::getline(std::cin, " + tokens[1] + ")){\nif (";
-        return temp + tokens[1] + " != \"\"){break;}\n}";
+        std::string temp = "while(std::getline(std::cin, " + tokens[1] + ")){if (";
+        return temp + tokens[1] + " != \"\"){break;}}";
     }
 }
 
@@ -165,8 +165,36 @@ std::string endAndEndwComp(std::vector<std::string> tokens, Interpreter * interp
     return "}";
 }
 
-// For functions that can't be implemented in c++
-std::string emptyComp(std::vector<std::string> tokens, Interpreter * interp){}
+// String ops
+std::string concatComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = tokens[1] + " = " + tokens[1];
+    for (int i = 2; i < tokens.size(); i++){
+        temp += '+' + getCPPValOf(tokens[i], interp);
+    }
+    return temp + ';';
+}
+
+std::string reverseStrComp(std::vector<std::string> tokens, Interpreter * interp){
+    
+}
+
+// misc
+std::string systemComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "system(" + getCPPValOf(tokens[1], interp) + ");";
+}
+
+std::string quitComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "exit(0);";
+}
+
+std::string breakComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "break;";
+}
+
+// For functions that can't be properly implemented in c++
+std::string emptyComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "";
+}
 
 extern void initCompilation(){
     // Output
@@ -192,4 +220,17 @@ extern void initCompilation(){
     compedLines.insert({"for", forComp});
     compedLines.insert({"end", endAndEndwComp});
     compedLines.insert({"endw", endAndEndwComp});
+    compedLines.insert({"break", breakComp});
+    // String ops
+    compedLines.insert({"concat", concatComp});
+    // System Commands
+    compedLines.insert({"system", systemComp});
+    compedLines.insert({"quit", quitComp});
+    // Uncompilable
+    compedLines.insert({"slug", emptyComp});
+    compedLines.insert({"exec", emptyComp});
+    compedLines.insert({"getType", emptyComp});
+    compedLines.insert({"delete", emptyComp});
+    compedLines.insert({"remember", emptyComp});
+    compedLines.insert({"forget", emptyComp});
 }
