@@ -110,6 +110,7 @@ class Interpreter{
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
         std::string currentLineBeingProcessed;
         int curlyBraceNum = 0;
+        int skippedBraces = 0;
         std::unordered_map<std::string, Function> functions; // standard functions for the interpreter
 
         bool isDefiningFunction = false;
@@ -153,7 +154,7 @@ class Interpreter{
         bool inStrings(std::string);
         bool inBools(std::string);
 
-        std::vector<std::string> tokenizer(std::string passedInString);
+        std::vector<std::string> tokenizer(std::string passedInString, bool compiling);
         void callError(std::string errorMsg);
 };
 

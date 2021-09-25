@@ -28,7 +28,7 @@ extern void proccessLine(std::string line){
     auto cbnTemp = slugInterp.curlyBraceNum;
     int amountOfTokens = 0;
     std::string args[32]; // Hopefully not more that 10 arguments
-    std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line);
+    std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line, false);
     amountOfTokens = currentLineTokens.size();
     if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0] && !slugInterp.isDefiningFunction && !slugInterp.definingLoop){ // if statement succeded
         for (int i = 0; i < amountOfTokens; i++){ // looping through tokens
@@ -283,8 +283,18 @@ int main(int argc, char * argv[]){
         cppSourceFile << "#include <cmath>\n";
         // Main function
         cppSourceFile << "int main(void){\n";
+        int pastTabLevel = 0;
+        int currentTabLevel = 0;
+        // Adding the slug program converted to c++
         for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
-            cppSourceFile << "    " << slugToCpp(slugInterp.tokenizer(slugInterp.fullFile[slugInterp.lineNum])) << '\n';
+            auto tokens = slugInterp.tokenizer(slugInterp.fullFile[slugInterp.lineNum], true);
+            currentTabLevel = slugInterp.curlyBraceNum;
+            if (currentTabLevel < pastTabLevel){
+                for (int i = 0; i < pastTabLevel - currentTabLevel; i++){cppSourceFile << '}';}
+                slugInterp.skippedBraces = pastTabLevel - currentTabLevel;
+            }
+            cppSourceFile << "    " << slugToCpp(tokens) << '\n';
+            pastTabLevel = currentTabLevel;
         }
         // End of main function
         cppSourceFile << "}\n";

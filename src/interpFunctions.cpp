@@ -68,7 +68,7 @@ std::string getTrueIndex(std::string variable, Interpreter * interp){
 }
 
 // Very complicated tokenization
-std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
+std::vector<std::string> Interpreter::tokenizer(std::string passedInString, bool compiling){
     if (passedInString == ""){return {};}
     if (remembering && rememberedLines.find(passedInString) != rememberedLines.end()){
         curlyBraceNum = rememberedLines[passedInString].tablevel;
@@ -90,7 +90,7 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
     bool literalizing = false;
     std::string variable = "";
     for (unsigned int i = 0; i < passedInString.length(); i++){ // looping through string
-        if (passedInString[i] == '[' && !isString){ 
+        if (passedInString[i] == '[' && !isString && !compiling){ 
             if (!literalizing){
                 variable = '[';
             } else {
@@ -192,8 +192,6 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString){
                 pareNum--;
                 if (pareNum == 0){
                     seenParen = false; 
-                    tokens.push_back(token);
-                    token = "";
                 }
             }
         } else if (definingFunc){

@@ -42,10 +42,10 @@ std::string getCPPValOf(std::string s, Interpreter * interp){
     if (s[0] == '"'){ // Literal
         return s + '"';
     } else if (s[0] == '$'){ // Concatenation
-        std::string base = "";
         auto tokens = stringTokenizer(s.substr(1, s.length() - 1), interp);
-        for (auto t : tokens){
-            base += getCPPValOf(t, interp);
+        std::string base = getCPPValOf(tokens[0], interp);
+        for (int i = 1; i < tokens.size(); i++){
+            base += "+" + getCPPValOf(tokens[i], interp);
         }
         return base;
     } else if (s[0] == '('){
@@ -92,13 +92,7 @@ std::string stringComp(std::vector<std::string> tokens, Interpreter * interp){
 std::string boolComp(std::vector<std::string> tokens, Interpreter * interp){
     std::string temp = "bool " + tokens[1] + " = ";
     for (int i = 2; i < tokens.size(); i++){
-        if (tokens[i] == "and"){
-            temp += "&&";
-        } else if (tokens[i] == "or"){
-            temp += "||";
-        } else {
-            temp += getCPPValOf(tokens[i], interp);
-        }
+        temp += getCPPValOf(tokens[i], interp);
     }
     return temp + ';';
 }
@@ -162,6 +156,10 @@ std::string forComp(std::vector<std::string> tokens, Interpreter * interp){
 }
 
 std::string endAndEndwComp(std::vector<std::string> tokens, Interpreter * interp){
+    if (interp->skippedBraces > 0){
+        interp->skippedBraces--;
+        return "";
+    }
     return "}";
 }
 
@@ -175,7 +173,55 @@ std::string concatComp(std::vector<std::string> tokens, Interpreter * interp){
 }
 
 std::string reverseStrComp(std::vector<std::string> tokens, Interpreter * interp){
-    
+    return "std::reverse(" + tokens[1] + ".begin(), " + tokens[1] + ".end());";
+}
+
+std::string getchComp(std::vector<std::string> tokens, Interpreter * interp){
+    return tokens[3] + " = " + tokens[1] + '[' + tokens[2] + "];";
+}
+
+std::string setchComp(std::vector<std::string> tokens, Interpreter * interp){
+    return tokens[1] + '[' + tokens[2] + "] = " + getCPPValOf(tokens[3], interp) + "[0];";
+}
+
+// Conditionals
+std::string ifComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = "if(";
+    for (int i = 1; i < tokens.size(); i++){
+        temp += getCPPValOf(tokens[i], interp);
+    }
+    return temp + "){";
+}
+
+std::string elseifComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = "else if(";
+    for (int i = 1; i < tokens.size(); i++){
+        temp += getCPPValOf(tokens[i], interp);
+    }
+    return temp + "){";
+}
+
+std::string elseComp(std::vector<std::string> tokens, Interpreter * interp){
+    return "else{";
+}
+
+std::string makeListComp(std::vector<std::string> tokens, Interpreter * interp){
+    std::string temp = "";
+    switch(tokens[2][1]){
+        case 'i':
+            temp += "int";
+            break;
+        case 'f':
+            temp += "float";
+            break;
+        case 's':
+            temp += "std::string";
+            break;
+        case 'b':
+            temp += "bool";
+            break;
+    }
+    return temp + ' ' + tokens[1] + '[' + tokens[3] + "];";
 }
 
 // misc
@@ -221,8 +267,17 @@ extern void initCompilation(){
     compedLines.insert({"end", endAndEndwComp});
     compedLines.insert({"endw", endAndEndwComp});
     compedLines.insert({"break", breakComp});
+    // Conditionals
+    compedLines.insert({"if", ifComp});
+    compedLines.insert({"elseif", elseifComp});
+    compedLines.insert({"else", elseComp});
     // String ops
     compedLines.insert({"concat", concatComp});
+    compedLines.insert({"reverseStr", reverseStrComp});
+    compedLines.insert({"getch", getchComp});
+    compedLines.insert({"setch", setchComp});
+    // List creation
+    compedLines.insert({"makeList", makeListComp});
     // System Commands
     compedLines.insert({"system", systemComp});
     compedLines.insert({"quit", quitComp});
