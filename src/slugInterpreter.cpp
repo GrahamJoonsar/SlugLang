@@ -317,6 +317,19 @@ void slugSQRT(std::string * args, Interpreter * interp){
     }
 }
 
+void slugSin(std::string * args, Interpreter * interp){
+    interp->rt = RETURN_ENUM::RETURN_TYPE::FLOAT;
+    interp->returnedVal.f = sin(evalNum(args[0], interp));
+}
+void slugCos(std::string * args, Interpreter * interp){
+    interp->rt = RETURN_ENUM::RETURN_TYPE::FLOAT;
+    interp->returnedVal.f = cos(evalNum(args[0], interp));
+}
+void slugTan(std::string * args, Interpreter * interp){
+    interp->rt = RETURN_ENUM::RETURN_TYPE::FLOAT;
+    interp->returnedVal.f = tan(evalNum(args[0], interp));
+}
+
 // Easter egg, wont be included in the docs
 void dispSlug(std::string * args, Interpreter * interp){
     std::cout << "            ______      (o)o)     " << std::endl;
@@ -530,6 +543,11 @@ void slugFor(std::string * args, Interpreter * interp){
     interp->wstack.push({pfargs, boolPartNum, true, action, tabs});
 }
 
+// Breaking out of a loop
+void slugBreak(std::string * args, Interpreter * interp){
+    interp->breakingLoop = true;
+}
+
 void slugNamespace(std::string * args, Interpreter * interp){
     interp->namespaceNames.push_back(args[0]);
 }
@@ -538,9 +556,24 @@ void slugEndNamespace(std::string * args, Interpreter * interp){
     interp->namespaceNames.pop_back();
 }
 
-// Breaking out of a loop
-void slugBreak(std::string * args, Interpreter * interp){
-    interp->breakingLoop = true;
+// Generating a list
+void slugMakeList(std::string * args, Interpreter * interp){
+    for (int i = 0; i < (int)evalNum(args[2], interp); i++){
+        switch(args[1][1]){
+            case 'i':
+                interp->integers[args[0] + std::to_string(i)] = evalNum(args[3], interp);
+                break;
+            case 'f':
+                interp->floats[args[0] + std::to_string(i)] = evalNum(args[3], interp);
+                break;
+            case 's':
+                interp->strings[args[0] + std::to_string(i)] = getStrValOf(args[3], interp);
+                break;
+            case 'b':
+                interp->booleans[args[0] + std::to_string(i)] = interp->booleans[args[3]];
+                break;
+        }
+    }
 }
 
 /**void slugEndWhile(std::string * args, Interpreter * interp){
@@ -616,8 +649,11 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     // Mathematical functions
     functions.insert({"eval", {"eval", 2, &evalSet}}); // Assigning the var to the expression
     functions.insert({"sqrt", {"sqrt", 1, &slugSQRT}}); // sqrts the variable passed in.
-    functions.insert({"incr", {"incr", 1, &slugIncrement}}); // sqrts the variable passed in.
-    functions.insert({"decr", {"decr", 1, &slugDecrement}}); // sqrts the variable passed in.
+    functions.insert({"incr", {"incr", 1, &slugIncrement}}); // increments the variable passed in.
+    functions.insert({"decr", {"decr", 1, &slugDecrement}}); // decrements the variable passed in.
+    functions.insert({"sin", {"sin", 1, &slugSin}}); // returns the sin of the val passed in.
+    functions.insert({"cos", {"cos", 1, &slugCos}}); // returns the cos of the val passed in.
+    functions.insert({"tan", {"tan", 1, &slugTan}}); // returns the tan of the val passed in.
     // String operations
     functions.insert({"concat", {"concat", -2, &slugConcat}}); // String concatenation
     functions.insert({"reverseStr", {"reverseStr", 1, &reverseStr}}); // Reversing the string passed in
@@ -645,6 +681,8 @@ Interpreter::Interpreter(){ // whenever an interpreter is initiated
     //functions.push_back({"endw", 0, &slugEndWhile});
     // File functions
     functions.insert({"include", {"include", 1, &slugInclude}});
+    // Lists
+    functions.insert({"makeList", {"makeList", 4, &slugMakeList}});
     // Other stuff
     functions.insert({"slug", {"slug", 0, &dispSlug}});
     functions.insert({"exec", {"exec", 1, &slugExecute}});

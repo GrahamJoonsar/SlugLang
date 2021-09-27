@@ -1,0 +1,44 @@
+int currentCell 0
+
+string BFLine "++++++++++++++++++++.[->+<]."
+#readStr BFLine
+
+makeList cells "int" 30000 0
+
+int dir 1
+
+strLength BFLine BFLen
+
+bool JumpForward false
+bool JumpBack false
+
+for int i 0 ; i >= 0 and i < BFLen ; set i (i+dir)
+    getch BFLine i currentChar
+    if JumpForward
+        if currentChar == "]"
+            set JumpForward false
+    elseif JumpBack
+        if currentChar == "["
+            set dir 1
+            set JumpBack false
+    else
+        if currentChar == ">"
+            incr currentCell
+        elseif currentChar == "<"
+            decr currentCell
+        elseif currentChar == "+"
+            incr cells[currentCell]
+        elseif currentChar == "-"
+            decr cells[currentCell]
+        elseif currentChar == "."
+            println (cells[currentCell])
+        elseif currentChar == ","
+            readInt cells[currentCell]
+        elseif currentChar == "["
+            if cells[currentCell] == 0
+                set JumpForward true
+        elseif currentChar == "]"
+            if cells[currentCell] != 0
+                set JumpBack true
+                set dir -1
+endw

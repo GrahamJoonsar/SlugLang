@@ -1,7 +1,7 @@
 # comment
 
-width = 100
-height = 200
+width = 300
+height = 20000
 
 # comment
 

@@ -1,0 +1,23 @@
+# Uncensored String example
+# Original Problem
+# https://edabit.com/challenge/Wv9ZeXyC32EMfRWGB
+
+func uncensor (string str string vowels)
+    strLength str len
+    int currentVowel 0
+    string completeStr ""
+    for int i 0 ; i < len ; incr i
+        getch str i currentChar
+        if currentChar == "*"
+            getch vowels currentVowel currentCensor
+            concat completeStr currentCensor
+            incr currentVowel
+        else
+            concat completeStr currentChar
+    endw
+    return string completeStr
+end
+
+uncensor "H*ll* w*rld" "eoo" into newStr
+
+println newStr

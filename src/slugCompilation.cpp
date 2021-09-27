@@ -1,6 +1,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include <iostream>
 #include "slugInterpreter.h"
 #include "slugCompilation.h"
 
@@ -38,6 +39,10 @@ std::vector<std::string> stringTokenizer(std::string val, Interpreter * interp){
     return tokens;
 }
 
+bool isValidNumeric(char test){
+    return isalnum(test) || test == '_' || test == '.' || test == '-';
+}
+
 std::string getCPPValOf(std::string s, Interpreter * interp){
     if (s[0] == '"'){ // Literal
         return s + '"';
@@ -49,7 +54,64 @@ std::string getCPPValOf(std::string s, Interpreter * interp){
         }
         return base;
     } else if (s[0] == '('){
-        return s.substr(1, s.length() - 2);
+        s = s.substr(1, s.length() - 2);
+        std::string left = "";
+        std::string right = "";
+        std::string trueStr = "";
+        int parens = 0;
+        bool parensSeen = false;
+        for (int i = 0; i < s.length(); i++){
+            if (s[i] != '^'){ // Power operator
+                for (int j = i-1; true; j--){
+                    if (s[j] == ')'){
+                        parens++;
+                        parensSeen = true;
+                        left += ')';
+                    } else if (s[j] == '('){
+                        parens--;
+                        left += '(';
+                    } else {
+                        if (parensSeen && parens == 0){
+                            break;
+                        }
+                        if ((isValidNumeric(s[j]) || parens != 0) && j != 0){
+                            left += s[j];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                parensSeen = false;
+                parens = 0;
+                for (int j = i+1; true; j++){
+                    i = j;
+                    if (s[j] == ')'){
+                        parens--;
+                        right += ')';
+                    } else if (s[j] == '('){
+                        parens++;
+                        parensSeen = true;
+                        right += '(';
+                    } else {
+                        if (parensSeen && parens == 0){
+                            break;
+                        }
+                        if ((isValidNumeric(s[j]) || parens != 0) && j != s.length()-1){
+                            right += s[j];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                std::cout << "L: " << left << std::endl;
+                std::cout << "R: " << right << std::endl;
+                trueStr = trueStr.substr(0, trueStr.length() - (1+left.length()));
+                trueStr += "powf(" + left + "," + right + ")";
+            } else {
+                trueStr += s[i];
+            }
+        }
+        return trueStr;
     } else if (s == "and"){
         return "&&";
     } else if (s == "or"){
