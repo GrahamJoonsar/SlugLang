@@ -33,10 +33,10 @@ struct UserDefinedFunction{
 };
 
 struct ScopedVariables{
-    std::unordered_map<std::string, int> integers; // integers that are declared
-    std::unordered_map<std::string, float> floats; // floats that are declared
-    std::unordered_map<std::string, std::string> strings; // stringss that are declared
-    std::unordered_map<std::string, bool> booleans; // booleans that are declared
+    std::unordered_map<std::string, int> integers; // integer(s) that are declared
+    std::unordered_map<std::string, float> floats; // float(s) that are declared
+    std::unordered_map<std::string, std::string> strings; // strings(s) that are declared
+    std::unordered_map<std::string, bool> booleans; // boolean(s) that are declared
 };
 
 // Storing the varibles for functions
@@ -130,10 +130,10 @@ class Interpreter{
         bool breakingLoop = false;
 
         /* User declared Variables */
-        std::unordered_map<std::string, int> integers; // integers that are declared
-        std::unordered_map<std::string, float> floats; // floats that are declared
-        std::unordered_map<std::string, std::string> strings; // stringss that are declared
-        std::unordered_map<std::string, bool> booleans; // booleans that are declared
+        std::unordered_map<std::string, int> integers; // integer(s) that are declared(s)
+        std::unordered_map<std::string, float> floats; // float(s) that are declared(s)
+        std::unordered_map<std::string, std::string> strings; // strings(s) that are declared(s)
+        std::unordered_map<std::string, bool> booleans; // boolean(s) that are declared(s)
 
         std::unordered_map<std::string, int> int_temp;
         std::unordered_map<std::string, float> float_temp;
