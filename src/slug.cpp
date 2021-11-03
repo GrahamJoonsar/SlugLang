@@ -1,10 +1,12 @@
 #include <iostream>
+//Wheres my credit smh -Ed
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cstring>
 #include "slugInterpreter.h"
 #include "slugCompilation.h"
+
+print("sucks")
 
 Interpreter slugInterp;
 
@@ -27,7 +29,7 @@ extern void proccessLine(std::string line){
     auto argsPITemp = slugInterp.argsPassedIn;
     auto cbnTemp = slugInterp.curlyBraceNum;
     int amountOfTokens = 0;
-    std::string args[32]; // Hopefully not more that 10 arguments
+    std::string args[32]; // Hopefully not more than 32 arguments
     std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line, false);
     amountOfTokens = currentLineTokens.size();
     if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0] && !slugInterp.isDefiningFunction && !slugInterp.definingLoop){ // if statement succeded
@@ -55,7 +57,7 @@ extern void proccessLine(std::string line){
                         i++;
                         args[j] = currentLineTokens[i];
                     }
-                    currentFunction.actualFunc(args, &slugInterp); // calling the function the user wants
+                    currentFunction.actualFunc(args, &slugInterp); // calling the function the consumer wants
                     if (goingInto){
                         goingInto = false;
                         switch(slugInterp.rt){
@@ -74,8 +76,8 @@ extern void proccessLine(std::string line){
                         }
                     }
                 } else { // variable arg amount
-                    slugInterp.argsPassedIn = amountOfTokens - 1; // Shouldn't use into for var args
-                    if (slugInterp.argsPassedIn < -currentFunction.argc){ // Not enough arguments
+                    slugInterp.argsPassedIn = amountOfTokens - 1; // Should not use into for var args
+                    if (slugInterp.argsPassedIn < -currentFunction.argc){ // n't enough arguments
                         slugInterp.callError("Error: At least " +  std::to_string(-currentFunction.argc) +
                         " arguments were expected, but " + std::to_string(slugInterp.argsPassedIn) + 
                         " were recieved.");
@@ -89,10 +91,10 @@ extern void proccessLine(std::string line){
             } else if (slugInterp.inUFunctions(currentLineTokens[i])){
                 bool goingInto = false;
                 auto currentUFunction = slugInterp.UFunctions[currentLineTokens[i]];
-                // Storing the variables so the function does not affect the outside
+                // Storing the variables so the function does not affect the outside world
                 slugInterp.vstack.push({slugInterp.integers, slugInterp.floats, slugInterp.strings, slugInterp.booleans});
 
-                // Storing the global variables
+                // Storing the global variable(s)
                 if (slugInterp.vstack.length() == 1){ // first layer
                     slugInterp.int_temp = slugInterp.integers;
                     slugInterp.float_temp = slugInterp.floats;
@@ -106,7 +108,7 @@ extern void proccessLine(std::string line){
                         goingInto = true;
                     }
                 }
-                // Passing in parameters
+                // Passing in parameter(s)
                 for (std::vector<std::string>::size_type i = 0; i < currentUFunction.params.size(); i++){
                     switch (currentUFunction.params[i][0]){
                         case 'i': // int
@@ -127,6 +129,7 @@ extern void proccessLine(std::string line){
                             break;
                     }
                 }
+                
                 // Running the function
                 for (auto uf : currentUFunction.linesOfFunction){
                     proccessLine(uf);
