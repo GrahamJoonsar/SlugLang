@@ -42,12 +42,12 @@ struct ScopedVariables{
 // Storing the varibles for functions
 class VariableStack{
     private:
-    std::vector<ScopedVariables> v; 
+        std::vector<ScopedVariables> v; 
     public:
-    void push(ScopedVariables sv);
-    ScopedVariables back();
-    void pop_back();
-    unsigned int length();
+        void push(ScopedVariables sv);
+        ScopedVariables back();
+        void pop_back();
+        unsigned int length();
 };
 
 union VAL_RETURNED{

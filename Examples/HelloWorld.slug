@@ -1,3 +1,4 @@
-# How to do hello World in SlugLang
+# Hello World In SlugLang
 
+# Outputs Hello World! with a newline to the console
 println "Hello World!"

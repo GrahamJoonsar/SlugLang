@@ -498,7 +498,7 @@ void slugWhile(std::string * args, Interpreter * interp){
 // Variable name, boolean expression, action seperated by ;
 // for int i 0 ; i < 100 ; incr i
 //     println i
-// endw
+// end
 void slugFor(std::string * args, Interpreter * interp){
     std::string set; // the int i part
     std::string booleanExpression; // i < num

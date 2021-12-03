@@ -43,4 +43,4 @@ for int i 0 ; i >= 0 and i < BFLen ; set i (i+dir)
             if cells[currentCell] != 0
                 set JumpBack true
                 set dir -1
-endw
+end

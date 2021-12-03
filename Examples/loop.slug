@@ -3,6 +3,6 @@ readInt topBound
 
 for int i 0 ; i < topBound ; incr i
     printf "I is " i
-endw
+end
 
 println "Loop is done"

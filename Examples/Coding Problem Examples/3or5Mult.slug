@@ -6,4 +6,4 @@
 for int i 3 ; i < 100 ; incr i
     if (i%3) == 0 or (i%5) == 0
         println i
-endw
+end

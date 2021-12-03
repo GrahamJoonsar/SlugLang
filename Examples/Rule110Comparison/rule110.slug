@@ -1,6 +1,6 @@
 # An implementation of rule 110 in sluglang
 
-int width 300
+int width 200
 int height 20000
 
 # Initializing the Board
@@ -8,7 +8,7 @@ int height 20000
 string start " "
 for int i 0 ; i < (width-1) ; incr i
     concat start " "
-endw
+end
 
 makeList board "string" 20000 0
 
@@ -18,10 +18,10 @@ set board[0] $ start "X " $
 
 for int i 1 ; i < height ; incr i
     set board[i] $ start "  " $
-endw
+end
 
 
-remember
+
 println "NEW BOARD"
 for int i 0 ; i < (height-1) ; incr i
     for int j 1 ; j <= width ; incr j
@@ -51,8 +51,8 @@ for int i 0 ; i < (height-1) ; incr i
                 setch board[(i+1)] j "X"
             else
                 setch board[(i+1)] j " "
-    endw
+    end
     println $ "#" board[i] "#" $
-endw
+end
 
 forget

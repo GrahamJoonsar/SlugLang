@@ -1,12 +1,58 @@
-for float angle 0 ; angle < 360 ; set angle (angle+0.1)
-    makeList grid "string" 20 "                    "
-    cos angle into x
-    sin angle into y
-    int yi (y*10+20)
-    int xi (x*10+20)
-    setch grid[yi] xi "X"
-    for int i 0 ; i < 20 ; incr i
-        println grid[i]
-    endw
-    system "cls"
-endw
+# An implementation of rule 110 in sluglang
+
+int width 150
+int height 20000
+
+# Initializing the Board
+
+string start " "
+for int i 0 ; i < (width-1) ; incr i
+    concat start " "
+end
+
+makeList board "string" 20000 0
+
+# The starting seed
+# There must be spaces around the edges of the seed, but the middle is the only part tested
+set board[0] $ start "X " $
+
+for int i 1 ; i < height ; incr i
+    set board[i] $ start "  " $
+end
+
+
+
+println "NEW BOARD"
+for int i 0 ; i < (height-1) ; incr i
+    for int j 1 ; j <= width ; incr j
+        string left ""
+        string right ""
+        string current ""
+        getch board[i] (j-1) left
+        getch board[i] (j+1) right
+        getch board[i] j current
+        if current == "X"
+            int aliveNeighbors 0
+            if left == "X"
+                incr aliveNeighbors
+            if right == "X"
+                incr aliveNeighbors
+            if aliveNeighbors <= 1
+                setch board[(i+1)] j "X"
+            else
+                setch board[(i+1)] j " "
+        else
+            int aliveNeighbors 0
+            if left == "X"
+                incr aliveNeighbors
+            if right == "X"
+                incr aliveNeighbors
+            if aliveNeighbors > 0
+                setch board[(i+1)] j "X"
+            else
+                setch board[(i+1)] j " "
+    end
+    println $ "#" board[i] "#" $
+end
+
+forget

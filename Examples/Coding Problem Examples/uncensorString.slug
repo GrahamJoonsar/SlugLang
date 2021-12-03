@@ -14,7 +14,7 @@ func uncensor (string str string vowels)
             incr currentVowel
         else
             concat completeStr currentChar
-    endw
+    end
     return string completeStr
 end
 

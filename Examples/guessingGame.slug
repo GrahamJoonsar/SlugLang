@@ -27,7 +27,7 @@ while times_guessed < num_of_guesses
         println "You have to go higher."
     else
         println "You have to go lower."
-endw
+end
 
 println "Player 1 wins!"
 

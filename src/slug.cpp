@@ -201,7 +201,7 @@ extern void proccessLine(std::string line){
         }
     } else if (slugInterp.definingLoop){ // Collecting and executing lines for loops
         if (line.length() >= slugInterp.wstack.back().tabs.length()){
-            if (line != slugInterp.wstack.back().tabs + "endw"){ // Getting rid of spaces relative to tab level
+            if (line != slugInterp.wstack.back().tabs + "end"){ // Getting rid of spaces relative to tab level
                 line.erase(0, slugInterp.wstack.back().tabs.length()+4);
                 slugInterp.wstack.addl(line);
             } else {
@@ -246,7 +246,7 @@ int main(int argc, char * argv[]){
         return 8; // error
     }
 
-    std::ifstream inputFile(argv[1]); // Opening the file provided
+    std::ifstream inputFile(argv[2]); // Opening the file provided
 
     if (!inputFile.is_open()){
         std::cout << "File not found" << std::endl;
@@ -267,11 +267,11 @@ int main(int argc, char * argv[]){
     // Closing the file
     inputFile.close();
 
-    if (argv[2][0] == 'i'){ // Interpreted
+    if (argv[1][0] == 'i'){ // Interpreted
         for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
             proccessLine(slugInterp.fullFile[slugInterp.lineNum]);
         }
-    } else if (argv[2][0] == 'c'){ // Compiled
+    } else if (argv[1][0] == 'c'){ // Compiled
         initCompilation(); // Initializing all of the slug to cpp commands
         argv[1][strlen(argv[1])-5] = '\0'; // taking off the .slug postfix
         const char * outPutFileName = argv[1]; // name of file

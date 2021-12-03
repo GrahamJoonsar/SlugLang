@@ -49,9 +49,9 @@ while running
             else
                 #Adding it to the current line
                 concat line CurrentChar
-        endw
+        end
         println line 
-    endw
+    end
     move
     system "cls"
-endw
+end
