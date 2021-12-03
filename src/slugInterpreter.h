@@ -7,6 +7,18 @@
 
 class Interpreter;
 
+class Token{
+    public:
+        std::string text;
+        enum Type {
+            NUMBER,
+            STRING,
+            OTHER
+        };
+        Type type;
+        Token(std::string _text, Type _type) : text(_text), type(_type){} 
+};
+
 struct Function{
     std::string name; // Name of the function
     int argc; // the amount of arguments it takes
@@ -155,6 +167,7 @@ class Interpreter{
         bool inBools(std::string);
 
         std::vector<std::string> tokenizer(std::string passedInString, bool compiling);
+        std::vector<Token> new_tokenizer(std::string line);
         void callError(std::string errorMsg);
 };
 

@@ -226,3 +226,19 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString, bool
     curlyBraceNum = tabLevel;
     return tokens;
 }
+
+std::vector<Token> Interpreter::new_tokenizer(std::string line){
+    std::vector<Token> tokens; // The list of tokens that we will return
+    std::vector<std::string> unclassifiedTokens = tokenizer(line, false);
+
+    for (auto t: unclassifiedTokens){
+        if (t[0] == '"' || t[0] == '$'){ // String literal or concatenation grouping
+            tokens.push_back({t, Token::STRING});
+        } else if (/*Number literal*/(t[0] == '-' || isdigit(t[0])) || /*Mathematical expression*/ (t[0] == '(' && t[t.length()-1] == ')')){
+            tokens.push_back({t, Token::NUMBER});
+        } else { // op, variable name, or function call
+            tokens.push_back({t, Token::OTHER});
+        }
+    }
+    return tokens;
+}
