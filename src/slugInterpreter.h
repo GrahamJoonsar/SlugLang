@@ -13,6 +13,7 @@ class Token{
         enum Type {
             NUMBER,
             STRING,
+            LIST_ELEMENT,
             OTHER
         };
         Type type;
@@ -109,7 +110,7 @@ class WhileLoopStack{
 };
 
 struct LineInfo{
-    std::vector<std::string> tokens;
+    std::vector<Token> tokens;
     int tablevel;
 };
 
@@ -167,7 +168,7 @@ class Interpreter{
         bool inBools(std::string);
 
         std::vector<std::string> tokenizer(std::string passedInString, bool compiling);
-        std::vector<Token> new_tokenizer(std::string line);
+        LineInfo new_tokenizer(std::string line);
         void callError(std::string errorMsg);
 };
 

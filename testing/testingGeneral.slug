@@ -5,21 +5,19 @@ int height 20000
 
 # Initializing the Board
 
+string last ""
+
 string start " "
 for int i 0 ; i < (width-1) ; incr i
     concat start " "
 end
 
-makeList board "string" 20000 0
+string blank $ start "  " $
 
 # The starting seed
 # There must be spaces around the edges of the seed, but the middle is the only part tested
-set board[0] $ start "X " $
-
-for int i 1 ; i < height ; incr i
-    set board[i] $ start "  " $
-end
-
+set last $ start "X " $
+string first blank
 
 
 println "NEW BOARD"
@@ -28,9 +26,9 @@ for int i 0 ; i < (height-1) ; incr i
         string left ""
         string right ""
         string current ""
-        getch board[i] (j-1) left
-        getch board[i] (j+1) right
-        getch board[i] j current
+        getch last (j-1) left
+        getch last (j+1) right
+        getch last j current
         if current == "X"
             int aliveNeighbors 0
             if left == "X"
@@ -38,9 +36,9 @@ for int i 0 ; i < (height-1) ; incr i
             if right == "X"
                 incr aliveNeighbors
             if aliveNeighbors <= 1
-                setch board[(i+1)] j "X"
+                setch first j "X"
             else
-                setch board[(i+1)] j " "
+                setch first j " "
         else
             int aliveNeighbors 0
             if left == "X"
@@ -48,11 +46,11 @@ for int i 0 ; i < (height-1) ; incr i
             if right == "X"
                 incr aliveNeighbors
             if aliveNeighbors > 0
-                setch board[(i+1)] j "X"
+                setch first j "X"
             else
-                setch board[(i+1)] j " "
+                setch first j " "
     end
-    println $ "#" board[i] "#" $
+    println $ "#" first "#" $
+    set last first
+    set first blank
 end
-
-forget

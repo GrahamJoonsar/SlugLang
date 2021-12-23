@@ -70,10 +70,6 @@ std::string getTrueIndex(std::string variable, Interpreter * interp){
 // Very complicated tokenization
 std::vector<std::string> Interpreter::tokenizer(std::string passedInString, bool compiling){
     if (passedInString == ""){return {};}
-    if (remembering && rememberedLines.find(passedInString) != rememberedLines.end()){
-        curlyBraceNum = rememberedLines[passedInString].tablevel;
-        return rememberedLines[passedInString].tokens;
-    }
     std::vector<std::string> tokens;
     std::string token;
     bool isString = false;
@@ -124,9 +120,6 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString, bool
             } else if (passedInString[i] == '#'){ // Comments and ignored characters
                 if (token != ""){
                     tokens.push_back(token);
-                }
-                if (remembering && passedInString.find('[') == std::string::npos){
-                    rememberedLines[passedInString] = LineInfo{tokens, tabLevel};
                 }
                 curlyBraceNum = tabLevel;
                 return tokens; // Stop Tokenization
@@ -219,26 +212,25 @@ std::vector<std::string> Interpreter::tokenizer(std::string passedInString, bool
         tokens.push_back(token); // adding last token
     }
 
-    if (remembering && passedInString.find('[') == std::string::npos){
-        rememberedLines[passedInString] = LineInfo{tokens, tabLevel};
-    }
-
     curlyBraceNum = tabLevel;
     return tokens;
 }
 
-std::vector<Token> Interpreter::new_tokenizer(std::string line){
+LineInfo Interpreter::new_tokenizer(std::string line){
     std::vector<Token> tokens; // The list of tokens that we will return
     std::vector<std::string> unclassifiedTokens = tokenizer(line, false);
 
     for (auto t: unclassifiedTokens){
         if (t[0] == '"' || t[0] == '$'){ // String literal or concatenation grouping
             tokens.push_back({t, Token::STRING});
-        } else if (/*Number literal*/(t[0] == '-' || isdigit(t[0])) || /*Mathematical expression*/ (t[0] == '(' && t[t.length()-1] == ')')){
+        } else if (/*Number literal*/(t[0] == '-' || isdigit(t[0])) ||
+                    /*Mathematical expression*/ (t[0] == '(' && t[t.length()-1] == ')')){
             tokens.push_back({t, Token::NUMBER});
+        } else if (t.find('[')){ // index of 
+            tokens.push_back({t, Token::LIST_ELEMENT});
         } else { // op, variable name, or function call
             tokens.push_back({t, Token::OTHER});
         }
     }
-    return tokens;
+    return {tokens, curlyBraceNum};
 }

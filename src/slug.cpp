@@ -239,6 +239,7 @@ std::string slugToCpp(std::vector<std::string> tokens){
     }
 }
 
+// First arg, i/c ; Second arg, file name
 int main(int argc, char * argv[]){
     // Reading the command line arguments
     if (argc != 3){
@@ -273,10 +274,10 @@ int main(int argc, char * argv[]){
         }
     } else if (argv[1][0] == 'c'){ // Compiled
         initCompilation(); // Initializing all of the slug to cpp commands
-        argv[1][strlen(argv[1])-5] = '\0'; // taking off the .slug postfix
+        argv[2][strlen(argv[2])-5] = '\0'; // taking off the .slug postfix
         const char * outPutFileName = argv[1]; // name of file
         std::ofstream cppSourceFile; // The output file
-        cppSourceFile.open(strcat(argv[1], ".cpp"), std::ios_base::trunc); // Opening the file and erasing everything in it
+        cppSourceFile.open(strcat(argv[2], ".cpp"), std::ios_base::trunc); // Opening the file and erasing everything in it
         // Adding libraries
         cppSourceFile << "#include <iostream>\n"; 
         cppSourceFile << "#include <string>\n";
@@ -302,16 +303,16 @@ int main(int argc, char * argv[]){
         cppSourceFile.close();
         // Making the compiler command
         char command[256] = "g++ ";
-        strcat(command, argv[1]);
+        strcat(command, argv[2]);
         // Taking off .cpp postfix
-        argv[1][strlen(argv[1])-4] = '\0';
+        argv[2][strlen(argv[2])-4] = '\0';
         strcat(command, " -o ");
-        strcat(command, argv[1]);
+        strcat(command, argv[2]);
         strcat(command, ".exe");
         // Compiling
         system(command);
         // Removing cpp src file
-        strcat(argv[1], ".cpp");
+        strcat(argv[2], ".cpp");
         //remove(argv[1]);
     }
 }

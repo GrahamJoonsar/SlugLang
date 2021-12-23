@@ -53,7 +53,7 @@ std::string getCPPValOf(std::string s, Interpreter * interp){
             base += "+" + getCPPValOf(tokens[i], interp);
         }
         return base;
-    } else if (s[0] == '('){
+    } else if (s[0] == '('){/*
         s = s.substr(1, s.length() - 2);
         std::string left = "";
         std::string right = "";
@@ -110,8 +110,8 @@ std::string getCPPValOf(std::string s, Interpreter * interp){
             } else {
                 trueStr += s[i];
             }
-        }
-        return trueStr;
+        }*/
+        return s;
     } else if (s == "and"){
         return "&&";
     } else if (s == "or"){
