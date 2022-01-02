@@ -22,23 +22,23 @@ bool notEndOfLoopLine(int lengthOfTabs, std::string line){
     return firstCharSeen >= lengthOfTabs || firstCharSeen == -1;
 }
 
-extern void proccessLine(std::string line){
-    slugInterp.currentLineBeingProcessed = line;
+extern void proccessLine(LineInfo line_info){
+    slugInterp.currentLineBeingProcessed = line_info.line;
+    auto line = line_info.line;
     auto argsPITemp = slugInterp.argsPassedIn;
     auto cbnTemp = slugInterp.curlyBraceNum;
     int amountOfTokens = 0;
-    std::string args[32]; // Hopefully not more that 10 arguments
-    std::vector<std::string> currentLineTokens = slugInterp.tokenizer(line, false);
-    amountOfTokens = currentLineTokens.size();
-    if (slugInterp.curlyBraceLevel[slugInterp.curlyBraceNum][0] && !slugInterp.isDefiningFunction && !slugInterp.definingLoop){ // if statement succeded
+    std::string args[32];
+    amountOfTokens = line_info.tokens.size();
+    if (slugInterp.curlyBraceLevel[line_info.tablevel][0] && !slugInterp.isDefiningFunction && !slugInterp.definingLoop){ // if statement succeded
         for (int i = 0; i < amountOfTokens; i++){ // looping through tokens
-            if (slugInterp.inFunctions(currentLineTokens[i])){ // function was called
-                auto currentFunction = slugInterp.functions[currentLineTokens[i]];
+            if (slugInterp.inFunctions(line_info.tokens[i].text)){ // function was called
+                auto currentFunction = slugInterp.functions[line_info.tokens[i].text];
                 if (currentFunction.argc >= 0){ // not a variable argument amount
                     bool goingInto = false;
                     if (currentFunction.argc != amountOfTokens - 1){ // Wrong amount of arguments
                         if (amountOfTokens == currentFunction.argc+3){
-                            if (currentLineTokens[currentFunction.argc + 1] == "into"){
+                            if (line_info.tokens[currentFunction.argc + 1].text == "into"){
                                 goingInto = true;
                             } else {
                                 slugInterp.callError("Error: " + std::to_string(currentFunction.argc) + 
@@ -53,23 +53,23 @@ extern void proccessLine(std::string line){
                     }
                     for (int j = 0; j < currentFunction.argc; j++){
                         i++;
-                        args[j] = currentLineTokens[i];
+                        args[j] = line_info.tokens[i].text;
                     }
                     currentFunction.actualFunc(args, &slugInterp); // calling the function the user wants
                     if (goingInto){
                         goingInto = false;
                         switch(slugInterp.rt){
                             case RETURN_ENUM::INT:
-                                slugInterp.integers[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.i;
+                                slugInterp.integers[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.i;
                                 break;
                             case RETURN_ENUM::FLOAT:
-                                slugInterp.floats[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.f;
+                                slugInterp.floats[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.f;
                                 break;
                             case RETURN_ENUM::STRING:
-                                slugInterp.strings[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.s;
+                                slugInterp.strings[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.s;
                                 break;
                             case RETURN_ENUM::BOOL:
-                                slugInterp.booleans[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.b;
+                                slugInterp.booleans[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.b;
                                 break;
                         }
                     }
@@ -82,13 +82,13 @@ extern void proccessLine(std::string line){
                     }
                     for (int j = 0; j < amountOfTokens - 1; j++){
                         i++;
-                        args[j] = currentLineTokens[i];
+                        args[j] = line_info.tokens[i].text;
                     }
                     currentFunction.actualFunc(args, &slugInterp); // calling the function the user wants
                 }
-            } else if (slugInterp.inUFunctions(currentLineTokens[i])){
+            } else if (slugInterp.inUFunctions(line_info.tokens[i].text)){
                 bool goingInto = false;
-                auto currentUFunction = slugInterp.UFunctions[currentLineTokens[i]];
+                auto currentUFunction = slugInterp.UFunctions[line_info.tokens[i].text];
                 // Storing the variables so the function does not affect the outside
                 slugInterp.vstack.push({slugInterp.integers, slugInterp.floats, slugInterp.strings, slugInterp.booleans});
 
@@ -102,7 +102,7 @@ extern void proccessLine(std::string line){
 
                 // Checking if the correct amount of args is passed in
                 if (amountOfTokens - 1 > currentUFunction.argc){
-                    if (currentLineTokens[currentUFunction.argc + 1] == "into"){
+                    if (line_info.tokens[currentUFunction.argc + 1].text == "into"){
                         goingInto = true;
                     }
                 }
@@ -111,19 +111,19 @@ extern void proccessLine(std::string line){
                     switch (currentUFunction.params[i][0]){
                         case 'i': // int
                             i++;
-                            slugInterp.integers[currentUFunction.params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
+                            slugInterp.integers[currentUFunction.params[i]] = evalNum(line_info.tokens[1+(i/2)].text, &slugInterp);
                             break;
                         case 'f': // float
                             i++;
-                            slugInterp.floats[currentUFunction.params[i]] = evalNum(currentLineTokens[1+(i/2)], &slugInterp);
+                            slugInterp.floats[currentUFunction.params[i]] = evalNum(line_info.tokens[1+(i/2)].text, &slugInterp);
                             break;
                         case 's': // string
                             i++;
-                            slugInterp.strings[currentUFunction.params[i]] = getStrValOf(currentLineTokens[1+(i/2)], &slugInterp);
+                            slugInterp.strings[currentUFunction.params[i]] = getStrValOf(line_info.tokens[1+(i/2)].text, &slugInterp);
                             break;
                         case 'b': // bool (Must be stored in a var)
                             i++;
-                            slugInterp.booleans[currentUFunction.params[i]] = slugInterp.booleans[currentLineTokens[1+(i/2)]];
+                            slugInterp.booleans[currentUFunction.params[i]] = slugInterp.booleans[line_info.tokens[1+(i/2)].text];
                             break;
                     }
                 }
@@ -141,16 +141,16 @@ extern void proccessLine(std::string line){
                     goingInto = false;
                     switch(slugInterp.rt){
                         case RETURN_ENUM::INT:
-                            slugInterp.int_temp[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.i;
+                            slugInterp.int_temp[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.i;
                             break;
                         case RETURN_ENUM::FLOAT:
-                            slugInterp.float_temp[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.f;
+                            slugInterp.float_temp[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.f;
                             break;
                         case RETURN_ENUM::STRING:
-                            slugInterp.string_temp[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.s;
+                            slugInterp.string_temp[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.s;
                             break;
                         case RETURN_ENUM::BOOL:
-                            slugInterp.bool_temp[currentLineTokens[amountOfTokens-1]] = slugInterp.returnedVal.b;
+                            slugInterp.bool_temp[line_info.tokens[amountOfTokens-1].text] = slugInterp.returnedVal.b;
                             break;
                     }
                 }
@@ -197,13 +197,13 @@ extern void proccessLine(std::string line){
         }
         // Adding to the function and taking off the first 4 spaces
         if (line.length() > 4){
-            slugInterp.UFunctions[slugInterp.currentFunctionName].linesOfFunction.push_back(line.substr(4, line.length() - 3));
+            slugInterp.UFunctions[slugInterp.currentFunctionName].linesOfFunction.push_back(slugInterp.new_tokenizer(line.substr(4, line.length() - 3)));
         }
     } else if (slugInterp.definingLoop){ // Collecting and executing lines for loops
         if (line.length() >= slugInterp.wstack.back().tabs.length()){
             if (line != slugInterp.wstack.back().tabs + "end"){ // Getting rid of spaces relative to tab level
                 line.erase(0, slugInterp.wstack.back().tabs.length()+4);
-                slugInterp.wstack.addl(line);
+                slugInterp.wstack.addl(line, &slugInterp);
             } else {
                 slugInterp.definingLoop = false;
                 while(getBooleanValOf(slugInterp.wstack.back().booleanExpression, &slugInterp, slugInterp.wstack.back().length) && !slugInterp.breakingLoop){
@@ -261,16 +261,18 @@ int main(int argc, char * argv[]){
 
     while (getline(inputFile, currentLine)){ // Looping through the file
         slugInterp.fullFile.push_back(currentLine);
+        slugInterp.line_info.push_back(slugInterp.new_tokenizer(currentLine));
     }
 
     slugInterp.fullFile.push_back("###EOFSLUG###");
+    slugInterp.line_info.push_back(slugInterp.new_tokenizer("#"));
 
     // Closing the file
     inputFile.close();
 
     if (argv[1][0] == 'i'){ // Interpreted
         for (slugInterp.lineNum = 0; slugInterp.lineNum < slugInterp.fullFile.size(); slugInterp.lineNum++){
-            proccessLine(slugInterp.fullFile[slugInterp.lineNum]);
+            proccessLine(slugInterp.line_info[slugInterp.lineNum]);
         }
     } else if (argv[1][0] == 'c'){ // Compiled
         initCompilation(); // Initializing all of the slug to cpp commands

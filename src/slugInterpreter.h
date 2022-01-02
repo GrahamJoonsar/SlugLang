@@ -20,6 +20,12 @@ class Token{
         Token(std::string _text, Type _type) : text(_text), type(_type){} 
 };
 
+struct LineInfo{
+    std::vector<Token> tokens;
+    int tablevel;
+    std::string line;
+};
+
 struct Function{
     std::string name; // Name of the function
     int argc; // the amount of arguments it takes
@@ -35,7 +41,7 @@ struct Function{
 struct UserDefinedFunction{
     std::string name;
     int argc;
-    std::vector<std::string> linesOfFunction;
+    std::vector<LineInfo> linesOfFunction;
     std::vector<std::string> params;
     UserDefinedFunction(int _argc, std::string _name, std::vector<std::string> _params){
         argc = _argc;
@@ -83,13 +89,13 @@ namespace RETURN_ENUM{
 
 class WhileLoop{
     public:
-        std::vector<std::string> linesOfLoop;
+        std::vector<LineInfo> linesOfLoop;
         std::string* booleanExpression;
         int length;
         std::string tabs = "";
         bool isForLoop;
-        std::string action;
-        WhileLoop(std::string* _bExpression, int _length, bool _isForLoop, std::string _action, std::string _tabs){
+        LineInfo action;
+        WhileLoop(std::string* _bExpression, int _length, bool _isForLoop, LineInfo _action, std::string _tabs){
             booleanExpression = _bExpression;
             length = _length;
             isForLoop = _isForLoop;
@@ -106,12 +112,7 @@ class WhileLoopStack{
     WhileLoop back();
     void pop_back();
     unsigned int length();
-    void addl(std::string l);
-};
-
-struct LineInfo{
-    std::vector<Token> tokens;
-    int tablevel;
+    void addl(std::string l, Interpreter * interp);
 };
 
 class Interpreter{
@@ -119,6 +120,7 @@ class Interpreter{
         unsigned short int argsPassedIn = 1;
         unsigned int lineNum = 1;
         std::vector<std::string> fullFile;
+        std::vector<LineInfo> line_info;
 
         bool curlyBraceLevel[10][2]; // Hopefully not more than 10 layer of curly braces
         std::string currentLineBeingProcessed;
@@ -174,5 +176,5 @@ class Interpreter{
 
 extern float evalNum(std::string num, Interpreter * interp);
 extern std::string getStrValOf(std::string val, Interpreter * interp);
-extern void proccessLine(std::string line);
+extern void proccessLine(LineInfo line);
 extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc);

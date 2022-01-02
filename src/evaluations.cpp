@@ -147,7 +147,7 @@ extern float evalNum(std::string num, Interpreter * interp){
         }
         return s.pop();
     } else if (num[0] == '['){// Function
-        proccessLine(takeOffFrontChar(num)); // Run the function
+        proccessLine(interp->new_tokenizer(takeOffFrontChar(num))); // Run the function
         switch (interp->rt){
             case RETURN_ENUM::RETURN_TYPE::INT:
                 return interp->returnedVal.i;
@@ -188,7 +188,7 @@ extern std::string getStrValOf(std::string val, Interpreter * interp){
     } else if (val[0] == '"'){ // string literal
         return takeOffFrontChar(val);
     } else if (val[0] == '['){ // string returned from a function
-        proccessLine(takeOffFrontChar(val)); // Run the function
+        proccessLine(interp->new_tokenizer(takeOffFrontChar(val))); // Run the function
         std::string valReturned;
         switch (interp->rt){ // Get whatever was returned
             case RETURN_ENUM::INT:
@@ -261,10 +261,10 @@ bool evalBool(std::string * args, Interpreter * interp){
         if (args[0][0] == '[' || args[2][0] == '['){
             RETURN_ENUM::RETURN_TYPE type;
             if (args[0][0] == '['){ // Getting the type to be compared
-                proccessLine(takeOffFrontChar(args[0])); // Run the function
+                proccessLine(interp->new_tokenizer(takeOffFrontChar(args[0]))); // Run the function
                 type = interp->rt;
             } else {
-                proccessLine(takeOffFrontChar(args[2])); // Run the function
+                proccessLine(interp->new_tokenizer(takeOffFrontChar(args[2]))); // Run the function
                 type = interp->rt;
             }
             if (type == RETURN_ENUM::RETURN_TYPE::STRING){
@@ -315,8 +315,8 @@ extern bool getBooleanValOf(std::string * args, Interpreter * interp, int argc){
             andOr += "o";
         } else if (interp->inBools(args[i])){
             parts.push_back(interp->booleans[args[i]]);
-        } else if (args[i][0] == '['){ // Function that returns bool
-            proccessLine(takeOffFrontChar(args[i])); // Run the function
+        } else if (args[i][0] == '{'){ // Function that returns bool
+            proccessLine(interp->new_tokenizer(takeOffFrontChar(args[i]))); // Run the function
             parts.push_back(interp->returnedVal.b);
         } else { // Evaluating the boolean expression
             std::string sTemp[3] = {args[i]};

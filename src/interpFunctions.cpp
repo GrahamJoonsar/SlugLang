@@ -232,5 +232,5 @@ LineInfo Interpreter::new_tokenizer(std::string line){
             tokens.push_back({t, Token::OTHER});
         }
     }
-    return {tokens, curlyBraceNum};
+    return {tokens, curlyBraceNum, line};
 }

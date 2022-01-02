@@ -16,6 +16,6 @@ unsigned int WhileLoopStack::length(){
     return v.size();
 }
 
-void WhileLoopStack::addl(std::string l){
-    v.back().linesOfLoop.push_back(l);
+void WhileLoopStack::addl(std::string l, Interpreter * interp){
+    v.back().linesOfLoop.push_back(interp->new_tokenizer(l));
 }

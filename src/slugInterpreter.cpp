@@ -5,7 +5,7 @@
 #include <cmath>
 #include "evaluations.h"
 
-extern void proccessLine(std::string line);
+extern void proccessLine(LineInfo line);
 
 // Unused currently
 int getPrecedence(char op){
@@ -150,14 +150,14 @@ void setAndMutateSlug(std::string * args, Interpreter * interp){
     // Mutating
     int i = 0;
     if (interp->inInts(args[i])){
-            interp->int_temp[args[i]] = interp->integers[args[i]];
-        } else if (interp->inFloats(args[i])){
-            interp->float_temp[args[i]] = interp->floats[args[i]];
-        } else if (interp->inStrings(args[i])){
-            interp->string_temp[args[i]] = interp->strings[args[i]];
-        } else if (interp->inBools(args[i])){
-            interp->bool_temp[args[i]] = interp->booleans[args[i]];
-        }
+        interp->int_temp[args[i]] = interp->integers[args[i]];
+    } else if (interp->inFloats(args[i])){
+        interp->float_temp[args[i]] = interp->floats[args[i]];
+    } else if (interp->inStrings(args[i])){
+        interp->string_temp[args[i]] = interp->strings[args[i]];
+    } else if (interp->inBools(args[i])){
+        interp->bool_temp[args[i]] = interp->booleans[args[i]];
+    }
 }
 
 /* Getting user input */
@@ -470,7 +470,7 @@ void slugInclude(std::string * args, Interpreter * interp){
     inputFile.open(path);
     if (inputFile.is_open()){
         while (getline(inputFile, line)){
-            proccessLine(line);
+            proccessLine(interp->new_tokenizer(line));
         }
     } else {
         interp->callError("The file " + path + " cannot be found.");
@@ -490,7 +490,7 @@ void slugWhile(std::string * args, Interpreter * interp){
     for (int i = 0; i < interp->curlyBraceNum; i++){
         tabs += "    ";
     }
-    interp->wstack.push({pargs, interp->argsPassedIn, false, " ", tabs});
+    interp->wstack.push({pargs, interp->argsPassedIn, false, interp->new_tokenizer(" "), tabs});
     interp->definingLoop = true;
 }
 
@@ -538,9 +538,9 @@ void slugFor(std::string * args, Interpreter * interp){
     for (int i = 0; i < interp->curlyBraceNum; i++){
         tabs += "    ";
     }
-    proccessLine(set);
+    proccessLine(interp->new_tokenizer(set));
     interp->definingLoop = true;
-    interp->wstack.push({pfargs, boolPartNum, true, action, tabs});
+    interp->wstack.push({pfargs, boolPartNum, true, interp->new_tokenizer(action), tabs});
 }
 
 // Breaking out of a loop
@@ -559,7 +559,7 @@ void slugEndNamespace(std::string * args, Interpreter * interp){
 // Generating a list
 void slugMakeList(std::string * args, Interpreter * interp){
     for (int i = 0; i < (int)evalNum(args[2], interp); i++){
-        switch(args[1][1]){
+        switch(args[1][0]){
             case 'i':
                 interp->integers[args[0] + std::to_string(i)] = evalNum(args[3], interp);
                 break;
@@ -588,7 +588,7 @@ void slugMakeList(std::string * args, Interpreter * interp){
 
 // Most powerful and useful function in sluglang, runs the string passed in
 void slugExecute(std::string * args, Interpreter * interp){
-    proccessLine(getStrValOf(args[0], interp));
+    proccessLine(interp->new_tokenizer(getStrValOf(args[0], interp)));
 }
 
 void slugCheckType(std::string * args, Interpreter * interp){
